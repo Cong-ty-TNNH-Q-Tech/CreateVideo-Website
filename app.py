@@ -29,6 +29,9 @@ def generate():
     if source_image.filename == '' or driven_audio.filename == '':
         return jsonify({'success': False, 'error': 'No selected file'})
 
+    # Check for CPU flag
+    use_cpu = request.form.get('use_cpu') == 'true'
+
     # Save files
     image_filename = secure_filename(source_image.filename)
     audio_filename = secure_filename(driven_audio.filename)
@@ -67,7 +70,9 @@ def generate():
         '--batch_size', '1' # Force batch size 1
     ]
     
-    
+    if use_cpu:
+        command.append('--cpu')
+        print("Force CPU mode enabled.")
     
     print(f"Running command: {' '.join(command)}")
 
