@@ -6,7 +6,7 @@ def download_sadtalker_models():
     print("Preparing to download SadTalker models...")
     
     # Destination directory for the models
-    models_dir = os.path.join(os.getcwd(), "checkpoints")
+    models_dir = os.path.join(os.getcwd(), "SadTalker", "checkpoints")
     os.makedirs(models_dir, exist_ok=True)
     
     repo_id = "vinthony/SadTalker"
