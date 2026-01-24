@@ -1,0 +1,222 @@
+{
+  "70849fb9-49fa-41d8-a4ff-d66d03529fde": {
+    "id": "70849fb9-49fa-41d8-a4ff-d66d03529fde",
+    "filename": "Maui_Xaml_Binding_Lab_Handout.pdf",
+    "file_path": "static/uploads/presentations\\70849fb9-49fa-41d8-a4ff-d66d03529fde\\Maui_Xaml_Binding_Lab_Handout.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "LAB HANDOUT \nMAUI XAML Binding Practice with CommunityToolkit.Mvvm \n \nCourse / Module \nMobile Application Development (.NET MAUI) \nLab Title \nTask Manager – XAML Data Binding & MVVM Toolkit \nDuration \n3 hours (180 minutes) \nLab Type \nIndividual – Hands-on Practice \n \n1. Lab Objectives \nAfter completing this lab, students will be able to: \n• Explain the purpose of data binding in .NET MAUI \n• Apply MVVM pattern using CommunityToolkit.Mvvm \n• Correctly use common binding modes in XAML \n• Bind UI elements to ViewModel properties and commands \n• Use converters and MultiBinding in real UI scenarios \n \n2. Software & Tools \n• Visual Studio 2022 or later \n• .NET MAUI workload installed \n• NuGet package: \no CommunityToolkit.Mvvm",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "3. Problem Description \nYou are required to build a single-screen Task Manager application using .NET MAUI \n(XAML). \nThe application allows users to: - Enter a task name - Add the task to a list - Mark tasks as \ncompleted - View task statistics (total and completed) \n    Constraints - No navigation between pages - No database or API - No code-\nbehind logic for UI behavior - All interactions must be implemented using data \nbinding and commands \n \n4. User Interface Specification \nMain Screen Components \n1. Application title: MY TASKS \n2. Text input for new task \n3. Add button \n4. Task list (CollectionView) \n5. Checkbox for task completion \n6. Summary section displaying: \no Total tasks \no Completed tasks \n \n5. Required Binding Types \nYour solution must demonstrate the following bindings: \nNo Binding Type Required Usage \n1 OneWay Display task title \n2 TwoWay Entry ↔ ViewModel property \n3 OneWayToSource Selected task \n4 Command Add task action \n5 RelativeSource Access ViewModel from item template \n6 x:Reference UI-to-UI binding \n7 Converter Completed task text style \n8 MultiBinding Summary text \n9 ObservableCollection Auto-update task list \n10 INotifyPropertyChanged ViewModel updates",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "6. Data Model \nCreate a TaskItem model that contains: \n• Title (string) \n• IsCompleted (bool) \nThe model must inherit from ObservableObject. \n \n7. ViewModel Requirements \nCreate TasksViewModel with the following: \nProperties \n• NewTaskTitle (string) \n• Tasks (ObservableCollection) \n• SelectedTask (TaskItem) \n• TotalCount (int) \n• CompletedCount (int) \nCommands \n• AddTaskCommand \nUse [ObservableProperty] and [RelayCommand] attributes where applicable. \n \n8. XAML Requirements \n• Bind Entry.Text using TwoWay binding \n• Bind Button.Command to ViewModel command \n• Use CollectionView for task list \n• Bind CheckBox.IsChecked using TwoWay binding \n• Use a Value Converter to apply strikethrough to completed tasks \n• Use MultiBinding for summary text \n• Use x:Reference at least once \n \n9. Suggested Lab Steps \n1. Create a new .NET MAUI project",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 4,
+        "content": "2. Install CommunityToolkit.Mvvm \n3. Create the model class \n4. Create the ViewModel \n5. Design the UI in XAML \n6. Apply required bindings \n7. Test UI behavior \n \n10. Assessment Rubric (10 Marks) \nCriteria Marks \nCorrect MVVM structure 2 \nProper use of binding modes 3 \nCommand implementation 2 \nConverter & MultiBinding 2 \nUI completeness & clarity 1 \n \n11. Submission Requirements \nStudents must submit: \n• Source code folder or Git repository \n• Screenshot of running application \n \n12. Notes \n• Code-behind should be minimal or empty \n• Focus on binding correctness, not UI aesthetics \n• Naming conventions and clean structure are required \n \nEnd of Lab",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-01-24 14:38:59",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "a972a9ff-29c4-42e0-8b3e-d4bc4f54e3a4": {
+    "id": "a972a9ff-29c4-42e0-8b3e-d4bc4f54e3a4",
+    "filename": "Maui_Xaml_Binding_Lab_Handout.pdf",
+    "file_path": "static/uploads/presentations\\a972a9ff-29c4-42e0-8b3e-d4bc4f54e3a4\\Maui_Xaml_Binding_Lab_Handout.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "LAB HANDOUT \nMAUI XAML Binding Practice with CommunityToolkit.Mvvm \n \nCourse / Module \nMobile Application Development (.NET MAUI) \nLab Title \nTask Manager – XAML Data Binding & MVVM Toolkit \nDuration \n3 hours (180 minutes) \nLab Type \nIndividual – Hands-on Practice \n \n1. Lab Objectives \nAfter completing this lab, students will be able to: \n• Explain the purpose of data binding in .NET MAUI \n• Apply MVVM pattern using CommunityToolkit.Mvvm \n• Correctly use common binding modes in XAML \n• Bind UI elements to ViewModel properties and commands \n• Use converters and MultiBinding in real UI scenarios \n \n2. Software & Tools \n• Visual Studio 2022 or later \n• .NET MAUI workload installed \n• NuGet package: \no CommunityToolkit.Mvvm",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "3. Problem Description \nYou are required to build a single-screen Task Manager application using .NET MAUI \n(XAML). \nThe application allows users to: - Enter a task name - Add the task to a list - Mark tasks as \ncompleted - View task statistics (total and completed) \n    Constraints - No navigation between pages - No database or API - No code-\nbehind logic for UI behavior - All interactions must be implemented using data \nbinding and commands \n \n4. User Interface Specification \nMain Screen Components \n1. Application title: MY TASKS \n2. Text input for new task \n3. Add button \n4. Task list (CollectionView) \n5. Checkbox for task completion \n6. Summary section displaying: \no Total tasks \no Completed tasks \n \n5. Required Binding Types \nYour solution must demonstrate the following bindings: \nNo Binding Type Required Usage \n1 OneWay Display task title \n2 TwoWay Entry ↔ ViewModel property \n3 OneWayToSource Selected task \n4 Command Add task action \n5 RelativeSource Access ViewModel from item template \n6 x:Reference UI-to-UI binding \n7 Converter Completed task text style \n8 MultiBinding Summary text \n9 ObservableCollection Auto-update task list \n10 INotifyPropertyChanged ViewModel updates",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "6. Data Model \nCreate a TaskItem model that contains: \n• Title (string) \n• IsCompleted (bool) \nThe model must inherit from ObservableObject. \n \n7. ViewModel Requirements \nCreate TasksViewModel with the following: \nProperties \n• NewTaskTitle (string) \n• Tasks (ObservableCollection) \n• SelectedTask (TaskItem) \n• TotalCount (int) \n• CompletedCount (int) \nCommands \n• AddTaskCommand \nUse [ObservableProperty] and [RelayCommand] attributes where applicable. \n \n8. XAML Requirements \n• Bind Entry.Text using TwoWay binding \n• Bind Button.Command to ViewModel command \n• Use CollectionView for task list \n• Bind CheckBox.IsChecked using TwoWay binding \n• Use a Value Converter to apply strikethrough to completed tasks \n• Use MultiBinding for summary text \n• Use x:Reference at least once \n \n9. Suggested Lab Steps \n1. Create a new .NET MAUI project",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 4,
+        "content": "2. Install CommunityToolkit.Mvvm \n3. Create the model class \n4. Create the ViewModel \n5. Design the UI in XAML \n6. Apply required bindings \n7. Test UI behavior \n \n10. Assessment Rubric (10 Marks) \nCriteria Marks \nCorrect MVVM structure 2 \nProper use of binding modes 3 \nCommand implementation 2 \nConverter & MultiBinding 2 \nUI completeness & clarity 1 \n \n11. Submission Requirements \nStudents must submit: \n• Source code folder or Git repository \n• Screenshot of running application \n \n12. Notes \n• Code-behind should be minimal or empty \n• Focus on binding correctness, not UI aesthetics \n• Naming conventions and clean structure are required \n \nEnd of Lab",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-01-24 14:39:22",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "59d41985-84f2-4769-bd06-53ab2395ebf9": {
+    "id": "59d41985-84f2-4769-bd06-53ab2395ebf9",
+    "filename": "Maui_Xaml_Binding_Lab_Handout.pdf",
+    "file_path": "static/uploads/presentations\\59d41985-84f2-4769-bd06-53ab2395ebf9\\Maui_Xaml_Binding_Lab_Handout.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "LAB HANDOUT \nMAUI XAML Binding Practice with CommunityToolkit.Mvvm \n \nCourse / Module \nMobile Application Development (.NET MAUI) \nLab Title \nTask Manager – XAML Data Binding & MVVM Toolkit \nDuration \n3 hours (180 minutes) \nLab Type \nIndividual – Hands-on Practice \n \n1. Lab Objectives \nAfter completing this lab, students will be able to: \n• Explain the purpose of data binding in .NET MAUI \n• Apply MVVM pattern using CommunityToolkit.Mvvm \n• Correctly use common binding modes in XAML \n• Bind UI elements to ViewModel properties and commands \n• Use converters and MultiBinding in real UI scenarios \n \n2. Software & Tools \n• Visual Studio 2022 or later \n• .NET MAUI workload installed \n• NuGet package: \no CommunityToolkit.Mvvm",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "3. Problem Description \nYou are required to build a single-screen Task Manager application using .NET MAUI \n(XAML). \nThe application allows users to: - Enter a task name - Add the task to a list - Mark tasks as \ncompleted - View task statistics (total and completed) \n    Constraints - No navigation between pages - No database or API - No code-\nbehind logic for UI behavior - All interactions must be implemented using data \nbinding and commands \n \n4. User Interface Specification \nMain Screen Components \n1. Application title: MY TASKS \n2. Text input for new task \n3. Add button \n4. Task list (CollectionView) \n5. Checkbox for task completion \n6. Summary section displaying: \no Total tasks \no Completed tasks \n \n5. Required Binding Types \nYour solution must demonstrate the following bindings: \nNo Binding Type Required Usage \n1 OneWay Display task title \n2 TwoWay Entry ↔ ViewModel property \n3 OneWayToSource Selected task \n4 Command Add task action \n5 RelativeSource Access ViewModel from item template \n6 x:Reference UI-to-UI binding \n7 Converter Completed task text style \n8 MultiBinding Summary text \n9 ObservableCollection Auto-update task list \n10 INotifyPropertyChanged ViewModel updates",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "6. Data Model \nCreate a TaskItem model that contains: \n• Title (string) \n• IsCompleted (bool) \nThe model must inherit from ObservableObject. \n \n7. ViewModel Requirements \nCreate TasksViewModel with the following: \nProperties \n• NewTaskTitle (string) \n• Tasks (ObservableCollection) \n• SelectedTask (TaskItem) \n• TotalCount (int) \n• CompletedCount (int) \nCommands \n• AddTaskCommand \nUse [ObservableProperty] and [RelayCommand] attributes where applicable. \n \n8. XAML Requirements \n• Bind Entry.Text using TwoWay binding \n• Bind Button.Command to ViewModel command \n• Use CollectionView for task list \n• Bind CheckBox.IsChecked using TwoWay binding \n• Use a Value Converter to apply strikethrough to completed tasks \n• Use MultiBinding for summary text \n• Use x:Reference at least once \n \n9. Suggested Lab Steps \n1. Create a new .NET MAUI project",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 4,
+        "content": "2. Install CommunityToolkit.Mvvm \n3. Create the model class \n4. Create the ViewModel \n5. Design the UI in XAML \n6. Apply required bindings \n7. Test UI behavior \n \n10. Assessment Rubric (10 Marks) \nCriteria Marks \nCorrect MVVM structure 2 \nProper use of binding modes 3 \nCommand implementation 2 \nConverter & MultiBinding 2 \nUI completeness & clarity 1 \n \n11. Submission Requirements \nStudents must submit: \n• Source code folder or Git repository \n• Screenshot of running application \n \n12. Notes \n• Code-behind should be minimal or empty \n• Focus on binding correctness, not UI aesthetics \n• Naming conventions and clean structure are required \n \nEnd of Lab",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-01-24 15:03:57",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "c98460a9-7aa0-4c5e-837a-5286874379ad": {
+    "id": "c98460a9-7aa0-4c5e-837a-5286874379ad",
+    "filename": "Maui_Xaml_Binding_Lab_Handout.pdf",
+    "file_path": "static/uploads/presentations\\c98460a9-7aa0-4c5e-837a-5286874379ad\\Maui_Xaml_Binding_Lab_Handout.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "LAB HANDOUT \nMAUI XAML Binding Practice with CommunityToolkit.Mvvm \n \nCourse / Module \nMobile Application Development (.NET MAUI) \nLab Title \nTask Manager – XAML Data Binding & MVVM Toolkit \nDuration \n3 hours (180 minutes) \nLab Type \nIndividual – Hands-on Practice \n \n1. Lab Objectives \nAfter completing this lab, students will be able to: \n• Explain the purpose of data binding in .NET MAUI \n• Apply MVVM pattern using CommunityToolkit.Mvvm \n• Correctly use common binding modes in XAML \n• Bind UI elements to ViewModel properties and commands \n• Use converters and MultiBinding in real UI scenarios \n \n2. Software & Tools \n• Visual Studio 2022 or later \n• .NET MAUI workload installed \n• NuGet package: \no CommunityToolkit.Mvvm",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "Chào mừng các bạn đến với buổi thực hành hôm nay! Trong khuôn khổ môn Phát triển Ứng dụng Di động với .NET MAUI, chúng ta sẽ đi sâu vào một phần cực kỳ quan trọng và thiết yếu khi xây dựng các ứng dụng di động hiện đại: đó là Data Binding và mô hình MVVM.\n\nBuổi lab của chúng ta có tên là \"Task Manager – XAML Data Binding & MVVM Toolkit\". Đúng như tên gọi, chúng ta sẽ cùng nhau xây dựng một ứng dụng quản lý tác vụ cơ bản, nơi mà mọi logic và dữ liệu đều được quản lý một cách hiệu quả thông qua các kỹ thuật binding và kiến trúc MVVM. Đây là một buổi thực hành cá nhân kéo dài 3 tiếng, tập trung hoàn toàn vào thực hành trực tiếp, giúp các bạn có cái nhìn sâu sắc và kỹ năng thực tiễn.\n\nVậy sau 3 giờ thực hành này, chúng ta sẽ đạt được những gì?\n\nĐầu tiên, các bạn sẽ hiểu rõ **mục đích thực sự của Data Binding** trong .NET MAUI. Tại sao chúng ta cần nó? Nó giúp tách biệt UI và logic, làm cho code của chúng ta sạch hơn, dễ bảo trì hơn, và quan trọng nhất là tạo ra các ứng dụng phản hồi mượt mà hơn với dữ liệu.\n\nTiếp theo, chúng ta sẽ áp dụng **mô hình MVVM** – Model-View-ViewModel – một kiến trúc đã quá quen thuộc và hiệu quả trong phát triển ứng dụng UI. Đặc biệt, chúng ta sẽ sử dụng **CommunityToolkit.Mvvm**. Đây là một thư viện NuGet rất mạnh mẽ, giúp chúng ta triển khai MVVM một cách dễ dàng và hiệu quả hơn rất nhiều, giảm bớt boilerplate code.\n\nCác bạn cũng sẽ học cách sử dụng các **chế độ binding phổ biến trong XAML** một cách chính xác, từ OneWay, TwoWay cho đến OneTime. Chúng ta sẽ thực hành liên kết các phần tử UI như TextBox, Button với các thuộc tính và lệnh (Commands) trong ViewModel.\n\nVà để làm cho ứng dụng của chúng ta linh hoạt hơn, chúng ta sẽ khám phá cách dùng các **converters** để biến đổi dữ liệu, hoặc sử dụng **MultiBinding** để kết hợp nhiều nguồn dữ liệu khác nhau vào một UI element duy nhất. Tất cả đều là những tình huống thực tế mà bạn sẽ gặp trong quá trình phát triển ứng dụng.\n\nVề mặt công cụ, để buổi lab diễn ra suôn sẻ, các bạn chỉ cần đảm bảo máy tính của mình đã cài đặt Visual Studio 2022 trở lên, có workload .NET MAUI và đã thêm gói NuGet CommunityToolkit.Mvvm vào project của mình.\n\nHy vọng với buổi thực hành này, các bạn sẽ không chỉ nắm vững lý thuyết mà còn có thể tự tin áp dụng Data Binding và MVVM vào các dự án MAUI của mình. Đây là những kỹ năng nền tảng cực kỳ giá trị để xây dựng các ứng dụng di động hiện đại. Bây giờ, chúng ta hãy cùng bắt đầu nhé!",
+        "edited_text": "Chào mừng các bạn đến với buổi thực hành hôm nay! Trong khuôn khổ môn Phát triển Ứng dụng Di động với .NET MAUI, chúng ta sẽ đi sâu vào một phần cực kỳ quan trọng và thiết yếu khi xây dựng các ứng dụng di động hiện đại: đó là Data Binding và mô hình MVVM.\n\nBuổi lab của chúng ta có tên là \"Task Manager – XAML Data Binding & MVVM Toolkit\". Đúng như tên gọi, chúng ta sẽ cùng nhau xây dựng một ứng dụng quản lý tác vụ cơ bản, nơi mà mọi logic và dữ liệu đều được quản lý một cách hiệu quả thông qua các kỹ thuật binding và kiến trúc MVVM. Đây là một buổi thực hành cá nhân kéo dài 3 tiếng, tập trung hoàn toàn vào thực hành trực tiếp, giúp các bạn có cái nhìn sâu sắc và kỹ năng thực tiễn.\n\nVậy sau 3 giờ thực hành này, chúng ta sẽ đạt được những gì?\n\nĐầu tiên, các bạn sẽ hiểu rõ **mục đích thực sự của Data Binding** trong .NET MAUI. Tại sao chúng ta cần nó? Nó giúp tách biệt UI và logic, làm cho code của chúng ta sạch hơn, dễ bảo trì hơn, và quan trọng nhất là tạo ra các ứng dụng phản hồi mượt mà hơn với dữ liệu.\n\nTiếp theo, chúng ta sẽ áp dụng **mô hình MVVM** – Model-View-ViewModel – một kiến trúc đã quá quen thuộc và hiệu quả trong phát triển ứng dụng UI. Đặc biệt, chúng ta sẽ sử dụng **CommunityToolkit.Mvvm**. Đây là một thư viện NuGet rất mạnh mẽ, giúp chúng ta triển khai MVVM một cách dễ dàng và hiệu quả hơn rất nhiều, giảm bớt boilerplate code.\n\nCác bạn cũng sẽ học cách sử dụng các **chế độ binding phổ biến trong XAML** một cách chính xác, từ OneWay, TwoWay cho đến OneTime. Chúng ta sẽ thực hành liên kết các phần tử UI như TextBox, Button với các thuộc tính và lệnh (Commands) trong ViewModel.\n\nVà để làm cho ứng dụng của chúng ta linh hoạt hơn, chúng ta sẽ khám phá cách dùng các **converters** để biến đổi dữ liệu, hoặc sử dụng **MultiBinding** để kết hợp nhiều nguồn dữ liệu khác nhau vào một UI element duy nhất. Tất cả đều là những tình huống thực tế mà bạn sẽ gặp trong quá trình phát triển ứng dụng.\n\nVề mặt công cụ, để buổi lab diễn ra suôn sẻ, các bạn chỉ cần đảm bảo máy tính của mình đã cài đặt Visual Studio 2022 trở lên, có workload .NET MAUI và đã thêm gói NuGet CommunityToolkit.Mvvm vào project của mình.\n\nHy vọng với buổi thực hành này, các bạn sẽ không chỉ nắm vững lý thuyết mà còn có thể tự tin áp dụng Data Binding và MVVM vào các dự án MAUI của mình. Đây là những kỹ năng nền tảng cực kỳ giá trị để xây dựng các ứng dụng di động hiện đại. Bây giờ, chúng ta hãy cùng bắt đầu nhé!",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "3. Problem Description \nYou are required to build a single-screen Task Manager application using .NET MAUI \n(XAML). \nThe application allows users to: - Enter a task name - Add the task to a list - Mark tasks as \ncompleted - View task statistics (total and completed) \n    Constraints - No navigation between pages - No database or API - No code-\nbehind logic for UI behavior - All interactions must be implemented using data \nbinding and commands \n \n4. User Interface Specification \nMain Screen Components \n1. Application title: MY TASKS \n2. Text input for new task \n3. Add button \n4. Task list (CollectionView) \n5. Checkbox for task completion \n6. Summary section displaying: \no Total tasks \no Completed tasks \n \n5. Required Binding Types \nYour solution must demonstrate the following bindings: \nNo Binding Type Required Usage \n1 OneWay Display task title \n2 TwoWay Entry ↔ ViewModel property \n3 OneWayToSource Selected task \n4 Command Add task action \n5 RelativeSource Access ViewModel from item template \n6 x:Reference UI-to-UI binding \n7 Converter Completed task text style \n8 MultiBinding Summary text \n9 ObservableCollection Auto-update task list \n10 INotifyPropertyChanged ViewModel updates",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "Chào mọi người, hôm nay chúng ta sẽ cùng tìm hiểu về một dự án thú vị: xây dựng ứng dụng quản lý tác vụ (Task Manager) sử dụng .NET MAUI.\n\nMục tiêu của chúng ta là tạo ra một ứng dụng chỉ trên một màn hình duy nhất, nơi người dùng có thể thực hiện mọi thao tác quản lý công việc của mình. Cụ thể, người dùng có thể dễ dàng nhập tên một công việc mới, thêm nó vào danh sách, đánh dấu khi công việc đó hoàn thành, và theo dõi các số liệu thống kê cơ bản như tổng số công việc và số công việc đã hoàn thành.\n\nTuy nhiên, điểm thú vị và cũng là thử thách lớn nhất nằm ở các ràng buộc của dự án này. Đầu tiên, như đã nói, chúng ta không có chuyển trang, mọi thứ diễn ra trên một màn hình. Thứ hai, không sử dụng database hay API bên ngoài – tất cả dữ liệu sẽ được xử lý trong bộ nhớ của ứng dụng. Và quan trọng nhất, để đảm bảo tính minh bạch và dễ bảo trì, chúng ta *không được phép* viết bất kỳ logic xử lý UI nào trong phần code-behind của XAML. Thay vào đó, tất cả các tương tác người dùng phải được triển khai thông qua cơ chế data binding và commands.\n\nĐể đáp ứng các yêu cầu này, giao diện người dùng của chúng ta được thiết kế rất trực quan và đơn giản. Màn hình chính sẽ có tiêu đề rõ ràng là \"MY TASKS\". Phía trên cùng là một ô nhập liệu để người dùng gõ tên công việc mới, và ngay bên cạnh là nút \"Thêm\" để đưa công việc đó vào danh sách. Phần trung tâm sẽ là danh sách các công việc, hiển thị dưới dạng CollectionView. Mỗi công việc trong danh sách sẽ đi kèm một checkbox để người dùng dễ dàng đánh dấu hoàn thành. Cuối cùng, ở phần dưới cùng của màn hình, chúng ta sẽ có một khu vực tóm tắt, hiển thị tổng số công việc và số lượng công việc đã hoàn thành, giúp người dùng nắm bắt tình hình chung một cách nhanh chóng.\n\nĐể hiện thực hóa tất cả các tương tác này mà không cần dùng code-behind, chúng ta sẽ tận dụng triệt để các kiểu Data Binding khác nhau trong .NET MAUI. Ví dụ, kiểu `OneWay` sẽ giúp hiển thị tiêu đề công việc một chiều từ ViewModel ra UI. Kiểu `TwoWay` sẽ cực kỳ hữu ích cho ô nhập liệu, đảm bảo dữ liệu luôn được đồng bộ hai chiều giữa giao diện và ViewModel. Các nút bấm như \"Thêm\" sẽ được xử lý bằng `Command` binding, giúp tách rời logic hành động khỏi UI.\n\nTrong danh sách công việc, chúng ta sẽ cần đến `RelativeSource` để truy cập ViewModel từ bên trong item template, hoặc `x:Reference` để liên kết các thành phần UI với nhau trực tiếp. Để làm cho phần tóm tắt trở nên sống động, chúng ta sẽ dùng `MultiBinding` để kết hợp nhiều giá trị thành một chuỗi hiển thị duy nhất, và `Converter` để thay đổi phong cách hiển thị của văn bản, ví dụ như gạch ngang những công việc đã hoàn thành. Cuối cùng, để danh sách công việc tự động cập nhật mỗi khi có thay đổi, chúng ta sẽ sử dụng `ObservableCollection`, và ViewModel của chúng ta sẽ triển khai interface `INotifyPropertyChanged` để thông báo cho UI biết khi có bất kỳ thuộc tính nào thay đổi.\n\nTóm lại, mặc dù chỉ là một ứng dụng đơn màn hình, dự án này yêu cầu chúng ta phải có sự hiểu biết sâu sắc về các cơ chế Data Binding và MVVM trong .NET MAUI để xây dựng một giải pháp sạch sẽ, hiệu quả và dễ bảo trì.",
+        "edited_text": "Chào mọi người, hôm nay chúng ta sẽ cùng tìm hiểu về một dự án thú vị: xây dựng ứng dụng quản lý tác vụ (Task Manager) sử dụng .NET MAUI.\n\nMục tiêu của chúng ta là tạo ra một ứng dụng chỉ trên một màn hình duy nhất, nơi người dùng có thể thực hiện mọi thao tác quản lý công việc của mình. Cụ thể, người dùng có thể dễ dàng nhập tên một công việc mới, thêm nó vào danh sách, đánh dấu khi công việc đó hoàn thành, và theo dõi các số liệu thống kê cơ bản như tổng số công việc và số công việc đã hoàn thành.\n\nTuy nhiên, điểm thú vị và cũng là thử thách lớn nhất nằm ở các ràng buộc của dự án này. Đầu tiên, như đã nói, chúng ta không có chuyển trang, mọi thứ diễn ra trên một màn hình. Thứ hai, không sử dụng database hay API bên ngoài – tất cả dữ liệu sẽ được xử lý trong bộ nhớ của ứng dụng. Và quan trọng nhất, để đảm bảo tính minh bạch và dễ bảo trì, chúng ta *không được phép* viết bất kỳ logic xử lý UI nào trong phần code-behind của XAML. Thay vào đó, tất cả các tương tác người dùng phải được triển khai thông qua cơ chế data binding và commands.\n\nĐể đáp ứng các yêu cầu này, giao diện người dùng của chúng ta được thiết kế rất trực quan và đơn giản. Màn hình chính sẽ có tiêu đề rõ ràng là \"MY TASKS\". Phía trên cùng là một ô nhập liệu để người dùng gõ tên công việc mới, và ngay bên cạnh là nút \"Thêm\" để đưa công việc đó vào danh sách. Phần trung tâm sẽ là danh sách các công việc, hiển thị dưới dạng CollectionView. Mỗi công việc trong danh sách sẽ đi kèm một checkbox để người dùng dễ dàng đánh dấu hoàn thành. Cuối cùng, ở phần dưới cùng của màn hình, chúng ta sẽ có một khu vực tóm tắt, hiển thị tổng số công việc và số lượng công việc đã hoàn thành, giúp người dùng nắm bắt tình hình chung một cách nhanh chóng.\n\nĐể hiện thực hóa tất cả các tương tác này mà không cần dùng code-behind, chúng ta sẽ tận dụng triệt để các kiểu Data Binding khác nhau trong .NET MAUI. Ví dụ, kiểu `OneWay` sẽ giúp hiển thị tiêu đề công việc một chiều từ ViewModel ra UI. Kiểu `TwoWay` sẽ cực kỳ hữu ích cho ô nhập liệu, đảm bảo dữ liệu luôn được đồng bộ hai chiều giữa giao diện và ViewModel. Các nút bấm như \"Thêm\" sẽ được xử lý bằng `Command` binding, giúp tách rời logic hành động khỏi UI.\n\nTrong danh sách công việc, chúng ta sẽ cần đến `RelativeSource` để truy cập ViewModel từ bên trong item template, hoặc `x:Reference` để liên kết các thành phần UI với nhau trực tiếp. Để làm cho phần tóm tắt trở nên sống động, chúng ta sẽ dùng `MultiBinding` để kết hợp nhiều giá trị thành một chuỗi hiển thị duy nhất, và `Converter` để thay đổi phong cách hiển thị của văn bản, ví dụ như gạch ngang những công việc đã hoàn thành. Cuối cùng, để danh sách công việc tự động cập nhật mỗi khi có thay đổi, chúng ta sẽ sử dụng `ObservableCollection`, và ViewModel của chúng ta sẽ triển khai interface `INotifyPropertyChanged` để thông báo cho UI biết khi có bất kỳ thuộc tính nào thay đổi.\n\nTóm lại, mặc dù chỉ là một ứng dụng đơn màn hình, dự án này yêu cầu chúng ta phải có sự hiểu biết sâu sắc về các cơ chế Data Binding và MVVM trong .NET MAUI để xây dựng một giải pháp sạch sẽ, hiệu quả và dễ bảo trì.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "6. Data Model \nCreate a TaskItem model that contains: \n• Title (string) \n• IsCompleted (bool) \nThe model must inherit from ObservableObject. \n \n7. ViewModel Requirements \nCreate TasksViewModel with the following: \nProperties \n• NewTaskTitle (string) \n• Tasks (ObservableCollection) \n• SelectedTask (TaskItem) \n• TotalCount (int) \n• CompletedCount (int) \nCommands \n• AddTaskCommand \nUse [ObservableProperty] and [RelayCommand] attributes where applicable. \n \n8. XAML Requirements \n• Bind Entry.Text using TwoWay binding \n• Bind Button.Command to ViewModel command \n• Use CollectionView for task list \n• Bind CheckBox.IsChecked using TwoWay binding \n• Use a Value Converter to apply strikethrough to completed tasks \n• Use MultiBinding for summary text \n• Use x:Reference at least once \n \n9. Suggested Lab Steps \n1. Create a new .NET MAUI project",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 4,
+        "content": "2. Install CommunityToolkit.Mvvm \n3. Create the model class \n4. Create the ViewModel \n5. Design the UI in XAML \n6. Apply required bindings \n7. Test UI behavior \n \n10. Assessment Rubric (10 Marks) \nCriteria Marks \nCorrect MVVM structure 2 \nProper use of binding modes 3 \nCommand implementation 2 \nConverter & MultiBinding 2 \nUI completeness & clarity 1 \n \n11. Submission Requirements \nStudents must submit: \n• Source code folder or Git repository \n• Screenshot of running application \n \n12. Notes \n• Code-behind should be minimal or empty \n• Focus on binding correctness, not UI aesthetics \n• Naming conventions and clean structure are required \n \nEnd of Lab",
+        "notes": "",
+        "total_slides": 4,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-01-24 15:06:27",
+    "avatar_path": null,
+    "final_video_path": null
+  }
+}

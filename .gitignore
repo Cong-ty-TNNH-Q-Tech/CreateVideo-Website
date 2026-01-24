@@ -7,3 +7,6 @@ gfpgan/
 *.log
 static/uploads/
 static/results/
+
+# Environment variables
+.env
