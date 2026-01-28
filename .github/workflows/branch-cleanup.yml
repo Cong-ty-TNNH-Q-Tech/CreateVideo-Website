@@ -1,0 +1,67 @@
+name: Branch Cleanup
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sundays
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find stale branches
+        id: stale
+        run: |
+          # Fetch all remotes
+          git fetch --all --prune
+
+          # Branches not updated in 30 days
+          # We check for days >= 30, or months/years
+          stale=$(git for-each-ref --sort=-committerdate refs/remotes/origin \
+            --format='%(refname:short) %(committerdate:relative)' | \
+            grep -E '[3-9][0-9]+ days ago|[0-9]+ months ago|[0-9]+ years ago' | \
+            grep -vE 'origin/main|origin/master|origin/develop' | \
+            cut -d' ' -f1 | sed 's|origin/||')
+
+          echo "Found stale branches:"
+          echo "$stale"
+
+          echo "branches<<EOF" >> $GITHUB_OUTPUT
+          echo "$stale" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create cleanup Issue
+        if: steps.stale.outputs.branches != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branches = `${{ steps.stale.outputs.branches }}`.split('\n').filter(Boolean);
+            if (branches.length === 0) return;
+
+            const body = `## 🧹 Stale Branch Cleanup
+
+            The following branches haven't been updated in over 30 days:
+
+            ${branches.map(b => `- \`${b}\``).join('\n')}
+
+            ### Actions:
+            - [ ] Review each branch
+            - [ ] Delete branches that are no longer needed
+            - [ ] Close this issue when done
+            `;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🧹 Stale Branch Cleanup Report',
+              body: body,
+              labels: ['housekeeping', 'maintenance']
+            });
