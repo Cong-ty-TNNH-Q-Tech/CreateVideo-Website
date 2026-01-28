@@ -49,3 +49,43 @@ When working on this project, you can run commands to:
 - Verify implementation against design (`check-implementation`)
 - Suggest missing tests (`suggest-tests`)
 - Perform structured code reviews (`code-review`)
+
+# Activated Skills & AI Agents
+
+This project is equipped with specialized AI skills located in `.github/skills/`.
+
+## Available Agents
+
+### 1. 🔧 GitHub Workflow Automation (`github-workflow-automation`)
+- **Key Capabilities**: Automating PR reviews, issue triage, CI/CD pipelines, and Git operations.
+- **Triggers**: Automated via GitHub Actions (see `.github/workflows/`) or invoked manually.
+- **Usage**:
+  - **PR Reviews**: Open a PR to trigger AI code review.
+  - **Smart Tests**: PRs automatically run relevant tests based on changed files.
+  - **Branch Cleanup**: Runs weekly to report stale branches.
+  - **Manual**: Use tags like `@ai-helper` in comments (if configured).
+
+### 2. 🐍 WebApp Testing (`webapp-testing`)
+- **Key Capabilities**: Python-based Playwright testing for local web applications.
+- **Location**: `.github/skills/webapp-testing/`
+- **Usage**:
+  - Use `python .github/skills/webapp-testing/scripts/with_server.py` to run tests against a live server.
+  - Write test scripts in `tests/` using native `playwright.sync_api`.
+
+### 3. 🎭 Playwright Skill (`playwright-skill`)
+- **Key Capabilities**: General-purpose browser automation and E2E testing using Node.js/TypeScript.
+- **Usage**:
+  - Best for generating complex automation scripts or cross-browser testing scenarios.
+  - Can be used to verify UI behavior, screenshots, and responsive design.
+
+### 4. 🎨 UI/UX Pro Max (`ui-ux-pro-max`)
+- **Key Capabilities**: Expert design advice, accessibility checks, color palettes, and component library usage (Shadcn/UI, Tailwind).
+- **Usage**: Ask for design reviews, accessibility audits (`color-contrast`, `aria-labels`), or code improvements for frontend components.
+
+### 5. 🐳 Docker Expert (`docker-expert`)
+- **Key Capabilities**: Optimization of Dockerfiles, multi-stage builds, and container security.
+- **Usage**: Consult when writing `Dockerfile` or `docker-compose.yml` to ensure best practices (layer caching, size reduction).
+
+## Interaction Guidelines for Skills
+- **Context Awareness**: When asking for help, specify which agent/skill matches your need (e.g., "Act as the Docker Expert to optimize this file").
+- **Automation First**: Prefer using the configured GitHub Actions for routine tasks (testing, linting, reviewing).
