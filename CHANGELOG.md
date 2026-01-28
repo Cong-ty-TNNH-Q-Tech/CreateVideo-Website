@@ -1,0 +1,57 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased] - 2026-01-28
+
+### Refactor
+- **MVC Architecture**: Migrated the entire application structure to the MVC (Model-View-Controller) pattern.
+    - Split `app.py` into `models`, `controllers`, and `services`.
+    - Implemented Application Factory pattern in `app/__init__.py`.
+    - Created `PresentationModel` for data persistence.
+    - Moved configuration to `config.py`.
+- **Directory Structure**: Moved `utils` and `services` into the `app` directory for better organization.
+- **SadTalker Integration**: Moved `SadTalker` core engine into `app/SadTalker` and encapsulated its logic within `app/services/video_generator.py`.
+- **Unit Tests**: Updated `tests/` to align with the new application factory and directory structure.
+
+### CI/CD & DevOps
+- **GitHub Actions**: Added workflows for Python testing, AI Code Review, and maintenance.
+- **AI Review**: Updated AI Review workflow to support Gemini 2.5 Flash and use Vietnamese prompts.
+
+### Documentation & Agents
+- **AI DevKit**: Added AI DevKit documentation (`docs/ai/`) and agent skills (`.github/skills/`).
+- **Rules**: Updated `AGENTS.md` and added project rules.
+
+### Core Features (Previous)
+- **Step 1 & 2**: Implemented PPT/PDF upload and Gemini API integration for text generation (2026-01-24).
+- **SadTalker**: Integrated SadTalker for video generation, fixed GPU/CPU switching issues, and improved UI/UX (2026-01-23).
+
+## History being tracked
+
+### 2026-01-28
+- `35ba7c8` refactor: move SadTalker to app directory and create VideoGenerationService
+- `2d4727d` Merge pull request #4 from Cong-ty-TNNH-MoneyEveryWhere/refactor/mvc-structure
+- `b087f7a` refactor: move utils and services into app directory structure
+- `8789485` Merge pull request #3 from Cong-ty-TNNH-MoneyEveryWhere/refactor/mvc-structure
+- `ed644d4` refactor: migrate application structure to MVC pattern
+- `0dddb25` Update AI Review prompt to use Vietnamese
+- `e1658f7` Merge pull request #2 from Cong-ty-TNNH-MoneyEveryWhere/temp
+- `0d0947f` chore: delete some files
+- `d7991f2` Update AI Review workflow to support Gemini 2.5 Flash
+- `a9a00eb` Update AGENTS.md and add project rules with skill instructions
+- `0eaee3c` Add GitHub Actions workflows for Python testing, AI review, and maintenance
+- `97653f6` feat: add agent skills
+- `860961e` docs: add ai devkit
+
+### 2026-01-24
+- `29140ee` Merge pull request #1 from Cong-ty-TNNH-MoneyEveryWhere/feature/step1-step2-implementation
+- `fedbde0` chore: Remove implementation/documentation files
+- `c1d25ec` feat: Implement Step 1 (PPT/PDF upload) and Step 2 (Gemini API integration)
+
+### 2026-01-23
+- `2492480` Refactor requirements and update app logic
+- `3221dd9` Update: Integrate SadTalker, fix GPU/CPU issues, add UI/UX
+
+### 2026-01-22
+- `dbf655a` Merge remote-tracking branch 'origin/main' into main
+- `4fa3748` Initial commit

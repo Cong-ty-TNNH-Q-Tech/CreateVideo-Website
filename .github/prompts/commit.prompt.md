@@ -1,0 +1,1 @@
+- Commit all changes with conventional commit messages and push

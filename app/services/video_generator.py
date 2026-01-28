@@ -11,6 +11,7 @@ class VideoGenerationService:
             app_root: Root path of the application (where SadTalker folder is located)
         """
         # SadTalker is now inside app/SadTalker
+        self.app_root = app_root
         self.sadtalker_dir = os.path.join(app_root, 'SadTalker')
         
     def generate_video(self, source_image_path, driven_audio_path, result_dir, use_cpu=False):
@@ -24,7 +25,7 @@ class VideoGenerationService:
         
         # Determine python executable
         # Try to find venv python from the project root (parent of app_root)
-        project_root = os.path.dirname(app_root)
+        project_root = os.path.dirname(self.app_root)
         venv_python = os.path.join(project_root, 'venv', 'Scripts', 'python.exe')
         
         if os.path.exists(venv_python):
