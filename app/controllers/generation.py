@@ -1,9 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 import os
-import subprocess
-import sys
-import glob
+from app.services.video_generator import VideoGenerationService
 
 generation_bp = Blueprint('generation', __name__)
 
@@ -32,65 +30,14 @@ def generate():
     source_image.save(image_path)
     driven_audio.save(audio_path)
 
-    # CALL SADTALKER INFERENCE
-    sadtalker_dir = os.path.join(os.getcwd(), 'SadTalker')
-    result_dir_abs = os.path.abspath(current_app.config['RESULT_FOLDER'])
+    # Use Service
+    # app.root_path usually points to .../app
+    generator = VideoGenerationService(current_app.root_path)
+    result = generator.generate_video(
+        image_path, 
+        audio_path, 
+        current_app.config['RESULT_FOLDER'],
+        use_cpu=use_cpu
+    )
     
-    # Use venv python explicitly if possible to avoid environment mismatch
-    venv_python = os.path.join(os.getcwd(), 'venv', 'Scripts', 'python.exe')
-    if os.path.exists(venv_python):
-        python_exec = venv_python
-    else:
-        python_exec = sys.executable
-
-    # Construct command
-    # python inference.py --driven_audio <audio> --source_image <image> --result_dir <dir> --still --preprocess full
-    command = [
-        python_exec, 'inference.py',
-        '--driven_audio', os.path.abspath(audio_path),
-        '--source_image', os.path.abspath(image_path),
-        '--result_dir', result_dir_abs,
-        '--still', 
-        '--preprocess', 'resize',  # Changed from 'full' to 'resize' to save memory
-        '--checkpoint_dir', 'checkpoints',
-        '--batch_size', '1' # Force batch size 1
-    ]
-    
-    if use_cpu:
-        command.append('--cpu')
-        print("Force CPU mode enabled.")
-    
-    print(f"Running command: {' '.join(command)}")
-
-    try:
-        # Run inference
-        process = subprocess.run(
-            command, 
-            cwd=sadtalker_dir, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        
-        if process.returncode != 0:
-            print(f"Error Output: {process.stderr}")
-            return jsonify({'success': False, 'error': f"SadTalker Error: {process.stderr}"})
-            
-        print(f"Output: {process.stdout}")
-
-        # Find the latest generated MP4 file in the result directory
-        list_of_files = glob.glob(os.path.join(result_dir_abs, '*.mp4'))
-        if not list_of_files:
-             return jsonify({'success': False, 'error': "No video generated."})
-             
-        latest_file = max(list_of_files, key=os.path.getctime)
-        result_filename = os.path.basename(latest_file)
-        
-        return jsonify({
-            'success': True,
-            'video_url': f'/static/results/{result_filename}'
-        })
-
-    except Exception as e:
-        print(f"Exception: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
+    return jsonify(result)
