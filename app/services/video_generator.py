@@ -40,9 +40,12 @@ class VideoGenerationService:
             '--source_image', source_image_abs,
             '--result_dir', result_dir_abs,
             '--still', 
-            '--preprocess', 'resize',
+            '--preprocess', 'full',  # 'full' for better quality, 'crop' for cropped face
+            '--size', '512',  # Higher resolution (256, 512)
             '--checkpoint_dir', 'checkpoints',
-            '--batch_size', '1'
+            '--batch_size', '2',  # Larger batch for smoother results
+            '--enhancer', 'gfpgan',  # Face enhancement for better quality
+            '--expression_scale', '1.0'  # Expression intensity
         ]
         
         if use_cpu:
@@ -63,11 +66,25 @@ class VideoGenerationService:
             )
             
             if process.returncode != 0:
-                print(f"Error Output: {process.stderr}")
-                return {
-                    'success': False, 
-                    'error': f"SadTalker Error: {process.stderr}"
-                }
+                stderr = process.stderr
+                print(f"Error Output: {stderr}")
+                
+                # Provide user-friendly error messages
+                if "No face detected" in stderr or "index 0 is out of bounds" in stderr:
+                    return {
+                        'success': False, 
+                        'error': "Không phát hiện được khuôn mặt trong ảnh. Vui lòng sử dụng ảnh chân dung rõ nét với khuôn mặt hiện diện rõ ràng."
+                    }
+                elif "CUDA out of memory" in stderr:
+                    return {
+                        'success': False,
+                        'error': "Hết bộ nhớ GPU. Vui lòng thử lại hoặc sử dụng ảnh có kích thước nhỏ hơn."
+                    }
+                else:
+                    return {
+                        'success': False, 
+                        'error': f"Lỗi khi tạo video: {stderr}"
+                    }
                 
             print(f"Output: {process.stdout}")
 
@@ -100,9 +117,20 @@ class VideoGenerationService:
             
             return {
                 'success': True,
-                'video_url': f'/static/results/{rel_path_url}'
+                'video_url': f'/static/results/{rel_path_url}',
+                'video_path': latest_file
             }
 
+        except ValueError as e:
+            # Handle face detection errors
+            error_msg = str(e)
+            if "No face detected" in error_msg:
+                return {
+                    'success': False,
+                    'error': "Không phát hiện được khuôn mặt trong ảnh. Vui lòng sử dụng ảnh chân dung rõ nét với khuôn mặt hiện diện rõ ràng."
+                }
+            else:
+                return {'success': False, 'error': error_msg}
         except Exception as e:
             print(f"Exception: {str(e)}")
-            return {'success': False, 'error': str(e)}
+            return {'success': False, 'error': f"Lỗi không mong đợi: {str(e)}"}

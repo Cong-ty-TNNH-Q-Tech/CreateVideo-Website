@@ -138,8 +138,13 @@ if __name__ == '__main__':
 
     if torch.cuda.is_available() and not args.cpu:
         args.device = "cuda"
+        print(f"[GPU] Using GPU: {torch.cuda.get_device_name(0)}")
+        print(f"      GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.2f} GB")
     else:
         args.device = "cpu"
+        print("[CPU] Using CPU mode")
+        if torch.cuda.is_available():
+            print("      Note: GPU is available but CPU mode was forced with --cpu flag")
 
     main(args)
 

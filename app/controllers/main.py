@@ -6,7 +6,12 @@ main_bp = Blueprint('main', __name__)
 def home():
     return render_template('presentation.html')
 
-@main_bp.route('/old')
-def old_home():
-    """Old SadTalker demo page"""
-    return render_template('index.html')
+@main_bp.route('/test/sadtalker')
+def test_sadtalker():
+    """Test page for SadTalker video generation"""
+    return render_template('test_sadtalker.html')
+
+@main_bp.route('/test/tts')
+def test_tts():
+    """Test page for VieNeu-TTS voice synthesis"""
+    return render_template('test_tts.html')

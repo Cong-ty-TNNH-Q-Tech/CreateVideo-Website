@@ -70,7 +70,22 @@ class KeypointExtractor():
                     with torch.no_grad():
                         # face detection -> face alignment.
                         img = np.array(images)
-                        bboxes = self.det_net.detect_faces(images, 0.97)
+                        
+                        # Try multiple confidence thresholds for better detection
+                        bboxes = None
+                        for confidence in [0.97, 0.92, 0.85, 0.75]:
+                            bboxes = self.det_net.detect_faces(images, confidence)
+                            if len(bboxes) > 0:
+                                print(f"Face detected with confidence threshold: {confidence}")
+                                break
+                        
+                        # Check if any face was detected
+                        if bboxes is None or len(bboxes) == 0:
+                            raise ValueError(
+                                "No face detected in the image. "
+                                "Please ensure the image contains a clear, visible face. "
+                                "Tips: Use a well-lit portrait photo with the face clearly visible."
+                            )
                         
                         bboxes = bboxes[0]
                         img = img[int(bboxes[1]):int(bboxes[3]), int(bboxes[0]):int(bboxes[2]), :]

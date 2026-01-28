@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test VieNeu-TTS - Voice Synthesis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 150px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #f093fb;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group select:focus {
+            outline: none;
+            border-color: #f093fb;
+        }
+        
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed #f093fb;
+            border-radius: 10px;
+            background: #fff5f8;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .form-group input[type="file"]:hover {
+            border-color: #f5576c;
+            background: #ffe8ed;
+        }
+        
+        .voice-clone-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(240, 147, 251, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .status.show {
+            display: block;
+        }
+        
+        .status.loading {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .result-audio {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .result-audio.show {
+            display: block;
+        }
+        
+        .result-audio audio {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top-color: #f093fb;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .info-box h4 {
+            margin-bottom: 10px;
+            color: #1976D2;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+        }
+        
+        .info-box li {
+            margin-bottom: 5px;
+        }
+        
+        .nav-links {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+        }
+        
+        .nav-links a {
+            color: #f093fb;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 VieNeu-TTS Test</h1>
+            <p>Test Vietnamese Text-to-Speech với voice cloning</p>
+        </div>
+        
+        <div class="content">
+            <form id="ttsForm">
+                <div class="form-group">
+                    <label for="textInput">📝 Nhập text cần đọc</label>
+                    <textarea id="textInput" name="text" placeholder="Nhập văn bản tiếng Việt cần chuyển thành giọng nói..." required>Xin chào, tôi là VieNeu TTS. Tôi có thể giúp bạn đọc sách, làm chatbot thời gian thực, hoặc thậm chí clone giọng nói của bạn.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="modelSelect">🤖 Chọn model TTS</label>
+                    <select id="modelSelect" name="model">
+                        <option value="pnnbao-ump/VieNeu-TTS-0.3B-q4-gguf">⚡ VieNeu-TTS-0.3B-q4-gguf (Extreme Speed 2x, 3⭐)</option>
+                        <option value="pnnbao-ump/VieNeu-TTS-0.3B-q8-gguf">🚀 VieNeu-TTS-0.3B-q8-gguf (Ultra Fast 1.5x, 4⭐)</option>
+                        <option value="pnnbao-ump/VieNeu-TTS-q4-gguf">⚡ VieNeu-TTS-q4-gguf (Very Fast, 3⭐)</option>
+                        <option value="pnnbao-ump/VieNeu-TTS-q8-gguf">🚀 VieNeu-TTS-q8-gguf (Fast, 4⭐)</option>
+                        <option value="pnnbao-ump/VieNeu-TTS-0.3B">🔥 VieNeu-TTS-0.3B (Ultra Fast 2x, 4⭐)</option>
+                        <option value="pnnbao-ump/VieNeu-TTS">💎 VieNeu-TTS (Best Quality, 5⭐)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="voiceSelect">🎭 Chọn giọng nói</label>
+                    <select id="voiceSelect" name="voice">
+                        <option value="default">Giọng mặc định</option>
+                        <option value="Tuyen">Tuyên (nam miền Bắc)</option>
+                        <option value="Ngoc">Ngọc (nữ miền Bắc)</option>
+                        <option value="Ly">Ly (nữ miền Bắc)</option>
+                        <option value="Binh">Bình (nam miền Bắc)</option>
+                        <option value="Vinh">Vĩnh (nam miền Nam)</option>
+                        <option value="Doan">Đoan (nữ miền Nam)</option>
+                        <option value="clone">🎯 Voice Cloning (từ file hoặc ghi âm)</option>
+                    </select>
+                </div>
+                
+                <div class="voice-clone-section" id="cloneSection" style="display: none;">
+                    <h4>🎯 Voice Cloning</h4>
+                    <div class="form-group">
+                        <label for="refAudio">Audio mẫu (3-5 giây)</label>
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                            <button type="button" class="btn btn-secondary" id="recordBtn" style="flex: 1;">
+                                🎙️ Ghi âm từ microphone
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="stopRecordBtn" style="flex: 1; display: none;">
+                                ⏹️ Dừng ghi âm
+                            </button>
+                        </div>
+                        <input type="file" id="refAudio" name="ref_audio" accept="audio/*">
+                        <div class="file-info" id="audioInfo"></div>
+                        <audio id="recordPreview" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="refText">Transcript của audio mẫu</label>
+                        <textarea id="refText" name="ref_text" placeholder="Nhập chính xác nội dung trong audio mẫu..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>💡 Tips cho Voice Cloning:</h4>
+                        <ul>
+                            <li>Audio mẫu nên dài 3-5 giây</li>
+                            <li>Chất lượng âm thanh tốt, ít nhiễu</li>
+                            <li>Transcript phải chính xác 100%</li>
+                            <li>Giọng nói rõ ràng, không quá nhanh</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="btn-container">
+                    <button type="submit" class="btn btn-primary" id="generateBtn">
+                        🔊 Tạo giọng nói
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        🔄 Reset
+                    </button>
+                </div>
+            </form>
+            
+            <div class="status" id="status"></div>
+            
+            <div class="result-audio" id="resultAudio">
+                <h3>✅ Audio đã tạo thành công!</h3>
+                <audio controls id="audioPlayer"></audio>
+                <div style="margin-top: 15px;">
+                    <a id="downloadLink" class="btn btn-primary" download>📥 Tải về</a>
+                </div>
+            </div>
+            
+            <div class="nav-links">
+                <a href="/">← Về trang chính</a>
+                <a href="/test/sadtalker">Test SadTalker →</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('ttsForm');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const cloneSection = document.getElementById('cloneSection');
+        const refAudio = document.getElementById('refAudio');
+        const audioInfo = document.getElementById('audioInfo');
+        const status = document.getElementById('status');
+        const resultAudio = document.getElementById('resultAudio');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const downloadLink = document.getElementById('downloadLink');
+        const generateBtn = document.getElementById('generateBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const stopRecordBtn = document.getElementById('stopRecordBtn');
+        const recordPreview = document.getElementById('recordPreview');
+        
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordedBlob = null;
+        
+        // Show/hide voice cloning section
+        voiceSelect.addEventListener('change', function() {
+            if (this.value === 'clone') {
+                cloneSection.style.display = 'block';
+                document.getElementById('refText').required = true;
+                // Don't set refAudio.required here - will check manually in submit
+            } else {
+                cloneSection.style.display = 'none';
+                refAudio.required = false;
+                document.getElementById('refText').required = false;
+            }
+        });
+        
+        // Show file info
+        refAudio.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                audioInfo.textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                // Clear recorded audio when file is uploaded
+                recordedBlob = null;
+                recordPreview.style.display = 'none';
+            } else {
+                audioInfo.textContent = '';
+            }
+        });
+        
+        // Microphone recording
+        recordBtn.addEventListener('click', async function() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(recordedBlob);
+                    recordPreview.src = audioUrl;
+                    recordPreview.style.display = 'block';
+                    audioInfo.textContent = `✓ Ghi âm thành công (${(recordedBlob.size / 1024).toFixed(1)} KB)`;
+                    
+                    // Remove required attribute from file input since we have recorded audio
+                    refAudio.required = false;
+                    
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+                recordBtn.style.display = 'none';
+                stopRecordBtn.style.display = 'block';
+                audioInfo.textContent = '🔴 Đang ghi âm...';
+                
+            } catch (error) {
+                alert('Không thể truy cập microphone: ' + error.message);
+            }
+        });
+        
+        stopRecordBtn.addEventListener('click', function() {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                recordBtn.style.display = 'block';
+                stopRecordBtn.style.display = 'none';
+            }
+        });
+        
+        // Handle form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate voice cloning first
+            if (voiceSelect.value === 'clone') {
+                if (!recordedBlob && refAudio.files.length === 0) {
+                    status.className = 'status show error';
+                    status.textContent = '❌ Vui lòng upload file audio hoặc ghi âm từ microphone';
+                    return;
+                }
+            }
+            
+            // Reset previous results
+            resultAudio.classList.remove('show');
+            status.className = 'status show loading';
+            status.innerHTML = '<div class="spinner"></div> Đang tạo giọng nói... Vui lòng chờ.';
+            
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<div class="spinner"></div> Đang xử lý...';
+            
+            try {
+                // Create FormData
+                const formData = new FormData();
+                formData.append('text', document.getElementById('textInput').value);
+                formData.append('voice', voiceSelect.value);
+                formData.append('model', document.getElementById('modelSelect').value);
+                
+                if (voiceSelect.value === 'clone') {
+                    // Use recorded audio if available, otherwise use file upload
+                    if (recordedBlob) {
+                        formData.append('ref_audio', recordedBlob, 'recorded_audio.webm');
+                    } else if (refAudio.files.length > 0) {
+                        formData.append('ref_audio', refAudio.files[0]);
+                    }
+                    formData.append('ref_text', document.getElementById('refText').value);
+                }
+                
+                const response = await fetch('/api/generate-tts', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    status.className = 'status show success';
+                    status.textContent = '✅ Audio đã được tạo thành công!';
+                    
+                    // Show audio player
+                    audioPlayer.src = result.audio_url;
+                    downloadLink.href = result.audio_url;
+                    resultAudio.classList.add('show');
+                } else {
+                    throw new Error(result.error || 'Unknown error');
+                }
+                
+            } catch (error) {
+                status.className = 'status show error';
+                status.textContent = `❌ Lỗi: ${error.message}`;
+                console.error('Error:', error);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '🔊 Tạo giọng nói';
+            }
+        });
+        
+        // Handle reset
+        form.addEventListener('reset', function() {
+            cloneSection.style.display = 'none';
+            audioInfo.textContent = '';
+            status.classList.remove('show');
+            resultAudio.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
