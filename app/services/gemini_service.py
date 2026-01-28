@@ -2,7 +2,8 @@
 Service để gọi Gemini API
 """
 import os
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from typing import Optional
 
 class GeminiService:
@@ -19,23 +20,28 @@ class GeminiService:
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY not found. Please set it in environment variables or pass as parameter.")
         
-        genai.configure(api_key=self.api_key)
+        # Initialize client with new google.genai package
+        self.client = genai.Client(api_key=self.api_key)
+        
         # Sử dụng model mới nhất - gemini-2.5-flash (latest & recommended)
         # gemini-2.5-flash: Model mới nhất, nhanh, miễn phí, chất lượng tốt
         # gemini-1.5-flash: Fallback nếu 2.5 không có
         # gemini-1.5-pro: Fallback cho chất lượng cao hơn
-        # Lưu ý: gemini-pro (cũ) không còn được hỗ trợ
         try:
             # Sử dụng gemini-2.5-flash (model mới nhất, nhanh và miễn phí)
-            self.model = genai.GenerativeModel('gemini-2.5-flash')
+            self.model_name = 'gemini-2.5-flash'
+            # Test model by attempting to use it
+            _ = self.client.models.get(model=self.model_name)
         except Exception as e:
             # Fallback về gemini-1.5-flash nếu 2.5 không có
             try:
-                self.model = genai.GenerativeModel('gemini-1.5-flash')
+                self.model_name = 'gemini-1.5-flash'
+                _ = self.client.models.get(model=self.model_name)
             except Exception:
                 # Fallback về gemini-1.5-pro nếu flash không có
                 try:
-                    self.model = genai.GenerativeModel('gemini-1.5-pro')
+                    self.model_name = 'gemini-1.5-pro'
+                    _ = self.client.models.get(model=self.model_name)
                 except Exception:
                     # Nếu tất cả đều không được, raise error với message rõ ràng
                     raise ValueError(
@@ -79,7 +85,10 @@ Text thuyết trình:
 """
         
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
             return response.text.strip()
         except Exception as e:
             raise Exception(f"Gemini API error: {str(e)}")
@@ -116,7 +125,10 @@ Text cải thiện:
 """
         
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
             return response.text.strip()
         except Exception as e:
             raise Exception(f"Gemini API error: {str(e)}")
@@ -157,7 +169,10 @@ Text thuyết trình mới:
             return self.generate_presentation_text(slide_content)
         
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
             return response.text.strip()
         except Exception as e:
             raise Exception(f"Gemini API error: {str(e)}")
