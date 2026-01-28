@@ -38,23 +38,30 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install @anthropic-ai/sdk
+        run: npm install @google/generative-ai
 
       - name: AI Review
         uses: actions/github-script@v7
         with:
           script: |
-            const { Anthropic } = require(process.cwd() + '/node_modules/@anthropic-ai/sdk');
-            const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+            const { GoogleGenerativeAI } = require(process.cwd() + '/node_modules/@google/generative-ai');
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             // Create prompt
             const diff = `
             ${{ steps.diff.outputs.diff }}
-            `.substr(0, 150000); // Truncate to avoid token limits if necessary
+            `.substr(0, 500000); // Gemini 1.5 Flash has ~1M context window
 
             const changedFiles = `${{ steps.changed.outputs.files }}`;
 
-            const systemPrompt = `You are a senior code reviewer. Review the provided code diff.
+            const prompt = `You are a senior code reviewer. Review the provided code diff.
+            
+            Changed files: ${changedFiles}
+            
+            Diff:
+            ${diff}
+
             Focus on:
             1. Bugs and potential runtime errors
             2. Security vulnerabilities
@@ -64,21 +71,15 @@ jobs:
             Provide the review in Markdown format.`;
 
             try {
-              const response = await client.messages.create({
-                model: "claude-3-sonnet-20240229",
-                max_tokens: 4096,
-                messages: [{
-                  role: "user",
-                  content: `Review this PR diff and provide feedback:\n\nChanged files: ${changedFiles}\n\nDiff:\n${diff}`
-                }],
-                system: systemPrompt
-              });
+              const result = await model.generateContent(prompt);
+              const response = result.response;
+              const text = response.text();
 
               await github.rest.pulls.createReview({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: context.issue.number,
-                body: response.content[0].text,
+                body: text,
                 event: 'COMMENT'
               });
             } catch (error) {
@@ -86,4 +87,4 @@ jobs:
               // Don't fail the build, just log error
             }
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

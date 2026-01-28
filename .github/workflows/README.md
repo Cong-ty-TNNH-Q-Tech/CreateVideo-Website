@@ -11,8 +11,8 @@ This directory contains automated workflows configured for this project, leverag
 
 ### 2. AI Code Review (`ai-review.yml`)
 - **Triggers**: Pull Request events.
-- **Description**: Uses Anthropic's Claude to review code changes in PRs.
-- **Requirements**: Requires `ANTHROPIC_API_KEY` secret in GitHub repository settings.
+- **Description**: Uses Google's **Gemini 2.5 Flash** to review code changes in PRs (Fast & Cost-effective).
+- **Requirements**: Requires `GEMINI_API_KEY` secret in GitHub repository settings.
 - **References**: `github-workflow-automation` skill.
 
 ### 3. Smart Test Selection (`smart-tests.yml`)
@@ -33,4 +33,4 @@ This directory contains automated workflows configured for this project, leverag
 ## Configuration
 
 To enable the AI Code Review, go to your repository Settings -> Secrets and variables -> Actions, and add:
-- `ANTHROPIC_API_KEY`: Your Anthropic API key.
+- `GEMINI_API_KEY`: Your Google Gemini API key.
