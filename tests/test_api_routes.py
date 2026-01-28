@@ -10,7 +10,7 @@ from pathlib import Path
 # Try to import app, skip tests if dependencies not installed
 try:
     from flask import Flask
-    from app import app, presentations, save_presentations, load_presentations
+    from app import create_app
     APP_AVAILABLE = True
 except ImportError as e:
     APP_AVAILABLE = False
@@ -23,20 +23,17 @@ class TestAPIRoutes(unittest.TestCase):
         """Setup test client"""
         if not APP_AVAILABLE:
             self.skipTest("App not available (dependencies not installed)")
-        self.app = app
+        self.app = create_app()
         self.app.config['TESTING'] = True
         self.app.config['PRESENTATION_FOLDER'] = tempfile.mkdtemp()
         self.app.config['DATA_FOLDER'] = tempfile.mkdtemp()
+        # Initialize an empty presentation list
+        self.app.presentation_model.presentations = {}
         self.client = self.app.test_client()
-        
-        # Clear presentations
-        global presentations
-        presentations.clear()
     
     def tearDown(self):
         """Cleanup after tests"""
-        global presentations
-        presentations.clear()
+        self.app.presentation_model.presentations = {}
     
     def test_upload_presentation_no_file(self):
         """Test upload không có file"""
@@ -94,8 +91,7 @@ class TestAPIRoutes(unittest.TestCase):
     def test_get_slide_not_found(self):
         """Test get slide không tồn tại"""
         # Tạo presentation giả
-        global presentations
-        presentations['test-id'] = {
+        self.app.presentation_model.presentations['test-id'] = {
             'id': 'test-id',
             'filename': 'test.pptx',
             'slides': [
@@ -112,8 +108,7 @@ class TestAPIRoutes(unittest.TestCase):
     def test_get_slide_success(self):
         """Test get slide thành công"""
         # Tạo presentation giả
-        global presentations
-        presentations['test-id'] = {
+        self.app.presentation_model.presentations['test-id'] = {
             'id': 'test-id',
             'filename': 'test.pptx',
             'slides': [

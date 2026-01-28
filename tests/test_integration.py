@@ -9,7 +9,7 @@ import json
 # Try to import app, skip tests if dependencies not installed
 try:
     from flask import Flask
-    from app import app, presentations
+    from app import create_app
     APP_AVAILABLE = True
 except ImportError as e:
     APP_AVAILABLE = False
@@ -22,20 +22,18 @@ class TestIntegration(unittest.TestCase):
         """Setup test environment"""
         if not APP_AVAILABLE:
             self.skipTest("App not available (dependencies not installed)")
-        self.app = app
+        self.app = create_app()
         self.app.config['TESTING'] = True
         self.app.config['PRESENTATION_FOLDER'] = tempfile.mkdtemp()
         self.app.config['DATA_FOLDER'] = tempfile.mkdtemp()
         self.client = self.app.test_client()
         
         # Clear presentations
-        global presentations
-        presentations.clear()
+        self.app.presentation_model.presentations = {}
     
     def tearDown(self):
         """Cleanup"""
-        global presentations
-        presentations.clear()
+        self.app.presentation_model.presentations = {}
     
     def test_full_workflow_mock(self):
         """Test full workflow với mock data"""
@@ -46,8 +44,7 @@ class TestIntegration(unittest.TestCase):
         
         # Tạo presentation mock
         pres_id = 'test-pres-123'
-        global presentations
-        presentations[pres_id] = {
+        self.app.presentation_model.presentations[pres_id] = {
             'id': pres_id,
             'filename': 'test.pptx',
             'type': '.pptx',
