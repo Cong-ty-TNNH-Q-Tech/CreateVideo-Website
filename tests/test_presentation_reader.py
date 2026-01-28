@@ -8,7 +8,7 @@ from pathlib import Path
 
 # Try to import, skip tests if dependencies not installed
 try:
-    from utils.presentation_reader import PresentationReader
+    from app.utils.presentation_reader import PresentationReader
     READER_AVAILABLE = True
 except ImportError as e:
     READER_AVAILABLE = False
