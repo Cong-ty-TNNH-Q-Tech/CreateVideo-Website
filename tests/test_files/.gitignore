@@ -1,0 +1,8 @@
+# Ignore test files (có thể lớn)
+*.pptx
+*.ppt
+*.pdf
+
+# Nhưng giữ README.md
+!README.md
+

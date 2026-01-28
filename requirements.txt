@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Flask
 huggingface_hub
 opencv-python
@@ -32,4 +33,41 @@ gradio
 torch
 torchvision
 torchaudio
+=======
+# Web Framework
+Flask==3.0.0
+huggingface_hub==0.19.0
+
+# Presentation Reading
+python-pptx==0.6.21
+pypdf==3.17.0
+
+# AI Services
+google-generativeai==0.3.0
+
+# Text-to-Speech - VieNeu-TTS (Vietnamese TTS với voice cloning)
+# Cài đặt: pip install git+https://github.com/pnnbao97/VieNeu-TTS.git
+# Hoặc: pip install vieneu-tts (nếu có trên PyPI)
+vieneu-tts
+pydub==0.25.1
+torch>=2.0.0  # Required for VieNeu-TTS
+
+# Video Processing
+moviepy==1.0.3
+opencv-python==4.8.1.78
+imageio==2.31.1
+imageio-ffmpeg==0.4.9
+
+# Image Processing
+Pillow==10.0.0
+
+# Utilities
+python-dotenv==1.0.0
+werkzeug==3.0.1
+
+# Testing (optional)
+pytest==7.4.3
+pytest-cov==4.1.0
+coverage==7.3.2
+>>>>>>> 29140ee25e213d3aefcb2a1f5aebdab11c1053e7
 
