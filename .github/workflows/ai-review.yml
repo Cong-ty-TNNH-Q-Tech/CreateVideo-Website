@@ -68,7 +68,7 @@ jobs:
             3. Performance improvements
             4. Code style and best practices
             
-            Provide the review in Markdown format.`;
+            Provide the review in Vietnamese language (Tiếng Việt) and Markdown format.`;
 
             try {
               const result = await model.generateContent(prompt);
