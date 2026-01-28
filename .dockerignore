@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+*.md
+docs/
+README.md
+CHANGELOG.md
+AGENTS.md
+
+# Tests
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.log
+*.tmp
+*.bak
+
+# Large model files (should be mounted as volumes)
+app/SadTalker/checkpoints/*.pth
+app/SadTalker/checkpoints/*.safetensors
+app/SadTalker/gfpgan/weights/*
+
+# Results and uploads (mounted as volumes)
+static/results/*
+static/uploads/*
+data/presentations.json
+
+# Environment files
+.env
+.env.local

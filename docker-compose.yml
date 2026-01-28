@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # ============================================================
+  # VideoTeaching Web Application
+  # ============================================================
+  videoteaching:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    
+    image: videoteaching:latest
+    container_name: videoteaching-app
+    
+    # GPU support - requires NVIDIA Docker runtime
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # Environment variables
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+      # Add your Gemini API key here or use .env file
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-your_api_key_here}
+      # CUDA settings
+      - CUDA_VISIBLE_DEVICES=0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    
+    # Port mapping
+    ports:
+      - "5000:5000"
+    
+    # Volume mounts
+    volumes:
+      # Application code (for development)
+      - ./app:/app/app:ro
+      - ./templates:/app/templates:ro
+      - ./static:/app/static:rw
+      
+      # Data persistence
+      - ./data:/app/data:rw
+      - uploads:/app/static/uploads:rw
+      - results:/app/static/results:rw
+      
+      # Model checkpoints (mount your pre-downloaded models)
+      - ./app/SadTalker/checkpoints:/app/app/SadTalker/checkpoints:ro
+      - ./app/SadTalker/gfpgan/weights:/app/app/SadTalker/gfpgan/weights:ro
+      
+      # VieNeu-TTS models (cached by Hugging Face)
+      - huggingface-cache:/root/.cache/huggingface:rw
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Network
+    networks:
+      - videoteaching-network
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ============================================================
+# Named Volumes
+# ============================================================
+volumes:
+  uploads:
+    driver: local
+  results:
+    driver: local
+  huggingface-cache:
+    driver: local
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  videoteaching-network:
+    driver: bridge
