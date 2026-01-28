@@ -1,70 +1,79 @@
-Flask
-huggingface_hub
-opencv-python
+# ============================================================
+# VideoTeaching - Unified Requirements
+# ============================================================
 
-# SadTalker Core Dependencies
-numpy==1.23.4
-face_alignment==1.3.5
-imageio==2.19.3
-imageio-ffmpeg==0.4.7
-librosa==0.9.2
-numba
-resampy==0.3.1
-pydub==0.25.1
-scipy==1.10.1
-kornia==0.6.8
-tqdm
-yacs==0.1.8
-pyyaml
-joblib==1.1.0
-scikit-image==0.19.3
-basicsr==1.4.2
-facexlib==0.3.0
-gfpgan
-av
-safetensors
-
-# Optional / Utils
-gradio
-
-# PyTorch (CUDA capable version recommended)
-# Run: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-torch
+# -------------------- PyTorch (CUDA 11.8) --------------------
+# Install with: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+torch>=2.0.0
 torchvision
 torchaudio
-# Web Framework
-Flask==3.0.0
-huggingface_hub==0.19.0
 
-# Presentation Reading
-python-pptx==0.6.21
-pypdf==3.17.0
+# -------------------- Web Framework --------------------
+Flask>=3.0.0
+werkzeug>=3.0.1
 
-# AI Services
-google-generativeai==0.3.0
+# -------------------- AI Services --------------------
+google-generativeai>=0.3.0
+huggingface-hub>=0.36.0
+transformers>=4.40.0
+accelerate>=1.0.0
+safetensors>=0.4.0
 
-# Text-to-Speech - VieNeu-TTS (Vietnamese TTS với voice cloning)
-# Cài đặt: pip install git+https://github.com/pnnbao97/VieNeu-TTS.git
-# Hoặc: pip install vieneu-tts (nếu có trên PyPI)
-vieneu-tts
-pydub==0.25.1
-torch>=2.0.0  # Required for VieNeu-TTS
+# -------------------- VieNeu-TTS (Vietnamese TTS) --------------------
+# Core dependencies for app/VieNeu-TTS
+neucodec>=0.0.4
+einops>=0.8.0
+phonemizer>=3.3.0
+sentencepiece>=0.2.0
+peft>=0.10.0
 
-# Video Processing
-moviepy==1.0.3
-opencv-python==4.8.1.78
-imageio==2.31.1
-imageio-ffmpeg==0.4.9
+# -------------------- SadTalker Dependencies --------------------
+face_alignment>=1.3.5
+kornia>=0.6.8
+basicsr>=1.4.2
+facexlib>=0.3.0
+gfpgan
+yacs>=0.1.8
 
-# Image Processing
-Pillow==10.0.0
+# -------------------- Audio Processing --------------------
+librosa>=0.10.0
+pydub>=0.25.1
+soundfile>=0.12.0
+resampy>=0.4.0
+audioread>=3.0.0
 
-# Utilities
-python-dotenv==1.0.0
-werkzeug==3.0.1
+# -------------------- Video Processing --------------------
+moviepy>=1.0.3
+opencv-python>=4.8.0
+imageio>=2.31.0
+imageio-ffmpeg>=0.4.9
+av
 
-# Testing (optional)
-pytest==7.4.3
-pytest-cov==4.1.0
-coverage==7.3.2
+# -------------------- Image Processing --------------------
+Pillow>=10.0.0
+scikit-image>=0.21.0
+
+# -------------------- Presentation Reading --------------------
+python-pptx>=0.6.21
+pypdf>=3.17.0
+
+# -------------------- Utilities --------------------
+numpy>=1.23.0
+scipy>=1.10.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+tqdm>=4.65.0
+pyyaml>=6.0
+joblib>=1.3.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+numba>=0.57.0
+
+# -------------------- Optional: Gradio UI --------------------
+gradio>=4.0.0
+
+# -------------------- Testing --------------------
+pytest>=7.4.0
+pytest-cov>=4.1.0
+coverage>=7.3.0
 
