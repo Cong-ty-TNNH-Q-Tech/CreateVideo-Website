@@ -1,4 +1,4 @@
-from utils.gemini_service import GeminiService
+from app.services.gemini_service import GeminiService
 import os
 
 _gemini_service = None

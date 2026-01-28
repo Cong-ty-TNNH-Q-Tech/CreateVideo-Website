@@ -8,7 +8,7 @@ import sys
 
 # Try to import app, skip tests if dependencies not installed
 try:
-    from app import app
+    from app import create_app
     APP_AVAILABLE = True
 except ImportError as e:
     APP_AVAILABLE = False
@@ -21,7 +21,7 @@ class TestFileValidation(unittest.TestCase):
         """Setup test environment"""
         if not APP_AVAILABLE:
             self.skipTest("App not available (dependencies not installed)")
-        self.app = app
+        self.app = create_app()
         self.app.config['TESTING'] = True
         self.app.config['PRESENTATION_FOLDER'] = tempfile.mkdtemp()
         self.client = self.app.test_client()

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 import os
 import uuid
-from utils.presentation_reader import PresentationReader
+from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
 
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')

@@ -5,7 +5,7 @@ Cần có file test trong thư mục tests/test_files/
 import unittest
 import os
 from pathlib import Path
-from utils.presentation_reader import PresentationReader
+from app.utils.presentation_reader import PresentationReader
 
 class TestWithRealFiles(unittest.TestCase):
     """Test với file thật (nếu có)"""
