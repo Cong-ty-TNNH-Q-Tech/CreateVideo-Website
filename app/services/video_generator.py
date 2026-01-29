@@ -2,6 +2,7 @@ import os
 import subprocess
 import sys
 import glob
+import platform
 
 class VideoGenerationService:
     def __init__(self, app_root):
@@ -23,15 +24,22 @@ class VideoGenerationService:
         driven_audio_abs = os.path.abspath(driven_audio_path)
         result_dir_abs = os.path.abspath(result_dir)
         
-        # Determine python executable
-        # Try to find venv python from the project root (parent of app_root)
+        # Determine python executable based on OS
         project_root = os.path.dirname(self.app_root)
-        venv_python = os.path.join(project_root, 'venv', 'Scripts', 'python.exe')
         
-        if os.path.exists(venv_python):
-            python_exec = venv_python
-        else:
-            python_exec = sys.executable
+        # Check for both .venv and venv directories
+        venv_dirs = ['.venv', 'venv']
+        python_exec = sys.executable  # Default to current python
+        
+        for venv_name in venv_dirs:
+            if platform.system() == 'Windows':
+                venv_python = os.path.join(project_root, venv_name, 'Scripts', 'python.exe')
+            else:  # Linux, macOS, etc.
+                venv_python = os.path.join(project_root, venv_name, 'bin', 'python')
+            
+            if os.path.exists(venv_python):
+                python_exec = venv_python
+                break
 
         # Construct command
         command = [
