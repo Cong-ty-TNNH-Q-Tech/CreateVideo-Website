@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tạo Video Thuyết Trình - Step 1: Upload Presentation</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { 
-            padding-top: 2rem; 
-            background-color: #f8f9fa; 
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
         }
-        .container { 
-            max-width: 1000px; 
+
+        .container {
+            max-width: 1000px;
         }
+
         .step-card {
             border: 2px solid #dee2e6;
             border-radius: 8px;
@@ -20,11 +23,13 @@
             margin-bottom: 2rem;
             background: white;
         }
+
         .step-header {
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
         }
+
         .step-number {
             width: 40px;
             height: 40px;
@@ -37,6 +42,7 @@
             font-weight: bold;
             margin-right: 1rem;
         }
+
         .upload-area {
             border: 2px dashed #0d6efd;
             border-radius: 8px;
@@ -46,17 +52,21 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .upload-area:hover {
             background: #e7f1ff;
             border-color: #0a58ca;
         }
+
         .upload-area.dragover {
             background: #cfe2ff;
             border-color: #0a58ca;
         }
+
         .slides-preview {
             margin-top: 2rem;
         }
+
         .slide-item {
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -64,21 +74,27 @@
             margin-bottom: 1rem;
             background: white;
         }
+
         .slide-header {
             font-weight: bold;
             color: #0d6efd;
             margin-bottom: 0.5rem;
         }
+
         .slide-content {
             color: #6c757d;
             font-size: 0.9rem;
             max-height: 100px;
             overflow-y: auto;
         }
+
         .loading-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.9);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
             display: none;
             justify-content: center;
             align-items: center;
@@ -86,257 +102,262 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="container py-5">
-    <header class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-primary">Tạo Video Thuyết Trình</h1>
-        <p class="lead">Tự động tạo video thuyết trình với avatar nói chuyện</p>
-        
-        <!-- Navigation Links -->
-        <div class="mt-3">
-            <a href="/test/sadtalker" class="btn btn-outline-primary btn-sm me-2">🎬 Test SadTalker</a>
-            <a href="/test/tts" class="btn btn-outline-primary btn-sm">🎤 Test TTS</a>
-        </div>
-    </header>
+    <div class="container py-5">
+        <header class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-primary">Tạo Video Thuyết Trình</h1>
+            <p class="lead">Tự động tạo video thuyết trình với avatar nói chuyện</p>
 
-    <!-- Step 1: Upload Presentation -->
-    <div class="step-card">
-        <div class="step-header">
-            <div class="step-number">1</div>
-            <h3 class="mb-0">Upload File Presentation</h3>
-        </div>
-        
-        <div class="upload-area" id="uploadArea">
-            <input type="file" id="fileInput" accept=".pptx,.ppt,.pdf" style="display: none;">
-            <div>
-                <svg width="64" height="64" fill="currentColor" class="text-primary mb-3" viewBox="0 0 16 16">
-                    <path d="M.5 9.9a.5.5 0 0 1 .5.5h2.767l12-12H.5a.5.5 0 0 1-.5.5v11.5z"/>
-                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5V2z"/>
-                </svg>
-                <h4>Kéo thả file vào đây hoặc click để chọn</h4>
-                <p class="text-muted">Hỗ trợ: .pptx, .ppt, .pdf</p>
-                <p class="text-muted">Kích thước tối đa: 100MB</p>
+            <!-- Navigation Links -->
+            <div class="mt-3">
+                <a href="/test/sadtalker" class="btn btn-outline-primary btn-sm me-2">🎬 Test SadTalker</a>
+                <a href="/test/tts" class="btn btn-outline-primary btn-sm">🎤 Test TTS</a>
+            </div>
+        </header>
+
+        <!-- Step 1: Upload Presentation -->
+        <div class="step-card">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <h3 class="mb-0">Upload File Presentation</h3>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <input type="file" id="fileInput" accept=".pptx,.ppt,.pdf" style="display: none;">
+                <div>
+                    <svg width="64" height="64" fill="currentColor" class="text-primary mb-3" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5h2.767l12-12H.5a.5.5 0 0 1-.5.5v11.5z" />
+                        <path
+                            d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5V2z" />
+                    </svg>
+                    <h4>Kéo thả file vào đây hoặc click để chọn</h4>
+                    <p class="text-muted">Hỗ trợ: .pptx, .ppt, .pdf</p>
+                    <p class="text-muted">Kích thước tối đa: 100MB</p>
+                </div>
+            </div>
+
+            <div id="fileInfo" style="display: none;" class="mt-3">
+                <div class="alert alert-info">
+                    <strong>File đã chọn:</strong> <span id="fileName"></span>
+                    <button class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">Xóa</button>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <button id="uploadBtn" class="btn btn-primary btn-lg" disabled onclick="uploadPresentation()">
+                    📤 Upload và Đọc File
+                </button>
             </div>
         </div>
 
-        <div id="fileInfo" style="display: none;" class="mt-3">
+        <!-- Slides Preview -->
+        <div id="slidesPreview" class="step-card" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">✓</div>
+                <h3 class="mb-0">Nội dung đã đọc được</h3>
+            </div>
+
+            <div id="slidesList" class="slides-preview"></div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-success btn-lg" onclick="goToStep2()">
+                    Tiếp tục → Bước 2: Generate Text
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Generate & Edit Text -->
+        <div id="step2Section" class="step-card" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <h3 class="mb-0">Generate & Edit Text Thuyết Trình</h3>
+            </div>
+
             <div class="alert alert-info">
-                <strong>File đã chọn:</strong> <span id="fileName"></span>
-                <button class="btn btn-sm btn-outline-danger ms-2" onclick="clearFile()">Xóa</button>
+                <strong>💡 Hướng dẫn:</strong>
+                <ul class="mb-0">
+                    <li>Click "Generate Text" để tạo text thuyết trình tự động từ nội dung slide</li>
+                    <li>Bạn có thể chỉnh sửa text sau khi generate</li>
+                    <li>Click "Save" để lưu text đã chỉnh sửa</li>
+                </ul>
+            </div>
+
+            <div id="slidesTextContainer"></div>
+
+            <div class="text-center mt-4">
+                <button class="btn btn-warning btn-lg me-2" onclick="saveAllScripts()">
+                    💾 Save All Scripts
+                </button>
+                <button class="btn btn-primary btn-lg" onclick="goToStep3()">
+                    Tiếp tục → Bước 3: Upload Avatar
+                </button>
             </div>
         </div>
+    </div>
 
-        <div class="text-center mt-3">
-            <button id="uploadBtn" class="btn btn-primary btn-lg" disabled onclick="uploadPresentation()">
-                📤 Upload và Đọc File
-            </button>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <h3 class="mt-3">Đang xử lý...</h3>
+            <p class="text-muted" id="loadingText">Vui lòng đợi</p>
         </div>
     </div>
 
-    <!-- Slides Preview -->
-    <div id="slidesPreview" class="step-card" style="display: none;">
-        <div class="step-header">
-            <div class="step-number">✓</div>
-            <h3 class="mb-0">Nội dung đã đọc được</h3>
-        </div>
-        
-        <div id="slidesList" class="slides-preview"></div>
-        
-        <div class="text-center mt-4">
-            <button class="btn btn-success btn-lg" onclick="goToStep2()">
-                Tiếp tục → Bước 2: Generate Text
-            </button>
-        </div>
-    </div>
+    <script>
+        let currentPresentationId = null;
+        let selectedFile = null;
 
-    <!-- Step 2: Generate & Edit Text -->
-    <div id="step2Section" class="step-card" style="display: none;">
-        <div class="step-header">
-            <div class="step-number">2</div>
-            <h3 class="mb-0">Generate & Edit Text Thuyết Trình</h3>
-        </div>
-        
-        <div class="alert alert-info">
-            <strong>💡 Hướng dẫn:</strong> 
-            <ul class="mb-0">
-                <li>Click "Generate Text" để tạo text thuyết trình tự động từ nội dung slide</li>
-                <li>Bạn có thể chỉnh sửa text sau khi generate</li>
-                <li>Click "Save" để lưu text đã chỉnh sửa</li>
-            </ul>
-        </div>
+        // File input handling
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
 
-        <div id="slidesTextContainer"></div>
+        // Click to select file
+        uploadArea.addEventListener('click', () => fileInput.click());
 
-        <div class="text-center mt-4">
-            <button class="btn btn-primary btn-lg" onclick="goToStep3()">
-                Tiếp tục → Bước 3: Upload Avatar
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Loading Overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="text-center">
-        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <h3 class="mt-3">Đang xử lý...</h3>
-        <p class="text-muted" id="loadingText">Vui lòng đợi</p>
-    </div>
-</div>
-
-<script>
-    let currentPresentationId = null;
-    let selectedFile = null;
-
-    // File input handling
-    const fileInput = document.getElementById('fileInput');
-    const uploadArea = document.getElementById('uploadArea');
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileInfo = document.getElementById('fileInfo');
-    const fileName = document.getElementById('fileName');
-
-    // Click to select file
-    uploadArea.addEventListener('click', () => fileInput.click());
-
-    // File selected
-    fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            selectedFile = file;
-            fileName.textContent = file.name;
-            fileInfo.style.display = 'block';
-            uploadBtn.disabled = false;
-        }
-    });
-
-    // Drag and drop
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        
-        const file = e.dataTransfer.files[0];
-        if (file && (file.name.endsWith('.pptx') || file.name.endsWith('.ppt') || file.name.endsWith('.pdf'))) {
-            selectedFile = file;
-            fileInput.files = e.dataTransfer.files;
-            fileName.textContent = file.name;
-            fileInfo.style.display = 'block';
-            uploadBtn.disabled = false;
-        } else {
-            alert('Vui lòng chọn file .pptx, .ppt hoặc .pdf');
-        }
-    });
-
-    function clearFile() {
-        selectedFile = null;
-        fileInput.value = '';
-        fileInfo.style.display = 'none';
-        uploadBtn.disabled = true;
-    }
-
-    async function uploadPresentation() {
-        if (!selectedFile) {
-            alert('Vui lòng chọn file');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-
-        showLoading('Đang upload và đọc file...');
-
-        try {
-            const response = await fetch('/api/upload-presentation', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                currentPresentationId = data.presentation_id;
-                displaySlides(data.slides);
-                hideLoading();
-            } else {
-                hideLoading();
-                alert('Lỗi: ' + data.error);
+        // File selected
+        fileInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'block';
+                uploadBtn.disabled = false;
             }
-        } catch (error) {
-            hideLoading();
-            console.error('Error:', error);
-            alert('Lỗi kết nối: ' + error.message);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+
+            const file = e.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.pptx') || file.name.endsWith('.ppt') || file.name.endsWith('.pdf'))) {
+                selectedFile = file;
+                fileInput.files = e.dataTransfer.files;
+                fileName.textContent = file.name;
+                fileInfo.style.display = 'block';
+                uploadBtn.disabled = false;
+            } else {
+                alert('Vui lòng chọn file .pptx, .ppt hoặc .pdf');
+            }
+        });
+
+        function clearFile() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileInfo.style.display = 'none';
+            uploadBtn.disabled = true;
         }
-    }
 
-    function displaySlides(slides) {
-        const slidesList = document.getElementById('slidesList');
-        slidesList.innerHTML = '';
+        async function uploadPresentation() {
+            if (!selectedFile) {
+                alert('Vui lòng chọn file');
+                return;
+            }
 
-        slides.forEach(slide => {
-            const slideDiv = document.createElement('div');
-            slideDiv.className = 'slide-item';
-            slideDiv.innerHTML = `
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            showLoading('Đang upload và đọc file...');
+
+            try {
+                const response = await fetch('/api/upload-presentation', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentPresentationId = data.presentation_id;
+                    displaySlides(data.slides);
+                    hideLoading();
+                } else {
+                    hideLoading();
+                    alert('Lỗi: ' + data.error);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            }
+        }
+
+        function displaySlides(slides) {
+            const slidesList = document.getElementById('slidesList');
+            slidesList.innerHTML = '';
+
+            slides.forEach(slide => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'slide-item';
+                slideDiv.innerHTML = `
                 <div class="slide-header">Slide ${slide.slide_num} / ${slide.total_slides}</div>
                 <div class="slide-content">${slide.content || '(Không có nội dung)'}</div>
             `;
-            slidesList.appendChild(slideDiv);
-        });
+                slidesList.appendChild(slideDiv);
+            });
 
-        document.getElementById('slidesPreview').style.display = 'block';
-    }
-
-    function goToStep2() {
-        if (currentPresentationId) {
-            // Lưu presentation ID vào sessionStorage
-            sessionStorage.setItem('presentationId', currentPresentationId);
-            // Hiển thị Step 2
-            document.getElementById('step2Section').style.display = 'block';
-            document.getElementById('step2Section').scrollIntoView({ behavior: 'smooth' });
-            // Load slides để generate text
-            loadSlidesForStep2();
+            document.getElementById('slidesPreview').style.display = 'block';
         }
-    }
 
-    async function loadSlidesForStep2() {
-        if (!currentPresentationId) return;
-
-        try {
-            const response = await fetch(`/api/presentation/${currentPresentationId}/slides`);
-            const data = await response.json();
-            
-            if (data.success) {
-                displaySlidesForStep2(data.slides);
+        function goToStep2() {
+            if (currentPresentationId) {
+                // Lưu presentation ID vào sessionStorage
+                sessionStorage.setItem('presentationId', currentPresentationId);
+                // Hiển thị Step 2
+                document.getElementById('step2Section').style.display = 'block';
+                document.getElementById('step2Section').scrollIntoView({ behavior: 'smooth' });
+                // Load slides để generate text
+                loadSlidesForStep2();
             }
-        } catch (error) {
-            console.error('Error loading slides:', error);
         }
-    }
 
-    function displaySlidesForStep2(slides) {
-        const slidesContainer = document.getElementById('slidesTextContainer');
-        slidesContainer.innerHTML = '';
+        async function loadSlidesForStep2() {
+            if (!currentPresentationId) return;
 
-        slides.forEach(slide => {
-            const slideDiv = document.createElement('div');
-            slideDiv.className = 'slide-text-item mb-4';
-            slideDiv.innerHTML = `
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/slides`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displaySlidesForStep2(data.slides);
+                }
+            } catch (error) {
+                console.error('Error loading slides:', error);
+            }
+        }
+
+        function displaySlidesForStep2(slides) {
+            const slidesContainer = document.getElementById('slidesTextContainer');
+            slidesContainer.innerHTML = '';
+
+            slides.forEach(slide => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = 'slide-text-item mb-4';
+                slideDiv.innerHTML = `
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Slide ${slide.slide_num} / ${slide.total_slides}</h5>
                         <div>
                             <button class="btn btn-sm btn-primary" onclick="generateText(${slide.slide_num})">
-                                ✨ Generate Text
+                                ✨ Generate Script
                             </button>
                             <button class="btn btn-sm btn-success ms-2" onclick="saveText(${slide.slide_num})" style="display:none;" id="saveBtn${slide.slide_num}">
                                 💾 Save
@@ -351,12 +372,13 @@
                             </div>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">Text thuyết trình:</label>
+                            <label class="form-label">Kịch bản thuyết trình (Plain text suitable for TTS):</label>
                             <textarea 
-                                class="form-control" 
+                                class="form-control script-textarea" 
                                 id="textArea${slide.slide_num}" 
+                                data-slide-num="${slide.slide_num}"
                                 rows="5" 
-                                placeholder="Click 'Generate Text' để tạo text thuyết trình..."
+                                placeholder="Click 'Generate Script' để tạo kịch bản thuyết trình..."
                                 oninput="markAsEdited(${slide.slide_num})"
                             >${slide.edited_text || slide.generated_text || ''}</textarea>
                         </div>
@@ -364,110 +386,171 @@
                     </div>
                 </div>
             `;
-            slidesContainer.appendChild(slideDiv);
-        });
-    }
-
-    async function generateText(slideNum) {
-        if (!currentPresentationId) return;
-
-        const textArea = document.getElementById(`textArea${slideNum}`);
-        const statusDiv = document.getElementById(`textStatus${slideNum}`);
-        const saveBtn = document.getElementById(`saveBtn${slideNum}`);
-
-        statusDiv.innerHTML = '<span class="text-info">⏳ Đang generate text...</span>';
-        textArea.disabled = true;
-
-        try {
-            const response = await fetch('/api/generate-text', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    presentation_id: currentPresentationId,
-                    slide_num: slideNum,
-                    language: 'vi'
-                })
+                slidesContainer.appendChild(slideDiv);
             });
+        }
 
-            const data = await response.json();
+        async function generateText(slideNum) {
+            if (!currentPresentationId) return;
 
-            if (data.success) {
-                textArea.value = data.text;
-                statusDiv.innerHTML = '<span class="text-success">✅ Text đã được generate!</span>';
+            const textArea = document.getElementById(`textArea${slideNum}`);
+            const statusDiv = document.getElementById(`textStatus${slideNum}`);
+            const saveBtn = document.getElementById(`saveBtn${slideNum}`);
+
+            statusDiv.innerHTML = '<span class="text-info">⏳ Đang generate script...</span>';
+            textArea.disabled = true;
+
+            try {
+                const response = await fetch('/api/generate-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        presentation_id: currentPresentationId,
+                        slide_num: slideNum,
+                        language: 'vi'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    textArea.value = data.text;
+                    statusDiv.innerHTML = '<span class="text-success">✅ Script generated!</span>';
+                    saveBtn.style.display = 'inline-block';
+                } else {
+                    statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi: ${data.error}</span>`;
+                }
+            } catch (error) {
+                console.error('Error generating script:', error);
+                statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi kết nối: ${error.message}</span>`;
+            } finally {
+                textArea.disabled = false;
+            }
+        }
+
+        function markAsEdited(slideNum) {
+            const saveBtn = document.getElementById(`saveBtn${slideNum}`);
+            if (saveBtn) {
                 saveBtn.style.display = 'inline-block';
-            } else {
-                statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi: ${data.error}</span>`;
             }
-        } catch (error) {
-            console.error('Error generating text:', error);
-            statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi kết nối: ${error.message}</span>`;
-        } finally {
-            textArea.disabled = false;
         }
-    }
 
-    function markAsEdited(slideNum) {
-        const saveBtn = document.getElementById(`saveBtn${slideNum}`);
-        if (saveBtn) {
-            saveBtn.style.display = 'inline-block';
+        async function saveText(slideNum) {
+            if (!currentPresentationId) return;
+
+            const textArea = document.getElementById(`textArea${slideNum}`);
+            const statusDiv = document.getElementById(`textStatus${slideNum}`);
+            const saveBtn = document.getElementById(`saveBtn${slideNum}`);
+
+            statusDiv.innerHTML = '<span class="text-info">⏳ Đang lưu...</span>';
+
+            try {
+                const response = await fetch('/api/save-text', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        presentation_id: currentPresentationId,
+                        slide_num: slideNum,
+                        edited_text: textArea.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.innerHTML = '<span class="text-success">✅ Đã lưu!</span>';
+                    saveBtn.style.display = 'none';
+                } else {
+                    statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi: ${data.error}</span>`;
+                }
+            } catch (error) {
+                console.error('Error saving text:', error);
+                statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi kết nối: ${error.message}</span>`;
+            }
         }
-    }
 
-    async function saveText(slideNum) {
-        if (!currentPresentationId) return;
+        async function saveAllScripts() {
+            if (!currentPresentationId) return;
 
-        const textArea = document.getElementById(`textArea${slideNum}`);
-        const statusDiv = document.getElementById(`textStatus${slideNum}`);
-        const saveBtn = document.getElementById(`saveBtn${slideNum}`);
+            const textAreas = document.querySelectorAll('.script-textarea');
+            const slidesData = [];
 
-        statusDiv.innerHTML = '<span class="text-info">⏳ Đang lưu...</span>';
-
-        try {
-            const response = await fetch('/api/save-text', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    presentation_id: currentPresentationId,
-                    slide_num: slideNum,
-                    edited_text: textArea.value
-                })
+            textAreas.forEach(area => {
+                const slideNum = area.getAttribute('data-slide-num');
+                const text = area.value;
+                if (slideNum) {
+                    slidesData.push({
+                        slide_num: parseInt(slideNum),
+                        text: text
+                    });
+                }
             });
 
-            const data = await response.json();
-
-            if (data.success) {
-                statusDiv.innerHTML = '<span class="text-success">✅ Đã lưu!</span>';
-                saveBtn.style.display = 'none';
-            } else {
-                statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi: ${data.error}</span>`;
+            if (slidesData.length === 0) {
+                alert("Không có script nào để lưu.");
+                return;
             }
-        } catch (error) {
-            console.error('Error saving text:', error);
-            statusDiv.innerHTML = `<span class="text-danger">❌ Lỗi kết nối: ${error.message}</span>`;
+
+            showLoading('Đang lưu tất cả scripts...');
+
+            try {
+                const response = await fetch('/api/save-all-texts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        presentation_id: currentPresentationId,
+                        slides_data: slidesData
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`Đã lưu thành công ${data.saved_count} scripts!`);
+                    // Hide individual save buttons
+                    textAreas.forEach(area => {
+                        const slideNum = area.getAttribute('data-slide-num');
+                        const saveBtn = document.getElementById(`saveBtn${slideNum}`);
+                        if (saveBtn) saveBtn.style.display = 'none';
+                        const statusDiv = document.getElementById(`textStatus${slideNum}`);
+                        if (statusDiv) statusDiv.innerHTML = '<span class="text-success">✅ Đã lưu!</span>';
+                    });
+                } else {
+                    alert('Lỗi khi lưu: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error saving all scripts:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            } finally {
+                hideLoading();
+            }
         }
-    }
 
-    function showLoading(text = 'Đang xử lý...') {
-        document.getElementById('loadingText').textContent = text;
-        document.getElementById('loadingOverlay').style.display = 'flex';
-    }
-
-    function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }
-
-    function goToStep3() {
-        if (currentPresentationId) {
-            alert('Bước 3 sẽ được implement tiếp theo. Presentation ID: ' + currentPresentationId);
-            // TODO: Implement Step 3
+        function showLoading(text = 'Đang xử lý...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
-    }
-</script>
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function goToStep3() {
+            if (currentPresentationId) {
+                // Prompt user if they haven't saved? Ideally auto-save before verify.
+                // For now, assume they clicked save or implement auto save.
+                alert('Bước 3 sẽ được implement tiếp theo. Presentation ID: ' + currentPresentationId);
+                // TODO: Implement Step 3
+            }
+        }
+    </script>
 
 </body>
-</html>
 
+</html>

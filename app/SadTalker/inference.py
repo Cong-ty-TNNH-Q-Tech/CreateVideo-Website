@@ -5,6 +5,21 @@ from time import  strftime
 import os, sys, time
 from argparse import ArgumentParser
 
+# START PATCH: Fix basicsr compatibility with newer torchvision
+try:
+    import torchvision.transforms.functional_tensor
+except ImportError:
+    try:
+        import torchvision.transforms.functional as F
+        import types
+        functional_tensor = types.ModuleType("torchvision.transforms.functional_tensor")
+        functional_tensor.rgb_to_grayscale = F.rgb_to_grayscale
+        sys.modules["torchvision.transforms.functional_tensor"] = functional_tensor
+    except Exception as e:
+        print(f"Failed to patch torchvision: {e}")
+# END PATCH
+
+
 from src.utils.preprocess import CropAndExtract
 from src.test_audio2coeff import Audio2Coeff  
 from src.facerender.animate import AnimateFromCoeff
