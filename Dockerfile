@@ -4,6 +4,9 @@
 # ============================================================
 # Stage 1: Base image with CUDA and Python
 # ============================================================
+# ============================================================
+# Stage 1: Base image with CUDA and Python
+# ============================================================
 FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS base
 
 # Prevent interactive prompts during build
@@ -12,14 +15,20 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3.10 \
-    python3-pip \
-    python3-dev \
+RUN apt-get update && apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get update && apt-get install -y \
+    python3.11 \
+    python3.11-dev \
+    python3.11-venv \
+    python3.11-distutils \
     git \
     wget \
     curl \
     ffmpeg \
+    build-essential \
+    cmake \
+    libsndfile1 \
     libsm6 \
     libxext6 \
     libxrender-dev \
@@ -27,12 +36,12 @@ RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-# Create symbolic links for python
-RUN ln -sf /usr/bin/python3.10 /usr/bin/python && \
-    ln -sf /usr/bin/pip3 /usr/bin/pip
+# Install pip for Python 3.11
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
-# Upgrade pip
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel
+# Create symbolic links for python
+RUN ln -sf /usr/bin/python3.11 /usr/bin/python && \
+    ln -sf /usr/local/bin/pip /usr/bin/pip
 
 # ============================================================
 # Stage 2: Dependencies installation
@@ -44,15 +53,22 @@ WORKDIR /app
 # Copy requirements first for better caching
 COPY requirements.txt .
 
-# Install PyTorch with CUDA 11.8 support
+# Install PyTorch independently with CUDA 11.8 support
 RUN pip install --no-cache-dir \
-    torch==2.0.1 \
-    torchvision==0.15.2 \
-    torchaudio==2.0.2 \
+    torch==2.5.1 \
+    torchvision==0.20.1 \
+    torchaudio==2.5.1 \
     --index-url https://download.pytorch.org/whl/cu118
 
-# Install other dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies from requirements.txt
+# Remove conflicting system blinker if present
+RUN pip install --no-cache-dir --ignore-installed blinker -r requirements.txt
+
+# Fix BasicSR compatibility with newer TorchVision
+# Replace 'from torchvision.transforms.functional_tensor import rgb_to_grayscale'
+# with 'from torchvision.transforms.functional import rgb_to_grayscale'
+RUN sed -i 's/from torchvision.transforms.functional_tensor import rgb_to_grayscale/from torchvision.transforms.functional import rgb_to_grayscale/g' \
+    /usr/local/lib/python3.11/dist-packages/basicsr/data/degradations.py
 
 # ============================================================
 # Stage 3: Application

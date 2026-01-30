@@ -1,179 +1,146 @@
 """
-Service để gọi Gemini API
+Service to interact with Google Gemini API for generating presentation scripts.
 """
 import os
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from typing import Optional
 
 class GeminiService:
-    """Service để gọi Gemini API"""
+    """Service to interact with Gemini API"""
     
     def __init__(self, api_key: Optional[str] = None):
         """
         Initialize Gemini service
         
         Args:
-            api_key: Gemini API key (nếu None thì lấy từ env GEMINI_API_KEY)
+            api_key: Gemini API key (if None, loads from GEMINI_API_KEY env var)
         """
         self.api_key = api_key or os.getenv('GEMINI_API_KEY')
         if not self.api_key:
-            raise ValueError("GEMINI_API_KEY not found. Please set it in environment variables or pass as parameter.")
-        
-        # Initialize client with new google.genai package
-        self.client = genai.Client(api_key=self.api_key)
-        
-        # Sử dụng model mới nhất - gemini-2.5-flash (latest & recommended)
-        # gemini-2.5-flash: Model mới nhất, nhanh, miễn phí, chất lượng tốt
-        # gemini-1.5-flash: Fallback nếu 2.5 không có
-        # gemini-1.5-pro: Fallback cho chất lượng cao hơn
-        try:
-            # Sử dụng gemini-2.5-flash (model mới nhất, nhanh và miễn phí)
-            self.model_name = 'gemini-2.5-flash'
-            # Test model by attempting to use it
-            _ = self.client.models.get(model=self.model_name)
-        except Exception as e:
-            # Fallback về gemini-1.5-flash nếu 2.5 không có
-            try:
-                self.model_name = 'gemini-1.5-flash'
-                _ = self.client.models.get(model=self.model_name)
-            except Exception:
-                # Fallback về gemini-1.5-pro nếu flash không có
-                try:
-                    self.model_name = 'gemini-1.5-pro'
-                    _ = self.client.models.get(model=self.model_name)
-                except Exception:
-                    # Nếu tất cả đều không được, raise error với message rõ ràng
-                    raise ValueError(
-                        f"Không thể khởi tạo Gemini model. "
-                        f"Đã thử: gemini-2.5-flash, gemini-1.5-flash, gemini-1.5-pro. "
-                        f"Vui lòng kiểm tra API key và model availability. "
-                        f"Error: {str(e)}"
-                    )
-    
-    def generate_presentation_text(self, slide_content: str, language: str = 'vi') -> str:
-        """
-        Tạo text thuyết trình từ nội dung slide
-        
-        Args:
-            slide_content: Nội dung raw từ slide
-            language: Ngôn ngữ output (vi, en, ...)
-        
-        Returns:
-            str: Text thuyết trình đã được generate
-        """
-        if not slide_content or not slide_content.strip():
-            return "Nội dung slide trống, không thể tạo text thuyết trình."
-        
-        prompt = f"""
-Bạn là một chuyên gia tạo nội dung thuyết trình. 
-Dựa vào nội dung slide sau, hãy tạo ra một đoạn text thuyết trình tự nhiên, 
-dễ hiểu, phù hợp để nói trước đám đông.
-
-Nội dung slide:
-{slide_content}
-
-Yêu cầu:
-- Text phải tự nhiên, như đang nói chuyện
-- Độ dài phù hợp (khoảng 1-2 phút khi nói)
-- Sử dụng ngôn ngữ {language}
-- Không cần lặp lại tiêu đề slide
-- Tập trung vào giải thích và mở rộng nội dung
-- Giọng điệu chuyên nghiệp nhưng thân thiện
-
-Text thuyết trình:
-"""
-        
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt
-            )
-            return response.text.strip()
-        except Exception as e:
-            raise Exception(f"Gemini API error: {str(e)}")
-    
-    def enhance_text(self, user_text: str, instruction: str = "") -> str:
-        """
-        Cải thiện text dựa trên instruction của user
-        
-        Args:
-            user_text: Text hiện tại
-            instruction: Hướng dẫn cải thiện (vd: "làm ngắn gọn hơn", "thêm ví dụ")
-        
-        Returns:
-            str: Text đã được cải thiện
-        """
-        if not user_text or not user_text.strip():
-            return user_text
-        
-        if not instruction:
-            instruction = "Cải thiện text này để tự nhiên và dễ hiểu hơn"
-        
-        prompt = f"""
-{instruction}
-
-Text hiện tại:
-{user_text}
-
-Yêu cầu:
-- Giữ nguyên ý nghĩa chính
-- Làm cho text tự nhiên hơn
-- Dễ hiểu và phù hợp để nói
-
-Text cải thiện:
-"""
-        
-        try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt
-            )
-            return response.text.strip()
-        except Exception as e:
-            raise Exception(f"Gemini API error: {str(e)}")
-    
-    def regenerate_text(self, slide_content: str, current_text: str, feedback: str = "") -> str:
-        """
-        Tạo lại text với feedback từ user
-        
-        Args:
-            slide_content: Nội dung slide gốc
-            current_text: Text hiện tại
-            feedback: Feedback từ user (vd: "ngắn gọn hơn", "thêm ví dụ")
-        
-        Returns:
-            str: Text mới được generate
-        """
-        if feedback:
-            prompt = f"""
-Dựa vào nội dung slide và feedback, tạo lại text thuyết trình.
-
-Nội dung slide:
-{slide_content}
-
-Text hiện tại:
-{current_text}
-
-Feedback: {feedback}
-
-Yêu cầu:
-- Áp dụng feedback: {feedback}
-- Giữ nguyên chất lượng và tự nhiên
-- Phù hợp để nói trước đám đông
-
-Text thuyết trình mới:
-"""
+            # We don't raise error here to allow app to start, 
+            # but methods will fail if key is missing.
+            print("Warning: GEMINI_API_KEY not found.")
         else:
-            # Nếu không có feedback, generate lại từ đầu
-            return self.generate_presentation_text(slide_content)
+            genai.configure(api_key=self.api_key)
+        
+        # Configure generation config for TTS-friendly output
+        self.generation_config = {
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+        }
+        
+        # Use gemini-2.5-flash as requested by user and verified in available models
+        self.model_name = 'gemini-2.5-flash'
+        self.model = genai.GenerativeModel(
+            model_name=self.model_name,
+            generation_config=self.generation_config
+        )
+    
+    def generate_script(self, slide_text: str, language: str = 'vi') -> str:
+        """
+        Generate a speech script from slide text.
+        
+        Args:
+            slide_text: The text content extracted from the slide.
+            language: The target language for the script (default: 'vi' for Vietnamese).
+            
+        Returns:
+            str: The generated speech script (plain text).
+        """
+        if not self.api_key:
+            raise ValueError("Gemini API key is not configured.")
+            
+        if not slide_text or not slide_text.strip():
+            return "Slide này không có nội dung, vui lòng nhập nội dung để tạo kịch bản."
+            
+        # Prompt Engineering for TTS
+        prompt = f"""
+        Act as a professional presenter and speaker.
+        Rewrite the following slide content into a natural, engaging speech script suitable for Text-to-Speech (TTS).
+        
+        Input Text:
+        "{slide_text}"
+        
+        Requirements:
+        1. Language: {language} (Vietnamese).
+        2. Tone: Professional, engaging, and clear.
+        3. Format: PLAIN TEXT ONLY. Do NOT use Markdown, lists, bullet points, asterisks (*), hashtags (#), or emojis. TTS engines do not read these well.
+        4. Structure: Write in full sentences/paragraphs as if you are speaking to an audience.
+        5. Content: Do not just read the text. Explain and expand on the points naturally.
+        6. Length: Keep it concise and appropriate for the amount of content (approx. 1-2 minutes max).
+        
+        Generated Script:
+        """
         
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt
-            )
+            response = self.model.generate_content(prompt)
             return response.text.strip()
         except Exception as e:
-            raise Exception(f"Gemini API error: {str(e)}")
+            print(f"Error generating script with Gemini: {e}")
+            # Fallback handling or re-raise
+            raise Exception(f"Gemini API Error: {str(e)}")
 
+    def enhance_text(self, current_text: str, instruction: str) -> str:
+        """
+        Enhance the existing script based on user instruction.
+        """
+        if not self.api_key:
+            raise ValueError("Gemini API key is not configured.")
+            
+        prompt = f"""
+        Act as a professional editor.
+        Update the following speech script based on the instruction.
+        
+        Current Script:
+        "{current_text}"
+        
+        Instruction:
+        "{instruction}"
+        
+        Requirements:
+        1. Keep it as PLAIN TEXT (no markdown/emojis).
+        2. Maintain a professional speech tone.
+        3. Make it suitable for TTS.
+        
+        Updated Script:
+        """
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            raise Exception(f"Gemini enhancement error: {str(e)}")
+
+    def regenerate_text(self, slide_content: str, current_text: str, feedback: str) -> str:
+        """
+        Regenerate the script with feedback.
+        """
+        if not self.api_key:
+            raise ValueError("Gemini API key is not configured.")
+            
+        prompt = f"""
+        Act as a professional presenter.
+        Regenerate the speech script for the slide content, taking into account the user's feedback.
+        
+        Slide Content:
+        "{slide_content}"
+        
+        Current Script:
+        "{current_text}"
+        
+        User Feedback:
+        "{feedback}"
+        
+        Requirements:
+        1. Address the feedback specifically.
+        2. Format: PLAIN TEXT ONLY (no markdown/emojis).
+        3. Tone: Professional and natural for speech.
+        
+        New Script:
+        """
+        try:
+            response = self.model.generate_content(prompt)
+            return response.text.strip()
+        except Exception as e:
+            raise Exception(f"Gemini regeneration error: {str(e)}")

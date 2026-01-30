@@ -6,6 +6,7 @@ class Config:
     PRESENTATION_FOLDER = 'static/uploads/presentations'
     DATA_FOLDER = 'data'
     MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100MB max file size
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 
     @staticmethod
     def init_app(app):

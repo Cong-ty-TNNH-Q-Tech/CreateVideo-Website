@@ -41,7 +41,7 @@ def upload_presentation():
             return jsonify({'success': False, 'error': 'No content found in file'}), 400
         
         # Add to model
-        presentation_data = current_app.presentation_model.add(filename, file_path, ext, slides)
+        presentation_data = current_app.presentation_model.add(filename, file_path, ext, slides, pres_id=pres_id)
         
         return jsonify({
             'success': True,
@@ -70,8 +70,10 @@ def get_presentation(pres_id):
 @presentation_bp.route('/presentation/<pres_id>/slides', methods=['GET'])
 def get_slides(pres_id):
     """Get all slides"""
+    print(f"DEBUG: get_slides called for {pres_id}", flush=True)
     presentation = current_app.presentation_model.get_by_id(pres_id)
     if not presentation:
+        print(f"DEBUG: Presentation {pres_id} not found in model", flush=True)
         return jsonify({'success': False, 'error': 'Presentation not found'}), 404
     
     return jsonify({
@@ -116,29 +118,14 @@ def generate_text():
                 'error': 'Gemini API not configured. Please set GEMINI_API_KEY environment variable.'
             }), 500
         
-        # Generate text
-        generated_text = gemini.generate_presentation_text(slide['content'], language=language)
+        # Generate text using the new method for TTS scripts
+        generated_text = gemini.generate_script(slide['content'], language=language)
         
         # Update slide
         current_app.presentation_model.update_slide(pres_id, slide_num, {
             'generated_text': generated_text,
-            'edited_text': generated_text if not slide.get('edited_text') else slide.get('edited_text') # Logic in original was: if not slide['edited_text'] then set it.
+            'edited_text': generated_text if not slide.get('edited_text') else slide.get('edited_text')
         })
-        # Note: Original logic: if not slide.get('edited_text'): slide['edited_text'] = generated_text
-        # My update above overwrites if not slide['edited_text'], wait.
-        # Original:
-        # slide['generated_text'] = generated_text
-        # if not slide.get('edited_text'):
-        #     slide['edited_text'] = generated_text
-        
-        # Let's verify my update_slide implementation logic. I passed a dict. 
-        # So I should handle that properly.
-        
-        updates = {'generated_text': generated_text}
-        if not slide.get('edited_text'):
-             updates['edited_text'] = generated_text
-        
-        current_app.presentation_model.update_slide(pres_id, slide_num, updates)
         
         return jsonify({
             'success': True,
@@ -166,6 +153,30 @@ def save_text():
     return jsonify({
         'success': True,
         'message': 'Text saved successfully'
+    })
+
+@presentation_bp.route('/save-all-texts', methods=['POST'])
+def save_all_texts():
+    """Save all edited texts"""
+    data = request.json
+    pres_id = data.get('presentation_id')
+    slides_data = data.get('slides_data', []) # List of {slide_num: x, text: y}
+    
+    if not pres_id or not slides_data:
+        return jsonify({'success': False, 'error': 'Missing data'}), 400
+    
+    success_count = 0
+    for item in slides_data:
+        slide_num = item.get('slide_num')
+        text = item.get('text')
+        if slide_num is not None:
+             if current_app.presentation_model.update_slide(pres_id, slide_num, {'edited_text': text}):
+                 success_count += 1
+    
+    return jsonify({
+        'success': True,
+        'saved_count': success_count,
+        'message': f'Saved {success_count} scripts'
     })
 
 @presentation_bp.route('/enhance-text', methods=['POST'])
