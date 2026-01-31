@@ -4,6 +4,7 @@ import os
 import uuid
 from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
+from app.services.audio_service import get_audio_service
 
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')
 
@@ -250,4 +251,135 @@ def regenerate_text():
         })
     except Exception as e:
         print(f"Error regenerating text: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+# ==================== AUDIO ROUTES ====================
+
+@presentation_bp.route('/presentation/<pres_id>/generate_audio', methods=['POST'])
+def generate_audio(pres_id):
+    """Generate audio files for all slides in a presentation"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+        
+        # Get audio service
+        audio_service = get_audio_service()
+        
+        # Get static folder for saving audio files
+        static_folder = current_app.static_folder
+        
+        slides = presentation.get('slides', [])
+        if not slides:
+            return jsonify({'success': False, 'error': 'No slides found'}), 400
+        
+        results = []
+        success_count = 0
+        
+        for i, slide in enumerate(slides):
+            try:
+                # Get the text to convert (edited_text takes priority over generated_text)
+                text_to_convert = slide.get('edited_text') or slide.get('generated_text') or slide.get('content', '')
+                
+                if not text_to_convert.strip():
+                    results.append({
+                        'slide_index': i,
+                        'success': False,
+                        'message': 'No text available for this slide'
+                    })
+                    continue
+                
+                # Generate audio file path
+                audio_file_path = audio_service.get_audio_file_path(pres_id, i, static_folder)
+                audio_url = audio_service.get_audio_url(pres_id, i)
+                
+                # Generate audio
+                success, message = audio_service.generate_audio(text_to_convert, audio_file_path)
+                
+                if success:
+                    # Update slide with audio URL
+                    current_app.presentation_model.update_slide(pres_id, i, {
+                        'audio_url': audio_url,
+                        'audio_file_path': audio_file_path
+                    })
+                    success_count += 1
+                    
+                results.append({
+                    'slide_index': i,
+                    'success': True,
+                    'message': message,
+                    'audio_url': audio_url
+                })
+                
+            except Exception as e:
+                print(f"Error generating audio for slide {i}: {str(e)}")
+                results.append({
+                    'slide_index': i,
+                    'success': False,
+                    'message': f"Failed to generate audio: {str(e)}"
+                })
+        
+        return jsonify({
+            'success': True,
+            'message': f'Generated audio for {success_count}/{len(slides)} slides',
+            'success_count': success_count,
+            'total_slides': len(slides),
+            'results': results
+        })
+        
+    except Exception as e:
+        print(f"Error in generate_audio: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/regenerate_audio', methods=['POST'])
+def regenerate_audio(pres_id, slide_num):
+    """Regenerate audio for a specific slide"""
+    try:
+        slide = current_app.presentation_model.get_slide(pres_id, slide_num)
+        if not slide:
+            return jsonify({'success': False, 'error': 'Slide not found'}), 404
+        
+        # Get audio service
+        audio_service = get_audio_service()
+        
+        # Get static folder for saving audio files
+        static_folder = current_app.static_folder
+        
+        # Get the text to convert (edited_text takes priority over generated_text)
+        text_to_convert = slide.get('edited_text') or slide.get('generated_text') or slide.get('content', '')
+        
+        if not text_to_convert.strip():
+            return jsonify({
+                'success': False, 
+                'error': 'No text available for this slide'
+            }), 400
+        
+        # Generate audio file path
+        audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
+        audio_url = audio_service.get_audio_url(pres_id, slide_num)
+        
+        # Generate audio
+        success, message = audio_service.generate_audio(text_to_convert, audio_file_path)
+        
+        if success:
+            # Update slide with audio URL
+            current_app.presentation_model.update_slide(pres_id, slide_num, {
+                'audio_url': audio_url,
+                'audio_file_path': audio_file_path
+            })
+            
+            return jsonify({
+                'success': True,
+                'message': message,
+                'audio_url': audio_url,
+                'slide_num': slide_num
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': f"Failed to generate audio: {message}"
+            }), 500
+        
+    except Exception as e:
+        print(f"Error in regenerate_audio: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
