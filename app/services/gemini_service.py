@@ -64,7 +64,7 @@ class GeminiService:
         "{slide_text}"
         
         Requirements:
-        1. Language: {language} (Vietnamese).
+        1. Language: Detect the main language of the Input Text and write the Generated Script in the SAME language.
         2. Tone: Professional, engaging, and clear.
         3. Format: PLAIN TEXT ONLY. Do NOT use Markdown, lists, bullet points, asterisks (*), hashtags (#), or emojis. TTS engines do not read these well.
         4. Structure: Write in full sentences/paragraphs as if you are speaking to an audience.
