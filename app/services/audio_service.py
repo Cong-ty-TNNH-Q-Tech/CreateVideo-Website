@@ -366,6 +366,40 @@ class AudioService:
         """Generate the full file system path for the audio file"""
         audio_dir = os.path.join(static_folder, "audio", presentation_id)
         return os.path.join(audio_dir, f"slide_{slide_index}.wav")
+
+    def merge_audio_files(self, audio_paths: list, output_path: str) -> bool:
+        """Merge multiple audio files into one"""
+        try:
+            from moviepy.editor import concatenate_audioclips, AudioFileClip
+            
+            clips = []
+            for path in audio_paths:
+                if os.path.exists(path):
+                    try:
+                        clips.append(AudioFileClip(path))
+                    except Exception as e:
+                        print(f"⚠️ Error loading clip {path}: {e}")
+            
+            if not clips:
+                print("❌ No valid clips to merge")
+                return False
+                
+            final_clip = concatenate_audioclips(clips)
+            final_clip.write_audiofile(output_path, logger=None)
+            
+            # Close clips to release file handles
+            for clip in clips:
+                clip.close()
+            final_clip.close()
+            
+            return True
+        except ImportError:
+            print("❌ moviepy not available for audio merging")
+            return False
+        except Exception as e:
+            print(f"❌ Error merging audio: {e}")
+            traceback.print_exc()
+            return False
     
     def cleanup_presentation_audio(self, presentation_id: str, static_folder: str):
         """Clean up all audio files for a presentation"""

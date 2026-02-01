@@ -410,29 +410,80 @@ def generate_audio(pres_id):
                     
                 results.append({
                     'slide_index': i,
-                    'success': True,
-                    'message': message,
-                    'audio_url': audio_url
+                    'success': success,
+                    'audio_url': audio_url if success else None,
+                    'message': message
                 })
                 
             except Exception as e:
-                print(f"Error generating audio for slide {i}: {str(e)}")
+                print(f"Error processing slide {i}: {str(e)}")
                 results.append({
                     'slide_index': i,
                     'success': False,
-                    'message': f"Failed to generate audio: {str(e)}"
+                    'message': str(e)
                 })
         
         return jsonify({
             'success': True,
-            'message': f'Generated audio for {success_count}/{len(slides)} slides',
-            'success_count': success_count,
             'total_slides': len(slides),
+            'success_count': success_count,
             'results': results
         })
         
     except Exception as e:
-        print(f"Error in generate_audio: {str(e)}")
+        print(f"Error generating audio: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/presentation/<pres_id>/concatenate_audio', methods=['POST'])
+def concatenate_audio(pres_id):
+    """Merge all slide audios into one file"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+            
+        slides = presentation.get('slides', [])
+        if not slides:
+             return jsonify({'success': False, 'error': 'No slides found'}), 400
+             
+        audio_service = get_audio_service()
+        static_folder = current_app.static_folder
+        
+        # Collect audio paths from slides
+        audio_paths = []
+        for i, slide in enumerate(slides):
+            # Prefer audio_file_path from slide data, or reconstruct it
+            path = slide.get('audio_file_path')
+            if not path or not os.path.exists(path):
+                 # Try to reconstruct standard path
+                 path = audio_service.get_audio_file_path(pres_id, i, static_folder)
+            
+            if os.path.exists(path):
+                audio_paths.append(path)
+        
+        if not audio_paths:
+            return jsonify({'success': False, 'error': 'No audio files found to merge'}), 400
+            
+        # Output path
+        output_filename = f"full_presentation_{uuid.uuid4().hex}.mp3"
+        output_dir = os.path.join(static_folder, 'audio', pres_id)
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, output_filename)
+        
+        # Merge
+        if audio_service.merge_audio_files(audio_paths, output_path):
+            audio_url = f"/static/audio/{pres_id}/{output_filename}"
+            return jsonify({
+                'success': True,
+                'audio_url': audio_url,
+                'message': 'Audio merged successfully'
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Failed to merge audio files'}), 500
+            
+    except Exception as e:
+        print(f"Error concatenating audio: {str(e)}")
+        traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/regenerate_audio', methods=['POST'])

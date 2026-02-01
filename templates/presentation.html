@@ -297,6 +297,44 @@
         </div>
     </div>
 
+    <!-- Progress Modal -->
+    <div class="modal fade" id="progressModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <h5 class="mb-3">Generating Audio...</h5>
+                    <div class="progress mb-3">
+                        <div id="generationProgressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <p id="progressStatus" class="text-muted mb-0">Starting...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Result Modal -->
+    <div class="modal fade" id="audioResultModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎉 Audio Generation Complete!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="lead">Success! Here is your full presentation audio preview:</p>
+                    <div class="p-4 bg-light rounded mb-3">
+                        <audio id="fullAudioPlayer" controls class="w-100"></audio>
+                    </div>
+                    <div class="d-flex justify-content-center gap-2">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button class="btn btn-primary" onclick="goToStep4AndHideModal()">Continue to Step 4</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -954,60 +992,141 @@
             await generateAllAudioWithSettings(settings);
         }
 
+        async function regenerateAudioWithSettings(slideNum, settings) {
+            if (!currentPresentationId) return false;
+
+            const audioStatus = document.getElementById(`audioStatus${slideNum}`);
+            if (audioStatus) {
+                audioStatus.innerHTML = '<span class="text-info">⏳ Generating...</span>';
+            }
+
+            try {
+                const requestBody = {};
+
+                if (settings.type === 'preset' && settings.voice_id) {
+                    requestBody.voice_id = settings.voice_id;
+                } else if (settings.type === 'clone' && settings.clone_file) {
+                    // Placeholder for when clone is fully implemented for batch
+                    // requestBody.clone_voice_path = ...
+                }
+
+                const response = await fetch(`/api/presentation/${currentPresentationId}/slide/${slideNum}/regenerate_audio`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const audioPlayer = document.getElementById(`audioPlayer${slideNum}`);
+                    const audio = document.getElementById(`audio${slideNum}`);
+
+                    if (audioPlayer && audio) {
+                        audio.src = data.audio_url + '?t=' + Date.now();
+                        audioPlayer.style.display = 'block';
+                    }
+
+                    if (audioStatus) audioStatus.innerHTML = '<span class="text-success">✅ Done</span>';
+                    return true;
+                } else {
+                    if (audioStatus) audioStatus.innerHTML = `<span class="text-danger">❌ Error: ${data.error}</span>`;
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error regenerating audio:', error);
+                if (audioStatus) audioStatus.innerHTML = `<span class="text-danger">❌ Error: ${error.message}</span>`;
+                return false;
+            }
+        }
+
         async function generateAllAudioWithSettings(settings) {
             if (!currentPresentationId) {
                 alert('Không tìm thấy presentation!');
                 return;
             }
 
-            showLoading('Đang tạo audio cho tất cả slides...');
+            // Show Progress Modal
+            const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+            progressModal.show();
+
+            const progressBar = document.getElementById('generationProgressBar');
+            const progressStatus = document.getElementById('progressStatus');
+
+            progressBar.style.width = '0%';
+            progressStatus.textContent = 'Initializing...';
 
             try {
-                // Prepare request body with voice settings
-                const requestBody = { ...settings };
-                // Remove file object if present (cannot send in JSON like this, need separate handling or assume preset for now)
-                if (requestBody.clone_file) delete requestBody.clone_file;
+                // Get all slides that need generation
+                // We can know total slides from DOM
+                const scriptTextAreas = document.querySelectorAll('.script-textarea');
+                const totalSlides = scriptTextAreas.length;
+                let successCount = 0;
 
-                const response = await fetch(`/api/presentation/${currentPresentationId}/generate_audio`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody) // Send settings to backend
-                });
+                // Sequential Generation
+                for (let i = 0; i < totalSlides; i++) {
+                    const slideNum = scriptTextAreas[i].getAttribute('data-slide-num');
 
-                const data = await response.json();
+                    // Update Status
+                    progressStatus.textContent = `Generating audio for Slide ${slideNum} (${i + 1}/${totalSlides})...`;
 
-                if (data.success) {
-                    // Update UI for each slide
-                    data.results.forEach(result => {
-                        const slideNum = result.slide_index;
-                        // const audioStatus = document.getElementById(`audioStatus${slideNum}`); // Removed
-                        const audioPlayer = document.getElementById(`audioPlayer${slideNum}`);
-                        const audio = document.getElementById(`audio${slideNum}`);
+                    // Call generation
+                    const success = await regenerateAudioWithSettings(slideNum, settings);
+                    if (success) successCount++;
 
-                        if (result.success && result.audio_url) {
-                            if (audio && audioPlayer) {
-                                audio.src = result.audio_url + '?t=' + Date.now();
-                                audioPlayer.style.display = 'block';
-                            }
-                        }
-                    });
-
-                    hideLoading();
-                    alert(`Đã tạo thành công audio cho ${data.success_count}/${data.total_slides} slides!`);
-
-                    // Show next step button
-                    showStep4Button();
-                } else {
-                    hideLoading();
-                    alert('Lỗi khi tạo audio: ' + data.error);
+                    // Update Progress Bar
+                    const percent = Math.round(((i + 1) / totalSlides) * 90); // Go up to 90%, reserve 10% for merge
+                    progressBar.style.width = `${percent}%`;
                 }
+
+                // Merging Audio
+                progressStatus.textContent = 'Merging all audio files into preview...';
+
+                const response = await fetch(`/api/presentation/${currentPresentationId}/concatenate_audio`, {
+                    method: 'POST'
+                });
+                const mergeData = await response.json();
+
+                progressBar.style.width = '100%';
+
+                // Hide Progress Modal
+                // Allow small delay to see 100%
+                await new Promise(r => setTimeout(r, 500));
+                progressModal.hide();
+
+                if (mergeData.success) {
+                    // Show Result Modal
+                    const resultModal = new bootstrap.Modal(document.getElementById('audioResultModal'));
+                    const fullPlayer = document.getElementById('fullAudioPlayer');
+                    fullPlayer.src = mergeData.audio_url + '?t=' + Date.now();
+                    resultModal.show();
+                    // Auto play
+                    fullPlayer.play();
+                } else {
+                    console.error('Audio merge failed:', mergeData.error);
+                    // alert(`Generated ${successCount}/${totalSlides} slides, but failed to merge: ${mergeData.error}`);
+                    // Don't show critical alert, just warn or show small notification
+                }
+
+                // Show Next Step button on main page regarless of merge success
+                if (successCount > 0) {
+                    showStep4Button();
+                }
+
             } catch (error) {
-                hideLoading();
+                progressModal.hide();
                 console.error('Error generating audio:', error);
                 alert('Lỗi kết nối: ' + error.message);
             }
+        }
+
+        function goToStep4AndHideModal() {
+            const modalElement = document.getElementById('audioResultModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            modal.hide();
+            goToStep4();
         }
     </script>
 
