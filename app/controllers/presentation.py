@@ -255,6 +255,96 @@ def regenerate_text():
 
 # ==================== AUDIO ROUTES ====================
 
+@presentation_bp.route('/available-voices', methods=['GET'])
+def get_available_voices():
+    """Get list of available VieNeu-TTS preset voices"""
+    try:
+        audio_service = get_audio_service()
+        voices = audio_service.get_available_voices()
+        
+        return jsonify({
+            'success': True,
+            'voices': voices,
+            'vieneu_available': audio_service.vieneu_available
+        })
+    except Exception as e:
+        print(f"Error getting voices: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/preview-voice', methods=['POST'])
+def preview_voice():
+    """Generate a short preview audio with selected voice"""
+    try:
+        # Check if content type is multipart/form-data (file upload) or json
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            text = request.form.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_id = request.form.get('voice_id')
+            clone_file = request.files.get('clone_file')
+        else:
+            data = request.json or {}
+            text = data.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_id = data.get('voice_id')
+            clone_file = None
+
+        # Limit text length for preview
+        if len(text) > 100:
+            text = text[:100]
+            
+        audio_service = get_audio_service()
+        static_folder = current_app.static_folder
+        
+        # Create temp folder if not exists
+        temp_dir = os.path.join(static_folder, 'temp')
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        # Generate unique filename
+        filename = f"preview_{uuid.uuid4().hex}.wav"
+        output_path = os.path.join(temp_dir, filename)
+        
+        clone_voice_path = None
+        if clone_file:
+            # Save uploaded clone file temporarily
+            clone_filename = f"clone_source_{uuid.uuid4().hex}.wav"
+            clone_voice_path = os.path.join(temp_dir, clone_filename)
+            clone_file.save(clone_voice_path)
+        elif request.json:
+             # Handle clone path if passed directly (less likely for preview but good for API)
+             clone_voice_path = request.json.get('clone_voice_path')
+
+        
+        # Generate audio
+        success, message = audio_service.generate_audio(
+            text, 
+            output_path, 
+            voice_id=voice_id, 
+            clone_voice_path=clone_voice_path
+        )
+        
+        # Clean up clone source file if it was uploaded
+        if clone_file and clone_voice_path and os.path.exists(clone_voice_path):
+             # Optional: keep it or delete it? For preview maybe delete. 
+             # But if VieNeu needs it during generation, it loads it.
+             # VieNeu load_voice usually reads it. Safe to delete AFTER generation?
+             # Let's keep it for now or delete if confident. 
+             # Actually, if generation failed, we might want to debug.
+             # But to save space, let's not delete immediately, or maybe simple cleanup job later.
+             pass
+        
+        if success:
+            # Return URL to the audio file
+            audio_url = f"/static/temp/{filename}"
+            return jsonify({
+                'success': True,
+                'audio_url': audio_url,
+                'message': message
+            })
+        else:
+            return jsonify({'success': False, 'error': message}), 500
+            
+    except Exception as e:
+        print(f"Error previewing voice: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @presentation_bp.route('/presentation/<pres_id>/generate_audio', methods=['POST'])
 def generate_audio(pres_id):
     """Generate audio files for all slides in a presentation"""
@@ -272,6 +362,15 @@ def generate_audio(pres_id):
         slides = presentation.get('slides', [])
         if not slides:
             return jsonify({'success': False, 'error': 'No slides found'}), 400
+        
+        
+        # Get voice settings from request body (optional)
+        try:
+            data = request.get_json(silent=True) or {}
+        except:
+            data = {}
+        voice_id = data.get('voice_id')
+        clone_voice_path = data.get('clone_voice_path')
         
         results = []
         success_count = 0
@@ -294,7 +393,12 @@ def generate_audio(pres_id):
                 audio_url = audio_service.get_audio_url(pres_id, i)
                 
                 # Generate audio
-                success, message = audio_service.generate_audio(text_to_convert, audio_file_path)
+                success, message = audio_service.generate_audio(
+                    text_to_convert, 
+                    audio_file_path,
+                    voice_id=voice_id,
+                    clone_voice_path=clone_voice_path
+                )
                 
                 if success:
                     # Update slide with audio URL
@@ -354,12 +458,26 @@ def regenerate_audio(pres_id, slide_num):
                 'error': 'No text available for this slide'
             }), 400
         
+        
+        # Get voice settings from request body (optional) - backward compatible
+        try:
+            data = request.get_json(silent=True) or {}
+        except:
+            data = {}
+        voice_id = data.get('voice_id')
+        clone_voice_path = data.get('clone_voice_path')
+        
         # Generate audio file path
         audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
         audio_url = audio_service.get_audio_url(pres_id, slide_num)
         
-        # Generate audio
-        success, message = audio_service.generate_audio(text_to_convert, audio_file_path)
+        # Generate audio with optional voice settings
+        success, message = audio_service.generate_audio(
+            text_to_convert, 
+            audio_file_path,
+            voice_id=voice_id,
+            clone_voice_path=clone_voice_path
+        )
         
         if success:
             # Update slide with audio URL

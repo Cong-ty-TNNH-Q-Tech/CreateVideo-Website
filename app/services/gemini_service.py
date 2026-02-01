@@ -2,7 +2,7 @@
 Service to interact with Google Gemini API for generating presentation scripts.
 """
 import os
-import google.generativeai as genai
+from google import genai
 from typing import Optional
 
 class GeminiService:
@@ -20,8 +20,9 @@ class GeminiService:
             # We don't raise error here to allow app to start, 
             # but methods will fail if key is missing.
             print("Warning: GEMINI_API_KEY not found.")
+            self.client = None
         else:
-            genai.configure(api_key=self.api_key)
+            self.client = genai.Client(api_key=self.api_key)
         
         # Configure generation config for TTS-friendly output
         self.generation_config = {
@@ -31,12 +32,8 @@ class GeminiService:
             "max_output_tokens": 8192,
         }
         
-        # Use gemini-2.5-flash as requested by user and verified in available models
+        # Use gemini-1.5-flash - stable and available model
         self.model_name = 'gemini-2.5-flash'
-        self.model = genai.GenerativeModel(
-            model_name=self.model_name,
-            generation_config=self.generation_config
-        )
     
     def generate_script(self, slide_text: str, language: str = 'vi') -> str:
         """
@@ -49,7 +46,7 @@ class GeminiService:
         Returns:
             str: The generated speech script (plain text).
         """
-        if not self.api_key:
+        if not self.api_key or not self.client:
             raise ValueError("Gemini API key is not configured.")
             
         if not slide_text or not slide_text.strip():
@@ -75,7 +72,11 @@ class GeminiService:
         """
         
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=self.generation_config
+            )
             return response.text.strip()
         except Exception as e:
             print(f"Error generating script with Gemini: {e}")
@@ -86,7 +87,7 @@ class GeminiService:
         """
         Enhance the existing script based on user instruction.
         """
-        if not self.api_key:
+        if not self.api_key or not self.client:
             raise ValueError("Gemini API key is not configured.")
             
         prompt = f"""
@@ -107,7 +108,11 @@ class GeminiService:
         Updated Script:
         """
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=self.generation_config
+            )
             return response.text.strip()
         except Exception as e:
             raise Exception(f"Gemini enhancement error: {str(e)}")
@@ -116,7 +121,7 @@ class GeminiService:
         """
         Regenerate the script with feedback.
         """
-        if not self.api_key:
+        if not self.api_key or not self.client:
             raise ValueError("Gemini API key is not configured.")
             
         prompt = f"""
@@ -140,7 +145,11 @@ class GeminiService:
         New Script:
         """
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=self.generation_config
+            )
             return response.text.strip()
         except Exception as e:
             raise Exception(f"Gemini regeneration error: {str(e)}")
