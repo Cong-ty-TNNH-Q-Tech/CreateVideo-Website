@@ -181,6 +181,7 @@
                     <li>Click "Generate Text" để tạo text thuyết trình tự động từ nội dung slide</li>
                     <li>Bạn có thể chỉnh sửa text sau khi generate</li>
                     <li>Click "Save" để lưu text đã chỉnh sửa</li>
+                    <li>Click "Generate Audio" để tạo file audio từ kịch bản thuyết trình</li>
                 </ul>
             </div>
 
@@ -190,8 +191,11 @@
                 <button class="btn btn-warning btn-lg me-2" onclick="saveAllScripts()">
                     💾 Save All Scripts
                 </button>
-                <button class="btn btn-primary btn-lg" onclick="goToStep3()">
-                    Tiếp tục → Bước 3: Upload Avatar
+                <button class="btn btn-success btn-lg me-2" onclick="generateAllAudio()">
+                    🎵 Generate Audio
+                </button>
+                <button class="btn btn-primary btn-lg" onclick="goToStep4()" id="nextStepBtn" style="display:none;">
+                    Tiếp tục → Bước 4: Upload Avatar
                 </button>
             </div>
         </div>
@@ -371,7 +375,7 @@
                                 ${slide.content || '(Không có nội dung)'}
                             </div>
                         </div>
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label class="form-label">Kịch bản thuyết trình (Plain text suitable for TTS):</label>
                             <textarea 
                                 class="form-control script-textarea" 
@@ -382,11 +386,41 @@
                                 oninput="markAsEdited(${slide.slide_num})"
                             >${slide.edited_text || slide.generated_text || ''}</textarea>
                         </div>
+                        
+                        <!-- Audio Section -->
+                        <div class="mb-3" id="audioSection${slide.slide_num}">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label mb-0">🎵 Audio Preview:</label>
+                                <button class="btn btn-sm btn-outline-primary" onclick="regenerateAudio(${slide.slide_num})" id="regenAudioBtn${slide.slide_num}">
+                                    🔄 Regenerate Audio
+                                </button>
+                            </div>
+                            
+                            <div id="audioPlayer${slide.slide_num}" style="display: none;">
+                                <audio controls class="w-100" id="audio${slide.slide_num}">
+                                    <source src="" type="audio/wav">
+                                    Trình duyệt không hỗ trợ audio.
+                                </audio>
+                            </div>
+                            
+                            <div id="audioStatus${slide.slide_num}" class="text-muted small mt-2">
+                                ${slide.audio_url ? '<span class="text-success">✅ Audio đã tạo</span>' : '<span class="text-info">ℹ️ Chưa tạo audio cho slide này</span>'}
+                            </div>
+                        </div>
+                        
                         <div id="textStatus${slide.slide_num}" class="text-muted small"></div>
                     </div>
                 </div>
             `;
                 slidesContainer.appendChild(slideDiv);
+                
+                // Set up audio player if audio exists
+                if (slide.audio_url) {
+                    const audioPlayer = document.getElementById(`audioPlayer${slide.slide_num}`);
+                    const audio = document.getElementById(`audio${slide.slide_num}`);
+                    audio.src = slide.audio_url;
+                    audioPlayer.style.display = 'block';
+                }
             });
         }
 
@@ -543,11 +577,114 @@
 
         function goToStep3() {
             if (currentPresentationId) {
-                // Prompt user if they haven't saved? Ideally auto-save before verify.
-                // For now, assume they clicked save or implement auto save.
-                alert('Bước 3 sẽ được implement tiếp theo. Presentation ID: ' + currentPresentationId);
-                // TODO: Implement Step 3
+                // First generate audio for all slides
+                generateAllAudio();
             }
+        }
+
+        // ============== AUDIO FUNCTIONS ==============
+        
+        async function generateAllAudio() {
+            if (!currentPresentationId) {
+                alert('Không tìm thấy presentation!');
+                return;
+            }
+
+            showLoading('Đang tạo audio cho tất cả slides...');
+
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/generate_audio`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update UI for each slide
+                    data.results.forEach(result => {
+                        const slideNum = result.slide_index;
+                        const audioStatus = document.getElementById(`audioStatus${slideNum}`);
+                        const audioPlayer = document.getElementById(`audioPlayer${slideNum}`);
+                        const audio = document.getElementById(`audio${slideNum}`);
+                        
+                        if (result.success && result.audio_url) {
+                            audioStatus.innerHTML = '<span class="text-success">✅ Audio đã tạo</span>';
+                            audio.src = result.audio_url;
+                            audioPlayer.style.display = 'block';
+                        } else {
+                            audioStatus.innerHTML = `<span class="text-warning">⚠️ ${result.message}</span>`;
+                        }
+                    });
+
+                    hideLoading();
+                    alert(`Đã tạo thành công audio cho ${data.success_count}/${data.total_slides} slides! Bạn có thể tiếp tục bước 4: Upload Avatar.`);
+                    
+                    // Show next step button
+                    showStep4Button();
+                } else {
+                    hideLoading();
+                    alert('Lỗi khi tạo audio: ' + data.error);
+                }
+            } catch (error) {
+                hideLoading();
+                console.error('Error generating audio:', error);
+                alert('Lỗi kết nối: ' + error.message);
+            }
+        }
+
+        async function regenerateAudio(slideNum) {
+            if (!currentPresentationId) return;
+
+            const audioStatus = document.getElementById(`audioStatus${slideNum}`);
+            const regenBtn = document.getElementById(`regenAudioBtn${slideNum}`);
+            
+            audioStatus.innerHTML = '<span class="text-info">⏳ Đang tạo audio...</span>';
+            regenBtn.disabled = true;
+
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/slide/${slideNum}/regenerate_audio`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const audioPlayer = document.getElementById(`audioPlayer${slideNum}`);
+                    const audio = document.getElementById(`audio${slideNum}`);
+                    
+                    // Update audio source with cache busting
+                    audio.src = data.audio_url + '?t=' + Date.now();
+                    audioPlayer.style.display = 'block';
+                    
+                    audioStatus.innerHTML = '<span class="text-success">✅ Audio đã được tạo lại</span>';
+                } else {
+                    audioStatus.innerHTML = `<span class="text-danger">❌ Lỗi: ${data.error}</span>`;
+                }
+            } catch (error) {
+                console.error('Error regenerating audio:', error);
+                audioStatus.innerHTML = `<span class="text-danger">❌ Lỗi kết nối: ${error.message}</span>`;
+            } finally {
+                regenBtn.disabled = false;
+            }
+        }
+
+        function showStep4Button() {
+            // Show the next step button
+            const nextStepBtn = document.getElementById('nextStepBtn');
+            if (nextStepBtn) {
+                nextStepBtn.style.display = 'inline-block';
+            }
+        }
+
+        function goToStep4() {
+            // TODO: Implement Step 4 - Avatar Upload
+            alert('Bước 4 (Upload Avatar) sẽ được implement tiếp theo. Presentation ID: ' + currentPresentationId);
         }
     </script>
 

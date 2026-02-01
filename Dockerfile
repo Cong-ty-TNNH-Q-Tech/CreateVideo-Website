@@ -64,6 +64,13 @@ RUN pip install --no-cache-dir \
 # Remove conflicting system blinker if present
 RUN pip install --no-cache-dir --ignore-installed blinker -r requirements.txt
 
+# Install additional TTS dependencies (permanent)
+RUN pip install --no-cache-dir \
+    gtts>=2.4.0 \
+    pydub>=0.25.1 \
+    langdetect>=1.0.9 \
+    soundfile>=0.12.1
+
 # Fix BasicSR compatibility with newer TorchVision
 # Replace 'from torchvision.transforms.functional_tensor import rgb_to_grayscale'
 # with 'from torchvision.transforms.functional import rgb_to_grayscale'
