@@ -2,11 +2,20 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import traceback
 from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
 from app.services.audio_service import get_audio_service
 
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')
+
+# Allowed file extensions for avatar upload
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @presentation_bp.route('/upload-presentation', methods=['POST'])
 def upload_presentation():
@@ -79,7 +88,8 @@ def get_slides(pres_id):
     
     return jsonify({
         'success': True,
-        'slides': presentation['slides']
+        'slides': presentation['slides'],
+        'full_audio_url': presentation.get('full_audio_url')
     })
 
 @presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>', methods=['GET'])
@@ -473,6 +483,12 @@ def concatenate_audio(pres_id):
         # Merge
         if audio_service.merge_audio_files(audio_paths, output_path):
             audio_url = f"/static/audio/{pres_id}/{output_filename}"
+            # Update presentation with full audio url
+            current_app.presentation_model.update(pres_id, {
+                'full_audio_url': audio_url,
+                'full_audio_path': output_path
+            })
+            
             return jsonify({
                 'success': True,
                 'audio_url': audio_url,
@@ -484,6 +500,53 @@ def concatenate_audio(pres_id):
     except Exception as e:
         print(f"Error concatenating audio: {str(e)}")
         traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/presentation/<pres_id>/upload_avatar', methods=['POST'])
+def upload_avatar(pres_id):
+    """Upload avatar image for Step 4"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        if 'avatar' not in request.files:
+            return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+            
+        file = request.files['avatar']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+            
+        if file and allowed_file(file.filename):
+            static_folder = current_app.static_folder
+            avatar_dir = os.path.join(static_folder, 'avatars', pres_id)
+            os.makedirs(avatar_dir, exist_ok=True)
+            
+            filename = f"avatar_{uuid.uuid4().hex}.png" # Force png or keep original ext
+            # Better to keep ext usually, but consistency helps.
+            # Let's clean filename
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(avatar_dir, filename)
+            file.save(file_path)
+            
+            avatar_url = f"/static/avatars/{pres_id}/{filename}"
+            
+            # Update presentation with avatar
+            current_app.presentation_model.update(pres_id, {
+                'avatar_url': avatar_url,
+                'avatar_path': file_path
+            })
+            
+            return jsonify({
+                'success': True, 
+                'avatar_url': avatar_url,
+                'message': 'Avatar uploaded successfully'
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+            
+    except Exception as e:
+        print(f"Error uploading avatar: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/regenerate_audio', methods=['POST'])
