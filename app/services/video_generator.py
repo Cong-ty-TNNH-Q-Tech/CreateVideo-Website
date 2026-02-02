@@ -52,7 +52,7 @@ class VideoGenerationService:
             '--size', '512',  # Higher resolution (256, 512)
             '--checkpoint_dir', 'checkpoints',
             '--batch_size', '2',  # Larger batch for smoother results
-            '--enhancer', 'gfpgan',  # Face enhancement for better quality
+            # '--enhancer', 'gfpgan',  # Disabled: gfpgan not installed
             '--expression_scale', '1.0'  # Expression intensity
         ]
         

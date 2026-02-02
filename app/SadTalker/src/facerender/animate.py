@@ -20,7 +20,17 @@ from src.facerender.modules.generator import OcclusionAwareGenerator, OcclusionA
 from src.facerender.modules.make_animation import make_animation 
 
 from pydub import AudioSegment 
-from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
+
+# Try to import face_enhancer, but don't fail if gfpgan not installed
+try:
+    from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
+    FACE_ENHANCER_AVAILABLE = True
+except ImportError:
+    print("Warning: face_enhancer not available (gfpgan not installed). Face enhancement will be disabled.")
+    FACE_ENHANCER_AVAILABLE = False
+    enhancer_generator_with_len = None
+    enhancer_list = None
+
 from src.utils.paste_pic import paste_pic
 from src.utils.videoio import save_video_with_watermark
 
