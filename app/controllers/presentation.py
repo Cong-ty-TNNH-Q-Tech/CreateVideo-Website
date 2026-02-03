@@ -6,6 +6,8 @@ import traceback
 from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
 from app.services.audio_service import get_audio_service
+from app.services.video_generator import VideoGenerationService
+from app.services.presentation_video_exporter import PresentationVideoExporter
 
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')
 
@@ -615,3 +617,232 @@ def regenerate_audio(pres_id, slide_num):
     except Exception as e:
         print(f"Error in regenerate_audio: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/presentation/<pres_id>/generate_video', methods=['POST'])
+def generate_video(pres_id):
+    """Generate talking head video using SadTalker (Step 5)"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+        
+        # Validate avatar exists
+        avatar_path = presentation.get('avatar_path')
+        if not avatar_path or not os.path.exists(avatar_path):
+            return jsonify({
+                'success': False,
+                'error': 'Vui lòng upload avatar trước (Step 4)'
+            }), 400
+        
+        # Validate merged audio exists
+        full_audio_path = presentation.get('full_audio_path')
+        if not full_audio_path or not os.path.exists(full_audio_path):
+            return jsonify({
+                'success': False,
+                'error': 'Vui lòng tạo audio trước (Step 3). Cần merge tất cả audio slides.'
+            }), 400
+        
+        # Initialize video generator
+        # current_app.root_path points to 'app' folder
+        # VideoGenerationService needs path to project root (parent of 'app')
+        app_root = current_app.root_path  # This is the 'app' folder path
+        video_service = VideoGenerationService(app_root)
+        
+        # Create result directory
+        static_folder = current_app.static_folder
+        result_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(result_dir, exist_ok=True)
+        
+        print(f"🎬 Generating video with SadTalker...")
+        print(f"  Avatar: {avatar_path}")
+        print(f"  Audio: {full_audio_path}")
+        print(f"  Result dir: {result_dir}")
+        
+        # Generate video
+        result = video_service.generate_video(
+            source_image_path=avatar_path,
+            driven_audio_path=full_audio_path,
+            result_dir=result_dir,
+            use_cpu=False  # Use GPU if available
+        )
+        
+        if result['success']:
+            video_url = result['video_url']
+            video_path = result['video_path']
+            
+            # Update presentation with video info
+            current_app.presentation_model.update(pres_id, {
+                'final_video_url': video_url,
+                'final_video_path': video_path
+            })
+            
+            print(f"✅ Video generated successfully: {video_url}")
+            
+            return jsonify({
+                'success': True,
+                'video_url': video_url,
+                'message': 'Video tạo thành công!'
+            })
+        else:
+            error_msg = result.get('error', 'Unknown error')
+            print(f"❌ Video generation failed: {error_msg}")
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            }), 500
+            
+    except Exception as e:
+        print(f"❌ Error generating video: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f"Lỗi không mong đợi: {str(e)}"
+        }), 500
+
+@presentation_bp.route('/presentation/<pres_id>/export_presentation_video', methods=['POST'])
+def export_presentation_video(pres_id):
+    """Export presentation as video (slides + audio) without SadTalker"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+        
+        slides_data = presentation.get('slides', [])
+        print(f"📊 Debug - Total slides in presentation: {len(slides_data)}")
+        print(f"📊 Debug - Slides data: {slides_data}")
+        
+        if not slides_data or len(slides_data) == 0:
+            return jsonify({
+                'success': False,
+                'error': 'No slides found in presentation'
+            }), 400
+        
+        
+        # Extract slide images from presentation file
+        pres_file_path = presentation.get('file_path')
+        if not pres_file_path or not os.path.exists(pres_file_path):
+            return jsonify({
+                'success': False,
+                'error': 'Presentation file not found'
+            }), 400
+        
+        # Create directory for extracted slides
+        pres_upload_dir = os.path.dirname(pres_file_path)
+        slides_image_dir = os.path.join(pres_upload_dir, 'slides')
+        
+        print(f"📄 Extracting slides from: {pres_file_path}")
+        print(f"📁 Output directory: {slides_image_dir}")
+        
+        # Extract slides to images
+        try:
+            PresentationReader.extract_slide_images(pres_file_path, slides_image_dir)
+        except NotImplementedError as e:
+            return jsonify({
+                'success': False,
+                'error': str(e)
+            }), 400
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'error': f'Failed to extract slides: {str(e)}'
+            }), 500
+        
+        # Collect slides that have both image and audio
+        slides_with_audio = []
+        skipped_slides = []
+        
+        for slide in slides_data:
+            slide_num = slide.get('slide_num', '?')
+            audio_path = slide.get('audio_file_path')
+            
+            # Get extracted slide image path
+            slide_image_path = os.path.join(slides_image_dir, f'slide_{slide_num}.png')
+            
+            print(f"🔍 Checking slide {slide_num}:")
+            print(f"   Audio path: {audio_path}")
+            print(f"   Audio exists: {os.path.exists(audio_path) if audio_path else 'No path'}")
+            print(f"   Image path: {slide_image_path}")
+            print(f"   Image exists: {os.path.exists(slide_image_path) if slide_image_path else 'No path'}")
+            
+            # Skip slides without audio or image
+            if not audio_path or not os.path.exists(audio_path):
+                print(f"⚠️ Skipping slide {slide_num}: no audio")
+                skipped_slides.append(slide_num)
+                continue
+            
+            if not os.path.exists(slide_image_path):
+                print(f"⚠️ Skipping slide {slide_num}: no image")
+                skipped_slides.append(slide_num)
+                continue
+            
+            # Valid slide - add to list
+            print(f"✅ Slide {slide_num} is valid!")
+            slides_with_audio.append({
+                'image_path': slide_image_path,
+                'audio_path': audio_path
+            })
+        
+        # Check if we have at least one valid slide
+        if len(slides_with_audio) == 0:
+            return jsonify({
+                'success': False,
+                'error': 'No slides with both image and audio found. Please generate audio for at least one slide.'
+            }), 400
+
+        
+        # Create output directory
+        static_folder = current_app.static_folder
+        video_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(video_dir, exist_ok=True)
+        
+        output_filename = f'presentation_{pres_id}.mp4'
+        output_path = os.path.join(video_dir, output_filename)
+        
+        print(f"📹 Exporting presentation video...")
+        print(f"  Slides: {len(slides_with_audio)}")
+        print(f"  Output: {output_path}")
+        
+        # Create video
+        exporter = PresentationVideoExporter()
+        result = exporter.create_presentation_video(slides_with_audio, output_path)
+        
+        if result['success']:
+            video_url = f'/static/videos/{pres_id}/{output_filename}'
+            
+            # Update presentation model
+            current_app.presentation_model.update(pres_id, {
+                'presentation_video_url': video_url,
+                'presentation_video_path': output_path
+            })
+            
+            print(f"✅ Presentation video exported: {video_url}")
+            
+            # Build success message
+            message = f'Video tạo thành công với {len(slides_with_audio)} slide!'
+            if skipped_slides:
+                message += f' (Đã bỏ qua {len(skipped_slides)} slide thiếu audio/image)'
+            
+            return jsonify({
+                'success': True,
+                'video_url': video_url,
+                'message': message,
+                'slides_used': len(slides_with_audio),
+                'slides_skipped': len(skipped_slides)
+            })
+        else:
+            error_msg = result.get('error', 'Unknown error')
+            print(f"❌ Video export failed: {error_msg}")
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            }), 500
+            
+    except Exception as e:
+        print(f"❌ Error exporting presentation video: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f"Lỗi không mong đợi: {str(e)}"
+        }), 500
+
+

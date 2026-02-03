@@ -198,7 +198,162 @@
                     Tiếp tục → Bước 4: Upload Avatar
                 </button>
             </div>
+
+            <!-- Persistent Full Audio Player -->
+            <div class="mt-4" id="fullPresentationAudioContainer" style="display:none;">
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">🎵 Full Presentation Preview</h5>
+                    </div>
+                    <div class="card-body bg-light">
+                        <audio id="persistentFullAudioPlayer" controls class="w-100"></audio>
+                        <p class="text-muted small mb-0 mt-2">This is the combined audio of all slides.</p>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <!-- Step 4: Upload Avatar -->
+    <div id="step4Section" class="step-card" style="display: none;">
+        <div class="step-header">
+            <div class="step-number">4</div>
+            <h3 class="mb-0">Upload Avatar</h3>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>💡 Instruction:</strong> Upload a clear image of a face (Portrait) to generate the video which
+            matches the audio.
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card p-4 text-center">
+                    <div id="avatarPreviewContainer" class="mb-3"
+                        style="min-height: 200px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
+                        <p class="text-muted" id="avatarPlaceholder">No avatar selected</p>
+                        <img id="avatarPreview" src="" class="img-fluid rounded shadow-sm"
+                            style="max-height: 300px; display: none;">
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label for="avatarInput" class="form-label fw-bold">Select Avatar Image (JPG/PNG):</label>
+                        <input type="file" class="form-control" id="avatarInput"
+                            accept="image/png, image/jpeg, image/jpg">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="uploadAvatar()" id="uploadAvatarBtn">
+                            🖼️ Confirm & Upload Avatar
+                        </button>
+                    </div>
+                    <div id="avatarStatus" class="mt-2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-success btn-lg" onclick="goToStep5()" id="step5Btn" style="display: none;">
+                🎬 Next: Generate Video (Step 5)
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 5: Generate Video - Choose Method -->
+    <div id="step5Section" class="step-card" style="display: none;">
+        <div class="step-header">
+            <div class="step-number">5</div>
+            <h3 class="mb-0">Generate Final Video</h3>
+        </div>
+
+        <div class="alert alert-info">
+            <strong>🎬 Choose your video generation method:</strong><br>
+            Select how you want to create your final video presentation.
+        </div>
+
+        <div class="row">
+            <!-- Option A: Presentation Video (Slides + Audio) -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 border-primary" style="cursor: pointer;"
+                    onclick="document.getElementById('presentationVideoBtn').click()">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-file-powerpoint" style="font-size: 3rem; color: #0d6efd;"></i>
+                        </div>
+                        <h4>📊 Presentation Video</h4>
+                        <p class="text-muted">Slides + Audio Sync</p>
+                        <ul class="text-left">
+                            <li>Tạo video từ slides có sẵn</li>
+                            <li>Audio đồng bộ với slides</li>
+                            <li>Mỗi slide hiển thị: thời lượng audio + 5s</li>
+                            <li>Có hiệu ứng fade transition</li>
+                            <li><strong>Không cần avatar</strong></li>
+                        </ul>
+                        <button class="btn btn-primary btn-lg mt-3" onclick="generatePresentationVideo()"
+                            id="presentationVideoBtn">
+                            🎥 Create Presentation Video
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option B: Talking Head Video (SadTalker) -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 border-success" style="cursor: pointer;"
+                    onclick="document.getElementById('talkingHeadVideoBtn').click()">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-user-tie" style="font-size: 3rem; color: #198754;"></i>
+                        </div>
+                        <h4>🎭 Talking Head Video</h4>
+                        <p class="text-muted">AI Avatar with SadTalker</p>
+                        <ul class="text-left">
+                            <li>Tạo video với avatar nói</li>
+                            <li>AI đồng bộ môi và biểu cảm</li>
+                            <li>Độ phân giải 512px</li>
+                            <li>Quá trình: 2-5 phút</li>
+                            <li><strong>Cần upload avatar (Step 4)</strong></li>
+                        </ul>
+                        <button class="btn btn-success btn-lg mt-3" onclick="generateTalkingHeadVideo()"
+                            id="talkingHeadVideoBtn">
+                            🤖 Create Talking Head Video
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status indicator (shared for both methods) -->
+        <div id="videoStatus" class="alert alert-secondary text-center" style="display: none;">
+            <div class="spinner-border text-primary mb-2" role="status">
+                <span class="visually-hidden">Processing...</span>
+            </div>
+            <p class="mb-0" id="videoStatusText">Đang tạo video...</p>
+        </div>
+
+        <div id="videoResultContainer" style="display: none;">
+            <div class="alert alert-success">
+                <strong>✅ Video đã được tạo thành công!</strong>
+            </div>
+
+            <div class="ratio ratio-16x9 mb-3" style="border-radius: 8px; overflow: hidden; background: #000;">
+                <video id="finalVideo" controls controlsList="nodownload">
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <div class="d-grid gap-2">
+                <a id="downloadVideoBtn" class="btn btn-success btn-lg" download>
+                    ⬇️ Download Video
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
     </div>
 
     <!-- Loading Overlay -->
@@ -470,6 +625,16 @@
 
                 if (data.success) {
                     displaySlidesForStep2(data.slides);
+
+                    // Show persistent audio if exists
+                    if (data.full_audio_url) {
+                        const persistentContainer = document.getElementById('fullPresentationAudioContainer');
+                        const persistentPlayer = document.getElementById('persistentFullAudioPlayer');
+                        if (persistentContainer && persistentPlayer) {
+                            persistentPlayer.src = data.full_audio_url;
+                            persistentContainer.style.display = 'block';
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Error loading slides:', error);
@@ -1104,6 +1269,14 @@
                     resultModal.show();
                     // Auto play
                     fullPlayer.play();
+
+                    // Update persistent player
+                    const persistentContainer = document.getElementById('fullPresentationAudioContainer');
+                    const persistentPlayer = document.getElementById('persistentFullAudioPlayer');
+                    if (persistentContainer && persistentPlayer) {
+                        persistentPlayer.src = mergeData.audio_url + '?t=' + Date.now();
+                        persistentContainer.style.display = 'block';
+                    }
                 } else {
                     console.error('Audio merge failed:', mergeData.error);
                     // alert(`Generated ${successCount}/${totalSlides} slides, but failed to merge: ${mergeData.error}`);
@@ -1127,6 +1300,208 @@
             const modal = bootstrap.Modal.getInstance(modalElement);
             modal.hide();
             goToStep4();
+        }
+
+        // --- Step 4 Logic ---
+
+        function showStep4Button() {
+            const btn = document.getElementById('nextStepBtn');
+            if (btn) btn.style.display = 'inline-block';
+        }
+
+        function goToStep4() {
+            const step4 = document.getElementById('step4Section');
+            if (step4) {
+                step4.style.display = 'block';
+                step4.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function uploadAvatar() {
+            const fileInput = document.getElementById('avatarInput');
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Please select an image file');
+                return;
+            }
+
+            if (!currentPresentationId) {
+                alert('Presentation ID missing');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', fileInput.files[0]);
+
+            const statusDiv = document.getElementById('avatarStatus');
+            statusDiv.innerHTML = '<span class="text-info">⏳ Uploading...</span>';
+
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/upload_avatar`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.innerHTML = '<span class="text-success">✅ Avatar uploaded successfully!</span>';
+                    document.getElementById('step5Btn').style.display = 'inline-block';
+                } else {
+                    statusDiv.innerHTML = `<span class="text-danger">❌ Error: ${data.error}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="text-danger">❌ Error: ${error.message}</span>`;
+            }
+        }
+
+        // Avatar Preview
+        document.getElementById('avatarInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('avatarPreview');
+                    img.src = e.target.result;
+                    img.style.display = 'inline-block'; // changed from block to fix potential layout issues
+                    document.getElementById('avatarPlaceholder').style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function goToStep5() {
+            const step5 = document.getElementById('step5Section');
+            if (step5) {
+                step5.style.display = 'block';
+                step5.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Presentation Video (Slides + Audio)
+        async function generatePresentationVideo() {
+            if (!currentPresentationId) {
+                alert('Presentation ID missing');
+                return;
+            }
+
+            const presentationBtn = document.getElementById('presentationVideoBtn');
+            const videoStatus = document.getElementById('videoStatus');
+            const videoStatusText = document.getElementById('videoStatusText');
+            const videoResultContainer = document.getElementById('videoResultContainer');
+
+            // Hide result if previously shown
+            videoResultContainer.style.display = 'none';
+
+            // Show loading status
+            presentationBtn.disabled = true;
+            videoStatus.style.display = 'block';
+            videoStatusText.textContent = '📹 Đang tạo presentation video... Vui lòng đợi.';
+
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/export_presentation_video`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Hide loading
+                    videoStatus.style.display = 'none';
+
+                    // Show video result
+                    const videoPlayer = document.getElementById('finalVideo');
+                    const downloadBtn = document.getElementById('downloadVideoBtn');
+
+                    videoPlayer.src = data.video_url + '?t=' + Date.now();
+                    downloadBtn.href = data.video_url;
+                    downloadBtn.download = `presentation_${currentPresentationId}.mp4`;
+
+                    videoResultContainer.style.display = 'block';
+
+                    // Auto play
+                    videoPlayer.play().catch(err => {
+                        console.log('Auto-play prevented:', err);
+                    });
+
+                    // Success message
+                    alert('✅ ' + data.message);
+                } else {
+                    videoStatus.style.display = 'none';
+                    alert('❌ Lỗi: ' + data.error);
+                    presentationBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error generating presentation video:', error);
+                videoStatus.style.display = 'none';
+                alert('❌ Lỗi kết nối: ' + error.message);
+                presentationBtn.disabled = false;
+            }
+        }
+
+        // Talking Head Video (SadTalker)
+        async function generateTalkingHeadVideo() {
+            if (!currentPresentationId) {
+                alert('Presentation ID missing');
+                return;
+            }
+
+            const talkingHeadBtn = document.getElementById('talkingHeadVideoBtn');
+            const videoStatus = document.getElementById('videoStatus');
+            const videoStatusText = document.getElementById('videoStatusText');
+            const videoResultContainer = document.getElementById('videoResultContainer');
+
+            // Hide result if previously shown
+            videoResultContainer.style.display = 'none';
+
+            // Show loading status
+            talkingHeadBtn.disabled = true;
+            videoStatus.style.display = 'block';
+            videoStatusText.textContent = 'Đang khởi tạo SadTalker... Quá trình có thể mất 2-5 phút.';
+
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/generate_video`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Hide loading
+                    videoStatus.style.display = 'none';
+
+                    // Show video result
+                    const videoPlayer = document.getElementById('finalVideo');
+                    const downloadBtn = document.getElementById('downloadVideoBtn');
+
+                    videoPlayer.src = data.video_url + '?t=' + Date.now();
+                    downloadBtn.href = data.video_url;
+                    downloadBtn.download = `talking_head_${currentPresentationId}.mp4`;
+
+                    videoResultContainer.style.display = 'block';
+
+                    // Auto play
+                    videoPlayer.play().catch(err => {
+                        console.log('Auto-play prevented:', err);
+                    });
+
+                    // Success message
+                    alert('✅ ' + data.message);
+                } else {
+                    videoStatus.style.display = 'none';
+                    alert('❌ Lỗi: ' + data.error);
+                    talkingHeadBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error generating video:', error);
+                videoStatus.style.display = 'none';
+                alert('❌ Lỗi kết nối: ' + error.message);
+                talkingHeadBtn.disabled = false;
+            }
         }
     </script>
 
