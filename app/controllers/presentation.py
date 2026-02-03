@@ -2,11 +2,20 @@ from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import traceback
 from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
 from app.services.audio_service import get_audio_service
 
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')
+
+# Allowed file extensions for avatar upload
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 @presentation_bp.route('/upload-presentation', methods=['POST'])
 def upload_presentation():
@@ -79,7 +88,8 @@ def get_slides(pres_id):
     
     return jsonify({
         'success': True,
-        'slides': presentation['slides']
+        'slides': presentation['slides'],
+        'full_audio_url': presentation.get('full_audio_url')
     })
 
 @presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>', methods=['GET'])
@@ -255,6 +265,96 @@ def regenerate_text():
 
 # ==================== AUDIO ROUTES ====================
 
+@presentation_bp.route('/available-voices', methods=['GET'])
+def get_available_voices():
+    """Get list of available VieNeu-TTS preset voices"""
+    try:
+        audio_service = get_audio_service()
+        voices = audio_service.get_available_voices()
+        
+        return jsonify({
+            'success': True,
+            'voices': voices,
+            'vieneu_available': audio_service.vieneu_available
+        })
+    except Exception as e:
+        print(f"Error getting voices: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/preview-voice', methods=['POST'])
+def preview_voice():
+    """Generate a short preview audio with selected voice"""
+    try:
+        # Check if content type is multipart/form-data (file upload) or json
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            text = request.form.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_id = request.form.get('voice_id')
+            clone_file = request.files.get('clone_file')
+        else:
+            data = request.json or {}
+            text = data.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_id = data.get('voice_id')
+            clone_file = None
+
+        # Limit text length for preview
+        if len(text) > 100:
+            text = text[:100]
+            
+        audio_service = get_audio_service()
+        static_folder = current_app.static_folder
+        
+        # Create temp folder if not exists
+        temp_dir = os.path.join(static_folder, 'temp')
+        os.makedirs(temp_dir, exist_ok=True)
+        
+        # Generate unique filename
+        filename = f"preview_{uuid.uuid4().hex}.wav"
+        output_path = os.path.join(temp_dir, filename)
+        
+        clone_voice_path = None
+        if clone_file:
+            # Save uploaded clone file temporarily
+            clone_filename = f"clone_source_{uuid.uuid4().hex}.wav"
+            clone_voice_path = os.path.join(temp_dir, clone_filename)
+            clone_file.save(clone_voice_path)
+        elif request.json:
+             # Handle clone path if passed directly (less likely for preview but good for API)
+             clone_voice_path = request.json.get('clone_voice_path')
+
+        
+        # Generate audio
+        success, message = audio_service.generate_audio(
+            text, 
+            output_path, 
+            voice_id=voice_id, 
+            clone_voice_path=clone_voice_path
+        )
+        
+        # Clean up clone source file if it was uploaded
+        if clone_file and clone_voice_path and os.path.exists(clone_voice_path):
+             # Optional: keep it or delete it? For preview maybe delete. 
+             # But if VieNeu needs it during generation, it loads it.
+             # VieNeu load_voice usually reads it. Safe to delete AFTER generation?
+             # Let's keep it for now or delete if confident. 
+             # Actually, if generation failed, we might want to debug.
+             # But to save space, let's not delete immediately, or maybe simple cleanup job later.
+             pass
+        
+        if success:
+            # Return URL to the audio file
+            audio_url = f"/static/temp/{filename}"
+            return jsonify({
+                'success': True,
+                'audio_url': audio_url,
+                'message': message
+            })
+        else:
+            return jsonify({'success': False, 'error': message}), 500
+            
+    except Exception as e:
+        print(f"Error previewing voice: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 @presentation_bp.route('/presentation/<pres_id>/generate_audio', methods=['POST'])
 def generate_audio(pres_id):
     """Generate audio files for all slides in a presentation"""
@@ -272,6 +372,15 @@ def generate_audio(pres_id):
         slides = presentation.get('slides', [])
         if not slides:
             return jsonify({'success': False, 'error': 'No slides found'}), 400
+        
+        
+        # Get voice settings from request body (optional)
+        try:
+            data = request.get_json(silent=True) or {}
+        except:
+            data = {}
+        voice_id = data.get('voice_id')
+        clone_voice_path = data.get('clone_voice_path')
         
         results = []
         success_count = 0
@@ -294,7 +403,12 @@ def generate_audio(pres_id):
                 audio_url = audio_service.get_audio_url(pres_id, i)
                 
                 # Generate audio
-                success, message = audio_service.generate_audio(text_to_convert, audio_file_path)
+                success, message = audio_service.generate_audio(
+                    text_to_convert, 
+                    audio_file_path,
+                    voice_id=voice_id,
+                    clone_voice_path=clone_voice_path
+                )
                 
                 if success:
                     # Update slide with audio URL
@@ -306,29 +420,133 @@ def generate_audio(pres_id):
                     
                 results.append({
                     'slide_index': i,
-                    'success': True,
-                    'message': message,
-                    'audio_url': audio_url
+                    'success': success,
+                    'audio_url': audio_url if success else None,
+                    'message': message
                 })
                 
             except Exception as e:
-                print(f"Error generating audio for slide {i}: {str(e)}")
+                print(f"Error processing slide {i}: {str(e)}")
                 results.append({
                     'slide_index': i,
                     'success': False,
-                    'message': f"Failed to generate audio: {str(e)}"
+                    'message': str(e)
                 })
         
         return jsonify({
             'success': True,
-            'message': f'Generated audio for {success_count}/{len(slides)} slides',
-            'success_count': success_count,
             'total_slides': len(slides),
+            'success_count': success_count,
             'results': results
         })
         
     except Exception as e:
-        print(f"Error in generate_audio: {str(e)}")
+        print(f"Error generating audio: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/presentation/<pres_id>/concatenate_audio', methods=['POST'])
+def concatenate_audio(pres_id):
+    """Merge all slide audios into one file"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+            
+        slides = presentation.get('slides', [])
+        if not slides:
+             return jsonify({'success': False, 'error': 'No slides found'}), 400
+             
+        audio_service = get_audio_service()
+        static_folder = current_app.static_folder
+        
+        # Collect audio paths from slides
+        audio_paths = []
+        for i, slide in enumerate(slides):
+            # Prefer audio_file_path from slide data, or reconstruct it
+            path = slide.get('audio_file_path')
+            if not path or not os.path.exists(path):
+                 # Try to reconstruct standard path
+                 path = audio_service.get_audio_file_path(pres_id, i, static_folder)
+            
+            if os.path.exists(path):
+                audio_paths.append(path)
+        
+        if not audio_paths:
+            return jsonify({'success': False, 'error': 'No audio files found to merge'}), 400
+            
+        # Output path
+        output_filename = f"full_presentation_{uuid.uuid4().hex}.mp3"
+        output_dir = os.path.join(static_folder, 'audio', pres_id)
+        os.makedirs(output_dir, exist_ok=True)
+        output_path = os.path.join(output_dir, output_filename)
+        
+        # Merge
+        if audio_service.merge_audio_files(audio_paths, output_path):
+            audio_url = f"/static/audio/{pres_id}/{output_filename}"
+            # Update presentation with full audio url
+            current_app.presentation_model.update(pres_id, {
+                'full_audio_url': audio_url,
+                'full_audio_path': output_path
+            })
+            
+            return jsonify({
+                'success': True,
+                'audio_url': audio_url,
+                'message': 'Audio merged successfully'
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Failed to merge audio files'}), 500
+            
+    except Exception as e:
+        print(f"Error concatenating audio: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@presentation_bp.route('/presentation/<pres_id>/upload_avatar', methods=['POST'])
+def upload_avatar(pres_id):
+    """Upload avatar image for Step 4"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        if 'avatar' not in request.files:
+            return jsonify({'success': False, 'error': 'No file uploaded'}), 400
+            
+        file = request.files['avatar']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+            
+        if file and allowed_file(file.filename):
+            static_folder = current_app.static_folder
+            avatar_dir = os.path.join(static_folder, 'avatars', pres_id)
+            os.makedirs(avatar_dir, exist_ok=True)
+            
+            filename = f"avatar_{uuid.uuid4().hex}.png" # Force png or keep original ext
+            # Better to keep ext usually, but consistency helps.
+            # Let's clean filename
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(avatar_dir, filename)
+            file.save(file_path)
+            
+            avatar_url = f"/static/avatars/{pres_id}/{filename}"
+            
+            # Update presentation with avatar
+            current_app.presentation_model.update(pres_id, {
+                'avatar_url': avatar_url,
+                'avatar_path': file_path
+            })
+            
+            return jsonify({
+                'success': True, 
+                'avatar_url': avatar_url,
+                'message': 'Avatar uploaded successfully'
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Invalid file type'}), 400
+            
+    except Exception as e:
+        print(f"Error uploading avatar: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/regenerate_audio', methods=['POST'])
@@ -354,12 +572,26 @@ def regenerate_audio(pres_id, slide_num):
                 'error': 'No text available for this slide'
             }), 400
         
+        
+        # Get voice settings from request body (optional) - backward compatible
+        try:
+            data = request.get_json(silent=True) or {}
+        except:
+            data = {}
+        voice_id = data.get('voice_id')
+        clone_voice_path = data.get('clone_voice_path')
+        
         # Generate audio file path
         audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
         audio_url = audio_service.get_audio_url(pres_id, slide_num)
         
-        # Generate audio
-        success, message = audio_service.generate_audio(text_to_convert, audio_file_path)
+        # Generate audio with optional voice settings
+        success, message = audio_service.generate_audio(
+            text_to_convert, 
+            audio_file_path,
+            voice_id=voice_id,
+            clone_voice_path=clone_voice_path
+        )
         
         if success:
             # Update slide with audio URL
