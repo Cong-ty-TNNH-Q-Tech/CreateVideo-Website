@@ -69,8 +69,9 @@ langdetect>=1.0.9
 python-pptx>=0.6.21
 pypdf>=3.17.0
 pymupdf>=1.22.5
-comtypes>=1.2.0
-pywin32>=306
+# Windows-only dependencies (install manually on Windows)
+# comtypes>=1.2.0
+# pywin32>=306
 
 # -------------------- Utilities --------------------
 numpy>=1.23.0

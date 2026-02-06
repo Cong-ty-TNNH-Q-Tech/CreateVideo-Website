@@ -1,0 +1,5 @@
+# Windows-specific dependencies
+# Install these on Windows only: pip install -r requirements-windows.txt
+
+comtypes>=1.2.0
+pywin32>=306
