@@ -2,7 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2026-01-28
+## [Unreleased] - 2026-02-06
+
+### Cleanup & Maintenance
+- **Git Configuration**: Updated `.gitignore` to exclude all media files (audio, video, images) and their directories.
+- **Code Cleanup**: Removed unnecessary test files and markdown documentation to streamline the repository.
+    - Deleted entire `tests/` directory with test files
+    - Removed `test_moviepy.py`
+    - Removed installation docs: `QUICK_INSTALL.md`, `INSTALL_BUILD_TOOLS.md`, `FIX_VIENEU_INSTALL.md`
+    - Removed `docs/TROUBLESHOOTING.md`
+- **Media Files**: Removed tracked media files from Git history to reduce repository size.
+
+### Features & Enhancements (Since 2026-01-28)
+- **Presentation Video Export**: Added full presentation video export with PPT support and enhanced styling (PR #9).
+- **Audio System Improvements**: 
+    - Implemented audio progress bar and auto-merge functionality
+    - Refactored audio UX with centralized voice settings and preview feature
+    - Fixed audio merge errors in presentation controller (PR #8)
+- **Multi-Language TTS**: Implemented Step 3 with comprehensive text-to-speech system (PR #7).
+    - Integrated VieNeu-TTS for Vietnamese
+    - Added TTS/SadTalker test pages
+- **Script Generation**: 
+    - Integrated Gemini 2.5 Flash for script generation
+    - Auto-detect input language for script generation (PR #6)
+    - Fixed data persistence 404 errors and added bulk save (PR #5)
+- **Infrastructure**:
+    - Added complete Docker Compose configuration with GPU support
+    - Migrated to `google.genai` SDK with auto model download
+    - Complete README rewrite with comprehensive documentation
+
+## [Previous] - 2026-01-28
 
 ### Refactor
 - **MVC Architecture**: Migrated the entire application structure to the MVC (Model-View-Controller) pattern.
