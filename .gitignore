@@ -5,8 +5,35 @@ checkpoints/
 SadTalker/checkpoints/
 gfpgan/
 *.log
+
+# Folders chứa media files
 static/uploads/
 static/results/
+static/audio/
+static/videos/
+static/avatars/
+static/temp/
+
+# Ignore các file media theo extension
+*.mp3
+*.wav
+*.ogg
+*.flac
+*.aac
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.svg
+*.ico
+*.webp
+*.tiff
 
 # Environment variables
 .env
