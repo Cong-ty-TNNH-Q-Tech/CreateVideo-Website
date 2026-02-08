@@ -845,4 +845,385 @@ def export_presentation_video(pres_id):
             'error': f"Lỗi không mong đợi: {str(e)}"
         }), 500
 
+@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/generate_slide_video', methods=['POST'])
+def generate_slide_video(pres_id, slide_num):
+    """Generate video for a single slide (slide image + audio)"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+        
+        slide = current_app.presentation_model.get_slide(pres_id, slide_num)
+        if not slide:
+            return jsonify({'success': False, 'error': 'Slide not found'}), 404
+        
+        # Check if audio exists
+        audio_path = slide.get('audio_file_path')
+        if not audio_path or not os.path.exists(audio_path):
+            return jsonify({
+                'success': False,
+                'error': 'Audio not found. Please generate audio first.'
+            }), 400
+        
+        # Extract slide image
+        pres_file_path = presentation.get('file_path')
+        if not pres_file_path or not os.path.exists(pres_file_path):
+            return jsonify({
+                'success': False,
+                'error': 'Presentation file not found'
+            }), 400
+        
+        pres_upload_dir = os.path.dirname(pres_file_path)
+        slides_image_dir = os.path.join(pres_upload_dir, 'slides')
+        
+        # Extract slide images if not exists
+        slide_image_path = os.path.join(slides_image_dir, f'slide_{slide_num}.png')
+        if not os.path.exists(slide_image_path):
+            print(f"📄 Extracting slide images from: {pres_file_path}")
+            try:
+                PresentationReader.extract_slide_images(pres_file_path, slides_image_dir)
+            except Exception as e:
+                return jsonify({
+                    'success': False,
+                    'error': f'Failed to extract slide image: {str(e)}'
+                }), 500
+        
+        if not os.path.exists(slide_image_path):
+            return jsonify({
+                'success': False,
+                'error': f'Slide image not found: slide_{slide_num}.png'
+            }), 400
+        
+        # Create single-slide video
+        static_folder = current_app.static_folder
+        video_dir = os.path.join(static_folder, 'videos', pres_id, 'slides')
+        os.makedirs(video_dir, exist_ok=True)
+        
+        output_filename = f'slide_{slide_num}.mp4'
+        output_path = os.path.join(video_dir, output_filename)
+        
+        print(f"🎬 Generating video for slide {slide_num}...")
+        print(f"  Image: {slide_image_path}")
+        print(f"  Audio: {audio_path}")
+        print(f"  Output: {output_path}")
+        
+        # Use PresentationVideoExporter for single slide
+        exporter = PresentationVideoExporter()
+        slides_data = [{
+            'image_path': slide_image_path,
+            'audio_path': audio_path
+        }]
+        
+        result = exporter.create_presentation_video(slides_data, output_path)
+        
+        if result['success']:
+            video_url = f'/static/videos/{pres_id}/slides/{output_filename}'
+            
+            # Update slide with video info
+            current_app.presentation_model.update_slide(pres_id, slide_num, {
+                'slide_video_url': video_url,
+                'slide_video_path': output_path
+            })
+            
+            print(f"✅ Video for slide {slide_num} created: {video_url}")
+            
+            return jsonify({
+                'success': True,
+                'video_url': video_url,
+                'message': f'Video for slide {slide_num} created successfully!'
+            })
+        else:
+            error_msg = result.get('error', 'Unknown error')
+            print(f"❌ Video generation failed: {error_msg}")
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            }), 500
+            
+    except Exception as e:
+        print(f"❌ Error generating slide video: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f'Lỗi không mong đợi: {str(e)}'
+        }), 500
 
+@presentation_bp.route('/presentation/<pres_id>/merge_slide_videos', methods=['POST'])
+def merge_slide_videos(pres_id):
+    """Merge all individual slide videos into final presentation"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+        
+        slides = presentation.get('slides', [])
+        
+        # Collect slide video paths in order
+        video_paths = []
+        missing_slides = []
+        
+        for slide in slides:
+            slide_num = slide.get('slide_num')
+            video_path = slide.get('slide_video_path')
+            
+            if video_path and os.path.exists(video_path):
+                video_paths.append(video_path)
+            else:
+                missing_slides.append(slide_num)
+        
+        if not video_paths:
+            return jsonify({
+                'success': False,
+                'error': 'No slide videos found. Please generate videos for slides first.'
+            }), 400
+        
+        print(f"🎬 Merging {len(video_paths)} slide videos...")
+        if missing_slides:
+            print(f"⚠️ Skipping {len(missing_slides)} slides without videos: {missing_slides}")
+        
+        # Output path
+        static_folder = current_app.static_folder
+        video_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(video_dir, exist_ok=True)
+        
+        output_filename = f'final_presentation_{uuid.uuid4().hex}.mp4'
+        output_path = os.path.join(video_dir, output_filename)
+        
+        # Merge videos using moviepy
+        from moviepy.editor import VideoFileClip, concatenate_videoclips
+        
+        clips = []
+        try:
+            for path in video_paths:
+                clip = VideoFileClip(path)
+                clips.append(clip)
+            
+            final_video = concatenate_videoclips(clips, method="compose")
+            
+            print(f"📹 Writing merged video to: {output_path}")
+            final_video.write_videofile(
+                output_path,
+                codec='libx264',
+                audio_codec='aac',
+                preset='ultrafast',
+                threads=4,
+                logger=None
+            )
+            
+            # Clean up
+            final_video.close()
+            for clip in clips:
+                clip.close()
+            
+            video_url = f'/static/videos/{pres_id}/{output_filename}'
+            
+            # Update presentation
+            current_app.presentation_model.update(pres_id, {
+                'final_video_url': video_url,
+                'final_video_path': output_path
+            })
+            
+            print(f"✅ Merged video created: {video_url}")
+            
+            message = f'Merged {len(video_paths)} slide videos successfully!'
+            if missing_slides:
+                message += f' (Skipped {len(missing_slides)} slides without videos)'
+            
+            return jsonify({
+                'success': True,
+                'video_url': video_url,
+                'message': message,
+                'slides_merged': len(video_paths),
+                'slides_skipped': len(missing_slides)
+            })
+            
+        except Exception as e:
+            # Clean up clips on error
+            for clip in clips:
+                try:
+                    clip.close()
+                except:
+                    pass
+            raise e
+        
+    except Exception as e:
+        print(f"❌ Error merging videos: {str(e)}")
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'error': f'Lỗi không mong đợi: {str(e)}'
+        }), 500
+
+
+
+@presentation_bp.route('/presentation/<pres_id>/generate_final_video_v2', methods=['POST'])
+def generate_final_video_v2(pres_id):
+    """
+    Unified endpoint for Step 4: Generate Final Video
+    Can optionally include Talking Head overlay
+    """
+    try:
+        data = request.form
+        use_talking_head = data.get('use_talking_head') == 'true'
+        
+        print(f"🎬 Generating Final Video V2 for {pres_id}")
+        print(f"   Use Talking Head: {use_talking_head}")
+        
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        # 1. Merge Slide Videos (Base Video)
+        # We reuse the logic from merge_slide_videos but internal
+        # First check if slides have videos
+        slides = presentation.get('slides', [])
+        video_paths = []
+        for slide in slides:
+            v_path = slide.get('slide_video_path')
+            if v_path and os.path.exists(v_path):
+                video_paths.append(v_path)
+        
+        if not video_paths:
+            return jsonify({
+                'success': False,
+                'error': 'Chưa có video slide nào. Vui lòng tạo video cho từng slide ở Bước 3 trước.'
+            }), 400
+
+        # Create base video
+        static_folder = current_app.static_folder
+        video_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(video_dir, exist_ok=True)
+        
+        base_filename = f'base_presentation_{uuid.uuid4().hex}.mp4'
+        base_output_path = os.path.join(video_dir, base_filename)
+        
+        from moviepy.editor import VideoFileClip, concatenate_videoclips
+        clips = []
+        try:
+            for path in video_paths:
+                clips.append(VideoFileClip(path))
+            
+            final_video = concatenate_videoclips(clips, method="compose")
+            final_video.write_videofile(
+                base_output_path,
+                codec='libx264',
+                audio_codec='aac',
+                preset='ultrafast',
+                threads=4,
+                logger=None
+            )
+            final_video.close()
+            for clip in clips: clip.close()
+            
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'success': False, 'error': f'Lỗi khi ghép video slides: {str(e)}'}), 500
+
+        # If NO Talking Head, we are done
+        if not use_talking_head:
+            video_url = f'/static/videos/{pres_id}/{base_filename}'
+            current_app.presentation_model.update(pres_id, {
+                'final_video_url': video_url,
+                'final_video_path': base_output_path
+            })
+            return jsonify({
+                'success': True,
+                'video_url': video_url,
+                'message': 'Đã tạo video thành công (Không có MC ảo)!'
+            })
+
+        # 2. Process Talking Head (If Enabled)
+        # Check avatar
+        if 'avatar' not in request.files:
+             return jsonify({'success': False, 'error': 'Vui lòng chọn ảnh Avatar cho MC ảo'}), 400
+             
+        avatar_file = request.files['avatar']
+        if avatar_file.filename == '':
+             return jsonify({'success': False, 'error': 'Chưa chọn file Avatar'}), 400
+             
+        # Save avatar
+        avatar_dir = os.path.join(static_folder, 'avatars', pres_id)
+        os.makedirs(avatar_dir, exist_ok=True)
+        avatar_filename = secure_filename(avatar_file.filename)
+        avatar_path = os.path.join(avatar_dir, avatar_filename)
+        avatar_file.save(avatar_path)
+        
+        # Check full audio
+        full_audio_path = presentation.get('full_audio_path')
+        if not full_audio_path or not os.path.exists(full_audio_path):
+             # Try to generate full audio on the fly if missing? 
+             # Or ask user to go back to step 3?
+             # For now, require step 3 full audio.
+             # Actually, we can just concatenate slide audios here if needed.
+             # But let's assume user did "Generate Audio" in Step 3 which should usually persist.
+             # Wait, "Generate Audio" in Step 3 generates per slide. "Merge Audio" is typically implicit or separate.
+             # Let's check if we can merge strictly from slide audios here to be safe.
+             
+             # Attempt to merge audio on the fly
+             audio_service = get_audio_service()
+             audio_paths = []
+             for i, slide in enumerate(slides):
+                 a_path = slide.get('audio_file_path')
+                 if a_path and os.path.exists(a_path):
+                     audio_paths.append(a_path)
+             
+             if not audio_paths:
+                 return jsonify({'success': False, 'error': 'Chưa có audio. Vui lòng tạo audio ở Bước 3.'}), 400
+                 
+             full_audio_filename = f"full_audio_temp_{uuid.uuid4().hex}.mp3"
+             full_audio_path = os.path.join(static_folder, 'audio', pres_id, full_audio_filename)
+             os.makedirs(os.path.dirname(full_audio_path), exist_ok=True)
+             
+             if not audio_service.merge_audio_files(audio_paths, full_audio_path):
+                 return jsonify({'success': False, 'error': 'Lỗi khi gộp file audio.'}), 500
+
+        # Generate Talking Head Video
+        print("🤖 Generating Talking Head Video...")
+        app_root = current_app.root_path
+        video_service = VideoGenerationService(app_root)
+        
+        th_result_dir = os.path.join(static_folder, 'videos', pres_id, 'talking_head_temp')
+        os.makedirs(th_result_dir, exist_ok=True)
+        
+        th_result = video_service.generate_video(
+            source_image_path=avatar_path,
+            driven_audio_path=full_audio_path,
+            result_dir=th_result_dir,
+            use_cpu=False
+        )
+        
+        if not th_result['success']:
+            return jsonify({'success': False, 'error': th_result.get('error', 'Lỗi tạo MC ảo')}), 500
+            
+        talking_head_video_path = th_result['video_path']
+        
+        # 3. Overlay Talking Head
+        print("✨ Overlaying Talking Head...")
+        final_filename = f'final_with_avatar_{uuid.uuid4().hex}.mp4'
+        final_output_path = os.path.join(video_dir, final_filename)
+        
+        exporter = PresentationVideoExporter()
+        overlay_result = exporter.overlay_talking_head(
+            base_output_path, 
+            talking_head_video_path, 
+            final_output_path
+        )
+        
+        if overlay_result['success']:
+            video_url = f'/static/videos/{pres_id}/{final_filename}'
+            current_app.presentation_model.update(pres_id, {
+                'final_video_url': video_url,
+                'final_video_path': final_output_path
+            })
+            return jsonify({
+                'success': True, 
+                'video_url': video_url,
+                'message': 'Đã tạo video thành công (Kèm MC ảo)!'
+            })
+        else:
+             return jsonify({'success': False, 'error': f"Lỗi khi ghép MC ảo: {overlay_result.get('error')}"}), 500
+
+    except Exception as e:
+        print(f"❌ Error in generate_final_video_v2: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': f"Lỗi hệ thống: {str(e)}"}), 500
