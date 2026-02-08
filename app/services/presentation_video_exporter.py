@@ -1,6 +1,8 @@
 import os
 import shutil
 import traceback
+import uuid
+import time
 from PIL import Image, ImageFilter, ImageOps
 from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
 from moviepy.video.fx.all import fadein, fadeout
@@ -145,6 +147,9 @@ class PresentationVideoExporter:
             print(f"Concatenating {len(clips)} slides...")
             final_video = concatenate_videoclips(clips, method="compose")
             
+            # Generate unique temp audio filename to avoid file locking issues on Windows
+            temp_audio_filename = os.path.join(temp_dir, f'temp_audio_{uuid.uuid4().hex}.m4a')
+            
             # Write video
             print(f"Writing video to {output_path}...")
             final_video.write_videofile(
@@ -152,12 +157,20 @@ class PresentationVideoExporter:
                 fps=fps,
                 codec='libx264',
                 audio_codec='aac',
-                temp_audiofile='temp-audio.m4a',
+                temp_audiofile=temp_audio_filename,
                 remove_temp=True,
                 preset='ultrafast',  # Much faster encoding
                 threads=4,           # Use multi-threading
                 logger=None  # Suppress moviepy logs
             )
+            
+            # Clean up temp audio file if still exists
+            if os.path.exists(temp_audio_filename):
+                try:
+                    time.sleep(0.5)  # Small delay to ensure file is released
+                    os.remove(temp_audio_filename)
+                except:
+                    pass  # Ignore cleanup errors
             
             # Clean up - close all clips AFTER video is written
             final_video.close()
