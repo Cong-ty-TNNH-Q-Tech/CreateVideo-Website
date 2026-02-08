@@ -100,6 +100,20 @@
             align-items: center;
             z-index: 1000;
         }
+        
+        /* Video player visibility classes */
+        .video-player-hidden {
+            display: none !important;
+        }
+        
+        .video-player-visible {
+            display: block !important;
+            min-height: 200px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #28a745;
+        }
     </style>
 </head>
 
@@ -178,10 +192,10 @@
             <div class="alert alert-info">
                 <strong>💡 Hướng dẫn:</strong>
                 <ul class="mb-0">
-                    <li>Click "Generate Text" để tạo text thuyết trình tự động từ nội dung slide</li>
-                    <li>Bạn có thể chỉnh sửa text sau khi generate</li>
-                    <li>Click "Save" để lưu text đã chỉnh sửa</li>
-                    <li>Click "Generate Audio" để tạo file audio từ kịch bản thuyết trình</li>
+                    <li>Click "Generate Script" để tạo kịch bản thuyết trình tự động từ nội dung slide</li>
+                    <li>Bạn có thể chỉnh sửa kịch bản sau khi generate</li>
+                    <li>Click "Save" để lưu kịch bản đã chỉnh sửa</li>
+                    <li>Sau khi hoàn tất, click "Save All Scripts & Continue" để chuyển sang bước tiếp theo</li>
                 </ul>
             </div>
 
@@ -191,13 +205,39 @@
                 <button class="btn btn-warning btn-lg me-2" onclick="saveAllScripts()">
                     💾 Save All Scripts
                 </button>
-                <button class="btn btn-success btn-lg me-2" onclick="openVoiceSettings()">
-                    🎵 Generate Audio
+                <button class="btn btn-success btn-lg me-2" onclick="saveAllScriptsAndContinue()" id="continueToAudioBtn">
+                    💾 Save All Scripts & Continue →
                 </button>
-                <button class="btn btn-primary btn-lg" onclick="goToStep4()" id="nextStepBtn" style="display:none;">
-                    Tiếp tục → Bước 4: Upload Avatar
+                <button class="btn btn-outline-secondary btn-lg" onclick="goToStep3()">
+                    ⏭️ Skip to Audio/Video
                 </button>
             </div>
+        </div>
+
+        <!-- Step 3: Generate Audio & Video (NEW) -->
+        <div id="step3Section" class="step-card" style="display: none;">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <h3 class="mb-0">Generate Audio & Video</h3>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Hướng dẫn:</strong>
+                <ul class="mb-0">
+                    <li>Click "Generate Audio" để tạo audio cho tất cả slides</li>
+                    <li>Sau khi có audio, click "Generate Video" cho từng slide để xem preview</li>
+                    <li>Hoàn tất sau đó chuyển sang bước cuối để merge hoặc tạo talking head video</li>
+                </ul>
+            </div>
+
+            <div class="text-center mb-4">
+                <button class="btn btn-success btn-lg" onclick="openVoiceSettings()">
+                    🎵 Generate Audio for All Slides
+                </button>
+            </div>
+
+            <!-- Slides will be loaded here dynamically -->
+            <div id="slidesAudioVideoContainer"></div>
 
             <!-- Persistent Full Audio Player -->
             <div class="mt-4" id="fullPresentationAudioContainer" style="display:none;">
@@ -211,11 +251,16 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Step 4: Upload Avatar -->
-    <div id="step4Section" class="step-card" style="display: none;">
+            <div class="text-center mt-4">
+                <button class="btn btn-primary btn-lg" onclick="goToStep4()" id="continueToFinalVideoBtn" style="display:none;">
+                    Tiếp tục → Bước 4: Final Video Generation
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Upload Avatar (HIDDEN - Avatar upload moved to Talking Head option) -->
+    <div id="step4Section" class="step-card" style="display: none !important;">
         <div class="step-header">
             <div class="step-number">4</div>
             <h3 class="mb-0">Upload Avatar</h3>
@@ -259,10 +304,10 @@
         </div>
     </div>
 
-    <!-- Step 5: Generate Video - Choose Method -->
+    <!-- Step 4: Generate Video - Choose Method -->
     <div id="step5Section" class="step-card" style="display: none;">
         <div class="step-header">
-            <div class="step-number">5</div>
+            <div class="step-number">4</div>
             <h3 class="mb-0">Generate Final Video</h3>
         </div>
 
@@ -275,23 +320,23 @@
             <!-- Option A: Presentation Video (Slides + Audio) -->
             <div class="col-md-6 mb-4">
                 <div class="card h-100 border-primary" style="cursor: pointer;"
-                    onclick="document.getElementById('presentationVideoBtn').click()">
+                    onclick="document.getElementById('mergeVideosBtn').click()">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <i class="fas fa-file-powerpoint" style="font-size: 3rem; color: #0d6efd;"></i>
                         </div>
-                        <h4>📊 Presentation Video</h4>
-                        <p class="text-muted">Slides + Audio Sync</p>
+                        <h4>📊 Merge Slide Videos</h4>
+                        <p class="text-muted">Combine All Slide Videos</p>
                         <ul class="text-left">
-                            <li>Tạo video từ slides có sẵn</li>
-                            <li>Audio đồng bộ với slides</li>
-                            <li>Mỗi slide hiển thị: thời lượng audio + 5s</li>
-                            <li>Có hiệu ứng fade transition</li>
-                            <li><strong>Không cần avatar</strong></li>
+                            <li>Merge tất cả slide videos đã tạo</li>
+                            <li>Tạo video hoàn chỉnh từ các slide</li>
+                            <li>Giữ nguyên chất lượng và transitions</li>
+                            <li>Tự động sắp xếp theo thứ tự slides</li>
+                            <li><strong>Cần tạo video cho slides trước</strong></li>
                         </ul>
-                        <button class="btn btn-primary btn-lg mt-3" onclick="generatePresentationVideo()"
-                            id="presentationVideoBtn">
-                            🎥 Create Presentation Video
+                        <button class="btn btn-primary btn-lg mt-3" onclick="mergeAllSlideVideos()"
+                            id="mergeVideosBtn">
+                            🎬 Merge All Slide Videos
                         </button>
                     </div>
                 </div>
@@ -299,8 +344,7 @@
 
             <!-- Option B: Talking Head Video (SadTalker) -->
             <div class="col-md-6 mb-4">
-                <div class="card h-100 border-success" style="cursor: pointer;"
-                    onclick="document.getElementById('talkingHeadVideoBtn').click()">
+                <div class="card h-100 border-success">
                     <div class="card-body text-center">
                         <div class="mb-3">
                             <i class="fas fa-user-tie" style="font-size: 3rem; color: #198754;"></i>
@@ -312,11 +356,26 @@
                             <li>AI đồng bộ môi và biểu cảm</li>
                             <li>Độ phân giải 512px</li>
                             <li>Quá trình: 2-5 phút</li>
-                            <li><strong>Cần upload avatar (Step 4)</strong></li>
+                            <li><strong>Cần upload avatar trước</strong></li>
                         </ul>
-                        <button class="btn btn-success btn-lg mt-3" onclick="generateTalkingHeadVideo()"
+                        
+                        <!-- Avatar Upload Section -->
+                        <div class="mt-3 mb-3 text-start">
+                            <label for="talkingHeadAvatarInput" class="form-label fw-bold">Upload Avatar (JPG/PNG):</label>
+                            <div id="talkingHeadAvatarPreviewContainer" class="mb-2"
+                                style="min-height: 150px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
+                                <p class="text-muted mb-0" id="talkingHeadAvatarPlaceholder">No avatar selected</p>
+                                <img id="talkingHeadAvatarPreview" src="" class="img-fluid rounded shadow-sm"
+                                    style="max-height: 200px; display: none;">
+                            </div>
+                            <input type="file" class="form-control" id="talkingHeadAvatarInput"
+                                accept="image/png, image/jpeg, image/jpg">
+                            <div id="talkingHeadAvatarStatus" class="mt-2 small"></div>
+                        </div>
+                        
+                        <button class="btn btn-success btn-lg mt-3 w-100" onclick="uploadAvatarAndGenerateTalkingHead()"
                             id="talkingHeadVideoBtn">
-                            🤖 Create Talking Head Video
+                            🤖 Upload Avatar & Create Video
                         </button>
                     </div>
                 </div>
@@ -463,28 +522,6 @@
                             role="progressbar" style="width: 0%"></div>
                     </div>
                     <p id="progressStatus" class="text-muted mb-0">Starting...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Audio Result Modal -->
-    <div class="modal fade" id="audioResultModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">🎉 Audio Generation Complete!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <p class="lead">Success! Here is your full presentation audio preview:</p>
-                    <div class="p-4 bg-light rounded mb-3">
-                        <audio id="fullAudioPlayer" controls class="w-100"></audio>
-                    </div>
-                    <div class="d-flex justify-content-center gap-2">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button class="btn btn-primary" onclick="goToStep4AndHideModal()">Continue to Step 4</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -680,24 +717,9 @@
                             >${slide.edited_text || slide.generated_text || ''}</textarea>
                         </div>
                         
-                        <!-- Audio Section -->
-                        <div class="mb-3" id="audioSection${slide.slide_num}">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <label class="form-label mb-0">🎵 Audio Result:</label>
-                                <!-- Buttons removed as requested -->
-                            </div>
-                            
-                            <div id="audioPlayer${slide.slide_num}" style="display: none;">
-                                <audio controls class="w-100" id="audio${slide.slide_num}">
-                                    <source src="" type="audio/wav">
-                                    Trình duyệt không hỗ trợ audio.
-                                </audio>
-                            </div>
-                            
-                            <div id="audioStatus${slide.slide_num}" class="text-muted small mt-2">
-                                ${slide.audio_url ? '<span class="text-success">✅ Audio đã tạo</span>' : '<span class="text-info">ℹ️ Chưa tạo audio cho slide này</span>'}
-                            </div>
-                        </div>
+
+                        
+
                         
                         <div id="textStatus${slide.slide_num}" class="text-muted small"></div>
                     </div>
@@ -705,13 +727,9 @@
             `;
                 slidesContainer.appendChild(slideDiv);
 
-                // Set up audio player if audio exists
-                if (slide.audio_url) {
-                    const audioPlayer = document.getElementById(`audioPlayer${slide.slide_num}`);
-                    const audio = document.getElementById(`audio${slide.slide_num}`);
-                    audio.src = slide.audio_url;
-                    audioPlayer.style.display = 'block';
-                }
+
+                
+
             });
         }
 
@@ -981,16 +999,16 @@
         }
 
         function showStep4Button() {
-            // Show the next step button
-            const nextStepBtn = document.getElementById('nextStepBtn');
-            if (nextStepBtn) {
-                nextStepBtn.style.display = 'inline-block';
+            // Show the continue button in Step 3
+            const continueBtn = document.getElementById('continueToFinalVideoBtn');
+            if (continueBtn) {
+                continueBtn.style.display = 'inline-block';
             }
         }
 
         function goToStep4() {
-            // TODO: Implement Step 4 - Avatar Upload
-            alert('Bước 4 (Upload Avatar) sẽ được implement tiếp theo. Presentation ID: ' + currentPresentationId);
+            // Step 4 removed - go directly to Step 5 (video generation)
+            goToStep5();
         }
 
         // ============== VOICE SETTINGS FUNCTIONS ==============
@@ -1116,6 +1134,27 @@
             }
         }
 
+        async function checkAndEnableContinueButton() {
+            if (!currentPresentationId) return;
+            
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const slides = data.presentation.slides || [];
+                    const hasAudioVideo = slides.some(s => s.audio_url && s.slide_video_url);
+                    
+                    const continueBtn = document.getElementById('continueToFinalVideoBtn');
+                    if (continueBtn && hasAudioVideo) {
+                        continueBtn.style.display = 'inline-block';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking continue button:', error);
+            }
+        }
+
         // Add event listeners for voice type radio buttons
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('input[name="voiceType"]').forEach(radio => {
@@ -1188,16 +1227,27 @@
                 if (data.success) {
                     const audioPlayer = document.getElementById(`audioPlayer${slideNum}`);
                     const audio = document.getElementById(`audio${slideNum}`);
-
                     if (audioPlayer && audio) {
                         audio.src = data.audio_url + '?t=' + Date.now();
                         audioPlayer.style.display = 'block';
                     }
 
-                    if (audioStatus) audioStatus.innerHTML = '<span class="text-success">✅ Done</span>';
+                    if (audioStatus) {
+                        audioStatus.innerHTML = '<span class="text-success">✅ Done</span>';
+                    }
+                    
+                    // Enable video generation button in Step 3
+                    const videoBtn = document.getElementById(`genVideoBtn${slideNum}`);
+                    if (videoBtn) {
+                        videoBtn.disabled = false;
+                        videoBtn.removeAttribute('title');
+                    }
+
                     return true;
                 } else {
-                    if (audioStatus) audioStatus.innerHTML = `<span class="text-danger">❌ Error: ${data.error}</span>`;
+                    if (audioStatus) {
+                        audioStatus.innerHTML = `<span class="text-danger">❌ ${data.error || 'Failed'}</span>`;
+                    }
                     return false;
                 }
             } catch (error) {
@@ -1262,28 +1312,27 @@
                 progressModal.hide();
 
                 if (mergeData.success) {
-                    // Show Result Modal
-                    const resultModal = new bootstrap.Modal(document.getElementById('audioResultModal'));
-                    const fullPlayer = document.getElementById('fullAudioPlayer');
-                    fullPlayer.src = mergeData.audio_url + '?t=' + Date.now();
-                    resultModal.show();
-                    // Auto play
-                    fullPlayer.play();
-
-                    // Update persistent player
+                    // Update persistent player in Step 3
                     const persistentContainer = document.getElementById('fullPresentationAudioContainer');
                     const persistentPlayer = document.getElementById('persistentFullAudioPlayer');
                     if (persistentContainer && persistentPlayer) {
                         persistentPlayer.src = mergeData.audio_url + '?t=' + Date.now();
                         persistentContainer.style.display = 'block';
                     }
+                    
+                    // Reload Step 3 to show audio players and enable video buttons
+                    const step3 = document.getElementById('step3Section');
+                    if (step3 && step3.style.display === 'block') {
+                        await loadSlidesForAudioVideo();
+                    }
+                    
+                    // Show success message
+                    alert('✅ Audio generation complete! You can now generate videos for each slide.');
                 } else {
                     console.error('Audio merge failed:', mergeData.error);
-                    // alert(`Generated ${successCount}/${totalSlides} slides, but failed to merge: ${mergeData.error}`);
-                    // Don't show critical alert, just warn or show small notification
                 }
 
-                // Show Next Step button on main page regarless of merge success
+                // Show Next Step button on main page regardless of merge success
                 if (successCount > 0) {
                     showStep4Button();
                 }
@@ -1295,26 +1344,17 @@
             }
         }
 
-        function goToStep4AndHideModal() {
-            const modalElement = document.getElementById('audioResultModal');
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            modal.hide();
-            goToStep4();
-        }
-
         // --- Step 4 Logic ---
 
         function showStep4Button() {
-            const btn = document.getElementById('nextStepBtn');
-            if (btn) btn.style.display = 'inline-block';
+            // Show the continue button in Step 3
+            const continueBtn = document.getElementById('continueToFinalVideoBtn');
+            if (continueBtn) continueBtn.style.display = 'inline-block';
         }
 
         function goToStep4() {
-            const step4 = document.getElementById('step4Section');
-            if (step4) {
-                step4.style.display = 'block';
-                step4.scrollIntoView({ behavior: 'smooth' });
-            }
+            // Step 4 removed - go directly to Step 5 (video generation)
+            goToStep5();
         }
 
         async function uploadAvatar() {
@@ -1368,11 +1408,119 @@
             }
         });
 
+        // Avatar Preview for Talking Head
+        document.getElementById('talkingHeadAvatarInput').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.getElementById('talkingHeadAvatarPreview');
+                    const placeholder = document.getElementById('talkingHeadAvatarPlaceholder');
+                    img.src = e.target.result;
+                    img.style.display = 'inline-block';
+                    placeholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
         function goToStep5() {
             const step5 = document.getElementById('step5Section');
             if (step5) {
                 step5.style.display = 'block';
                 step5.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Upload Avatar and Generate Talking Head Video (Combined)
+        async function uploadAvatarAndGenerateTalkingHead() {
+            const fileInput = document.getElementById('talkingHeadAvatarInput');
+            if (!fileInput.files || !fileInput.files[0]) {
+                alert('Vui lòng chọn ảnh avatar trước!');
+                return;
+            }
+
+            if (!currentPresentationId) {
+                alert('Presentation ID missing');
+                return;
+            }
+
+            const statusDiv = document.getElementById('talkingHeadAvatarStatus');
+            const videoStatus = document.getElementById('videoStatus');
+            const videoStatusText = document.getElementById('videoStatusText');
+            const videoResultContainer = document.getElementById('videoResultContainer');
+            const btn = document.getElementById('talkingHeadVideoBtn');
+
+            // Step 1: Upload Avatar
+            statusDiv.innerHTML = '<span class="text-info">⏳ Uploading avatar...</span>';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('avatar', fileInput.files[0]);
+
+            try {
+                const uploadResponse = await fetch(`/api/presentation/${currentPresentationId}/upload_avatar`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadResponse.json();
+
+                if (!uploadData.success) {
+                    statusDiv.innerHTML = `<span class="text-danger">❌ Upload failed: ${uploadData.error}</span>`;
+                    btn.disabled = false;
+                    return;
+                }
+
+                statusDiv.innerHTML = '<span class="text-success">✅ Avatar uploaded!</span>';
+
+                // Step 2: Generate Talking Head Video
+                videoResultContainer.style.display = 'none';
+                videoStatus.style.display = 'block';
+                videoStatusText.textContent = 'Đang khởi tạo SadTalker... Quá trình có thể mất 2-5 phút.';
+
+                const videoResponse = await fetch(`/api/presentation/${currentPresentationId}/generate_video`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const videoData = await videoResponse.json();
+
+                if (videoData.success) {
+                    // Hide loading
+                    videoStatus.style.display = 'none';
+
+                    // Show video result
+                    const videoPlayer = document.getElementById('finalVideo');
+                    const downloadBtn = document.getElementById('downloadVideoBtn');
+
+                    videoPlayer.src = videoData.video_url + '?t=' + Date.now();
+                    downloadBtn.href = videoData.video_url;
+                    downloadBtn.download = `talking_head_${currentPresentationId}.mp4`;
+
+                    videoResultContainer.style.display = 'block';
+
+                    // Auto play
+                    videoPlayer.play().catch(err => {
+                        console.log('Auto-play prevented:', err);
+                    });
+
+                    // Success message
+                    alert('✅ ' + videoData.message);
+                    statusDiv.innerHTML = '<span class="text-success">✅ Video created successfully!</span>';
+                } else {
+                    videoStatus.style.display = 'none';
+                    alert('❌ Lỗi: ' + videoData.error);
+                    statusDiv.innerHTML = `<span class="text-danger">❌ Video generation failed: ${videoData.error}</span>`;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                videoStatus.style.display = 'none';
+                alert('❌ Lỗi kết nối: ' + error.message);
+                statusDiv.innerHTML = `<span class="text-danger">❌ Error: ${error.message}</span>`;
+                btn.disabled = false;
             }
         }
 
@@ -1503,6 +1651,362 @@
                 talkingHeadBtn.disabled = false;
             }
         }
+
+        // Per-Slide Video Generation
+        async function generateSlideVideo(slideNum) {
+            if (!currentPresentationId) return;
+            
+            const btn = document.getElementById(`genVideoBtn${slideNum}`);
+            const statusDiv = document.getElementById(`videoStatus${slideNum}`);
+            const videoPlayer = document.getElementById(`videoPlayer${slideNum}`);
+            const video = document.getElementById(`video${slideNum}`);
+            
+            // Save original button content and show loading spinner
+            const originalBtnContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Đang tạo...';
+            statusDiv.innerHTML = '<span class="text-info"><span class="spinner-border spinner-border-sm me-1"></span> Đang tạo video cho slide ' + slideNum + '... Vui lòng đợi.</span>';
+            
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/slide/${slideNum}/generate_slide_video`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Video generated successfully:', data.video_url);
+                    console.log('Video element:', video);
+                    console.log('VideoPlayer container before:', videoPlayer.className);
+                    
+                    // Set video source and force load
+                    video.src = data.video_url + '?t=' + Date.now();
+                    video.load(); // Force reload the video element
+                    
+                    // Show video player container using CSS class
+                    videoPlayer.classList.remove('video-player-hidden');
+                    videoPlayer.classList.add('video-player-visible');
+                    
+                    console.log('VideoPlayer container after:', videoPlayer.className);
+                    
+                    // Update status and button
+                    statusDiv.innerHTML = '<span class="text-success">✅ Video đã tạo</span>';
+                    btn.innerHTML = '✅ Hoàn thành';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    
+                    console.log('Video src set to:', video.src);
+                    
+                    // Wait for video to be ready before playing
+                    video.onloadeddata = function() {
+                        console.log('Video loaded and ready to play');
+                        video.play().catch(err => {
+                            console.log('Auto-play prevented:', err);
+                        });
+                    };
+                    
+                    // Check if all slides have video to show continue button
+                    checkAllSlidesHaveVideo();
+                } else {
+                    statusDiv.innerHTML = `<span class="text-danger">❌ ${data.error}</span>`;
+                    btn.innerHTML = originalBtnContent;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerHTML = `<span class="text-danger">❌ ${error.message}</span>`;
+                btn.innerHTML = originalBtnContent;
+                btn.disabled = false;
+            }
+        }
+        
+        // Helper function to check if all slides have video
+        function checkAllSlidesHaveVideo() {
+            // This will be used to enable the continue button when all videos are ready
+            const allVideoStatuses = document.querySelectorAll('[id^="videoStatus"]');
+            let allHaveVideo = true;
+            allVideoStatuses.forEach(status => {
+                if (!status.innerHTML.includes('✅')) {
+                    allHaveVideo = false;
+                }
+            });
+            
+            const continueBtn = document.getElementById('continueToFinalVideoBtn');
+            if (continueBtn && allHaveVideo) {
+                continueBtn.style.display = 'inline-block';
+            }
+        }
+
+        // Merge All Slide Videos
+        async function mergeAllSlideVideos() {
+            if (!currentPresentationId) {
+                alert('Presentation ID missing');
+                return;
+            }
+            
+            const statusDiv = document.getElementById('videoStatus');
+            const statusText = document.getElementById('videoStatusText');
+            const resultContainer = document.getElementById('videoResultContainer');
+            const mergeBtn = document.getElementById('mergeVideosBtn');
+            
+            // Hide previous results
+            resultContainer.style.display = 'none';
+            
+            // Show loading
+            if (mergeBtn) mergeBtn.disabled = true;
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'alert alert-info text-center';
+            statusText.textContent = '🎬 Đang merge videos... Vui lòng đợi.';
+            
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}/merge_slide_videos`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.style.display = 'none';
+                    resultContainer.style.display = 'block';
+                    
+                    const videoElement = document.getElementById('finalVideo');
+                    const downloadBtn = document.getElementById('downloadVideoBtn');
+                    
+                    videoElement.src = data.video_url + '?t=' + Date.now();
+                    downloadBtn.href = data.video_url;
+                    downloadBtn.download = `final_presentation_${currentPresentationId}.mp4`;
+                    
+                    // Auto play
+                    videoElement.play().catch(err => {
+                        console.log('Auto-play prevented:', err);
+                    });
+                    
+                    alert('✅ ' + data.message);
+                } else {
+                    statusDiv.className = 'alert alert-danger text-center';
+                    statusText.textContent = '❌ Lỗi: ' + data.error;
+                    if (mergeBtn) mergeBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.className = 'alert alert-danger text-center';
+                statusText.textContent = '❌ Lỗi kết nối: ' + error.message;
+                if (mergeBtn) mergeBtn.disabled = false;
+            }
+        }
+
+        // ============== STEP NAVIGATION FUNCTIONS ==============
+
+        async function saveAllScriptsAndContinue() {
+            if (!currentPresentationId) {
+                alert('No presentation loaded');
+                return;
+            }
+
+            // Get all script textareas
+            const textareas = document.querySelectorAll('.script-textarea');
+            
+            // If no scripts generated yet, just go to Step 3
+            if (textareas.length === 0) {
+                const confirmSkip = confirm('Bạn chưa generate script nào. Bạn có muốn tiếp tục sang bước tạo audio/video không?');
+                if (confirmSkip) {
+                    goToStep3();
+                }
+                return;
+            }
+
+            let saveCount = 0;
+            let failCount = 0;
+
+            // Show progress
+            const continueBtn = document.getElementById('continueToAudioBtn');
+            if (continueBtn) continueBtn.disabled = true;
+
+            // Save all scripts
+            for (let textarea of textareas) {
+                const slideNum = parseInt(textarea.getAttribute('data-slide-num'));
+                const success = await saveText(slideNum);
+                if (success) {
+                    saveCount++;
+                } else {
+                    failCount++;
+                }
+            }
+
+            // Show result
+            if (failCount > 0) {
+                alert(`Saved ${saveCount} scripts, ${failCount} failed. Please check and try again.`);
+                if (continueBtn) continueBtn.disabled = false;
+            } else {
+                alert(`✅ Successfully saved ${saveCount} scripts!`);
+                // Navigate to Step 3
+                goToStep3();
+            }
+        }
+
+        function goToStep3() {
+            // Load slides for audio/video generation
+            loadSlidesForAudioVideo();
+
+            // Show Step 3
+            const step3 = document.getElementById('step3Section');
+            if (step3) {
+                step3.style.display = 'block';
+                step3.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        async function loadSlidesForAudioVideo() {
+            if (!currentPresentationId) return;
+
+            try {
+                const response = await fetch(`/api/presentation/${currentPresentationId}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    console.error('Failed to load presentation');
+                    return;
+                }
+
+                const presentation = data.presentation;
+                const slides = presentation.slides || [];
+                const container = document.getElementById('slidesAudioVideoContainer');
+                container.innerHTML = '';
+
+                slides.forEach(slide => {
+                    const slideDiv = document.createElement('div');
+                    slideDiv.className = 'card mb-3';
+                    
+                    // Get script text
+                    const scriptText = slide.edited_text || slide.generated_text || 'No script generated yet';
+                    const displayText = scriptText.length > 200 ? scriptText.substring(0, 200) + '...' : scriptText;
+                    
+                    slideDiv.innerHTML = `
+                        <div class="card-body">
+                            <h5 class="card-title">Slide ${slide.slide_num}</h5>
+                            
+                            <!-- Script Preview -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">📝 Script:</label>
+                                <p class="text-muted small" style="white-space: pre-wrap;">${displayText}</p>
+                            </div>
+
+                            <!-- Audio Section -->
+                            <div class="mb-3" id="audioSection${slide.slide_num}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0">🎵 Audio Result:</label>
+                                </div>
+                                
+                                <div id="audioPlayer${slide.slide_num}" style="display: none;">
+                                    <audio controls class="w-100" id="audio${slide.slide_num}">
+                                        <source src="" type="audio/wav">
+                                    </audio>
+                                </div>
+                                
+                                <div id="audioStatus${slide.slide_num}" class="text-muted small mt-2">
+                                    ${slide.audio_url ? '<span class="text-success">✅ Audio đã tạo</span>' : '<span class="text-info">ℹ️ Chưa tạo audio</span>'}
+                                </div>
+                            </div>
+                            
+                            <!-- Video Section -->
+                            <div class="mb-3" id="videoSection${slide.slide_num}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label mb-0">🎬 Slide Video Preview:</label>
+                                    <button class="btn btn-sm btn-primary" 
+                                            onclick="generateSlideVideo(${slide.slide_num})" 
+                                            id="genVideoBtn${slide.slide_num}"
+                                            ${!slide.audio_url ? 'disabled title="Generate audio first"' : ''}>
+                                        🎥 Generate Video
+                                    </button>
+                                </div>
+                                
+                                <div id="videoPlayer${slide.slide_num}" class="video-player-hidden">
+                                    <video controls class="w-100" id="video${slide.slide_num}" style="max-height: 300px; min-height: 200px; background: #000;">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                                
+                                <div id="videoStatus${slide.slide_num}" class="text-muted small mt-2">
+                                    ${slide.slide_video_url ? '<span class="text-success">✅ Video đã tạo</span>' : '<span class="text-info">ℹ️ Chưa tạo video</span>'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(slideDiv);
+
+                    // Debug logging
+                    console.log(`Slide ${slide.slide_num}:`, {
+                        has_audio_url: !!slide.audio_url,
+                        audio_url: slide.audio_url,
+                        has_video_url: !!slide.slide_video_url
+                    });
+
+                    // Set up audio player if audio exists
+                    if (slide.audio_url) {
+                        // Use setTimeout to ensure DOM is ready
+                        setTimeout(() => {
+                            const audioPlayer = document.getElementById(`audioPlayer${slide.slide_num}`);
+                            const audio = document.getElementById(`audio${slide.slide_num}`);
+                            const audioStatus = document.getElementById(`audioStatus${slide.slide_num}`);
+                            
+                            console.log(`Setting up audio for slide ${slide.slide_num}:`, {
+                                audioPlayer: !!audioPlayer,
+                                audio: !!audio,
+                                audioStatus: !!audioStatus
+                            });
+                            
+                            if (audioPlayer && audio) {
+                                audio.src = slide.audio_url;
+                                audioPlayer.style.display = 'block';
+                                console.log(`✅ Audio player shown for slide ${slide.slide_num}`);
+                                
+                                // Hide the status text when audio player is shown
+                                if (audioStatus) {
+                                    audioStatus.style.display = 'none';
+                                }
+                            } else {
+                                console.error(`❌ Could not find audio elements for slide ${slide.slide_num}`);
+                            }
+                        }, 100);
+                    }
+                    
+                    // Set up video player if video exists
+                    if (slide.slide_video_url) {
+                        setTimeout(() => {
+                            const videoPlayer = document.getElementById(`videoPlayer${slide.slide_num}`);
+                            const video = document.getElementById(`video${slide.slide_num}`);
+                            const videoStatus = document.getElementById(`videoStatus${slide.slide_num}`);
+                            
+                            if (videoPlayer && video) {
+                                video.src = slide.slide_video_url;
+                                videoPlayer.classList.remove('video-player-hidden');
+                                videoPlayer.classList.add('video-player-visible');
+                                console.log(`✅ Video player shown for slide ${slide.slide_num}`);
+                                
+                                // Hide the status text when video player is shown
+                                if (videoStatus) {
+                                    videoStatus.style.display = 'none';
+                                }
+                            }
+                        }, 100);
+                    }
+                });
+
+                // Only show continue button if at least one slide has both audio and video
+                const hasAudioVideo = slides.some(s => s.audio_url && s.slide_video_url);
+                const continueBtn = document.getElementById('continueToFinalVideoBtn');
+                if (continueBtn) {
+                    continueBtn.style.display = hasAudioVideo ? 'inline-block' : 'none';
+                }
+
+            } catch (error) {
+                console.error('Error loading slides:', error);
+                alert('Failed to load slides: ' + error.message);
+            }
+        }
+
     </script>
 
 </body>
