@@ -304,113 +304,88 @@
         </div>
     </div>
 
-    <!-- Step 4: Generate Video - Choose Method -->
+    <!-- Step 4: Generate Video - Cấu hình Video Cuối cùng -->
     <div id="step5Section" class="step-card" style="display: none;">
         <div class="step-header">
             <div class="step-number">4</div>
-            <h3 class="mb-0">Generate Final Video</h3>
+            <h3 class="mb-0">Cấu hình Video Cuối cùng</h3>
         </div>
 
         <div class="alert alert-info">
-            <strong>🎬 Choose your video generation method:</strong><br>
-            Select how you want to create your final video presentation.
+            <strong>🎬 Tùy chọn tạo video:</strong><br>
+            Lựa chọn cấu hình để tạo video thuyết trình cuối cùng của bạn.
         </div>
 
-        <div class="row">
-            <!-- Option A: Presentation Video (Slides + Audio) -->
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 border-primary" style="cursor: pointer;"
-                    onclick="document.getElementById('mergeVideosBtn').click()">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-file-powerpoint" style="font-size: 3rem; color: #0d6efd;"></i>
-                        </div>
-                        <h4>📊 Merge Slide Videos</h4>
-                        <p class="text-muted">Combine All Slide Videos</p>
-                        <ul class="text-left">
-                            <li>Merge tất cả slide videos đã tạo</li>
-                            <li>Tạo video hoàn chỉnh từ các slide</li>
-                            <li>Giữ nguyên chất lượng và transitions</li>
-                            <li>Tự động sắp xếp theo thứ tự slides</li>
-                            <li><strong>Cần tạo video cho slides trước</strong></li>
-                        </ul>
-                        <button class="btn btn-primary btn-lg mt-3" onclick="mergeAllSlideVideos()"
-                            id="mergeVideosBtn">
-                            🎬 Merge All Slide Videos
-                        </button>
+        <div class="card border-primary mb-4">
+            <div class="card-body">
+                <h4 class="card-title text-primary"><i class="fas fa-sliders-h me-2"></i>Thiết lập Video</h4>
+                <p class="text-muted">Hệ thống sẽ tự động ghép nối các video slide đã tạo ở Bước 3.</p>
+                
+                <hr>
+
+                <!-- Talking Head Option -->
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" id="useTalkingHeadCheckbox" onchange="toggleTalkingHeadOption()">
+                    <label class="form-check-label fw-bold" for="useTalkingHeadCheckbox">
+                        🤖 Thêm MC ảo (Talking Head)
+                    </label>
+                    <div class="form-text">
+                        Bật tùy chọn này để thêm gương mặt MC ảo đọc thuyết trình (hiển thị ở góc phải màn hình).
                     </div>
                 </div>
-            </div>
 
-            <!-- Option B: Talking Head Video (SadTalker) -->
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 border-success">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-user-tie" style="font-size: 3rem; color: #198754;"></i>
-                        </div>
-                        <h4>🎭 Talking Head Video</h4>
-                        <p class="text-muted">AI Avatar with SadTalker</p>
-                        <ul class="text-left">
-                            <li>Tạo video với avatar nói</li>
-                            <li>AI đồng bộ môi và biểu cảm</li>
-                            <li>Độ phân giải 512px</li>
-                            <li>Quá trình: 2-5 phút</li>
-                            <li><strong>Cần upload avatar trước</strong></li>
-                        </ul>
+                <!-- Avatar Upload Section (Hidden by default) -->
+                <div id="avatarUploadSection" class="mt-3 ps-4 border-start border-3 show-transition" style="display: none;">
+                    <div class="alert alert-light border">
+                        <label for="talkingHeadAvatarInput" class="form-label fw-bold">📸 Tải lên ảnh Avatar (JPG/PNG):</label>
+                        <p class="small text-muted mb-2">Chọn ảnh chân dung rõ nét, nhìn thẳng để AI tạo chuyển động môi tốt nhất.</p>
                         
-                        <!-- Avatar Upload Section -->
-                        <div class="mt-3 mb-3 text-start">
-                            <label for="talkingHeadAvatarInput" class="form-label fw-bold">Upload Avatar (JPG/PNG):</label>
-                            <div id="talkingHeadAvatarPreviewContainer" class="mb-2"
-                                style="min-height: 150px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
-                                <p class="text-muted mb-0" id="talkingHeadAvatarPlaceholder">No avatar selected</p>
-                                <img id="talkingHeadAvatarPreview" src="" class="img-fluid rounded shadow-sm"
-                                    style="max-height: 200px; display: none;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div id="talkingHeadAvatarPreviewContainer" 
+                                style="width: 100px; height: 100px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px dashed #ccc;">
+                                <span class="text-muted small" id="talkingHeadAvatarPlaceholder">No img</span>
+                                <img id="talkingHeadAvatarPreview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
                             </div>
-                            <input type="file" class="form-control" id="talkingHeadAvatarInput"
-                                accept="image/png, image/jpeg, image/jpg">
-                            <div id="talkingHeadAvatarStatus" class="mt-2 small"></div>
+                            <div class="flex-grow-1">
+                                <input type="file" class="form-control" id="talkingHeadAvatarInput"
+                                    accept="image/png, image/jpeg, image/jpg" onchange="previewAvatar(this)">
+                            </div>
                         </div>
-                        
-                        <button class="btn btn-success btn-lg mt-3 w-100" onclick="uploadAvatarAndGenerateTalkingHead()"
-                            id="talkingHeadVideoBtn">
-                            🤖 Upload Avatar & Create Video
-                        </button>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg px-5" onclick="generateFinalVideoV2()" id="generateFinalBtn">
+                        🎬 Tạo Video Cuối cùng
+                    </button>
+                    <div id="generateStatus" class="mt-3 text-muted display-none">
+                        <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                        <span id="generateStatusText">Đang xử lý...</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Status indicator (shared for both methods) -->
-        <div id="videoStatus" class="alert alert-secondary text-center" style="display: none;">
-            <div class="spinner-border text-primary mb-2" role="status">
-                <span class="visually-hidden">Processing...</span>
-            </div>
-            <p class="mb-0" id="videoStatusText">Đang tạo video...</p>
-        </div>
-
-        <div id="videoResultContainer" style="display: none;">
+        <!-- Video Result -->
+        <div id="videoResultContainer" style="display: none;" class="mt-4">
             <div class="alert alert-success">
                 <strong>✅ Video đã được tạo thành công!</strong>
             </div>
 
-            <div class="ratio ratio-16x9 mb-3" style="border-radius: 8px; overflow: hidden; background: #000;">
+            <div class="ratio ratio-16x9 mb-3" style="border-radius: 8px; overflow: hidden; background: #000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                 <video id="finalVideo" controls controlsList="nodownload">
                     <source src="" type="video/mp4">
-                    Your browser does not support the video tag.
+                    Trình duyệt của bạn không hỗ trợ thẻ video.
                 </video>
             </div>
 
             <div class="d-grid gap-2">
                 <a id="downloadVideoBtn" class="btn btn-success btn-lg" download>
-                    ⬇️ Download Video
+                    ⬇️ Tải Video xuống
                 </a>
             </div>
         </div>
-    </div>
-    </div>
-    </div>
     </div>
 
     </div>
@@ -2007,8 +1982,117 @@
             }
         }
 
+
+        // --- Step 4: Final Video Generation V2 ---
+
+        function toggleTalkingHeadOption() {
+            const checkbox = document.getElementById('useTalkingHeadCheckbox');
+            const avatarSection = document.getElementById('avatarUploadSection');
+            
+            if (checkbox.checked) {
+                avatarSection.style.display = 'block';
+            } else {
+                avatarSection.style.display = 'none';
+            }
+        }
+
+        function previewAvatar(input) {
+            const preview = document.getElementById('talkingHeadAvatarPreview');
+            const placeholder = document.getElementById('talkingHeadAvatarPlaceholder');
+            const container = document.getElementById('talkingHeadAvatarPreviewContainer');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    container.style.border = 'none';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = "";
+                preview.style.display = 'none';
+                placeholder.style.display = 'block';
+                container.style.border = '1px dashed #ccc';
+            }
+        }
+
+        async function generateFinalVideoV2() {
+            if (!currentPresentationId) return;
+
+            const useTalkingHead = document.getElementById('useTalkingHeadCheckbox').checked;
+            const btn = document.getElementById('generateFinalBtn');
+            const statusDiv = document.getElementById('generateStatus');
+            const statusText = document.getElementById('generateStatusText');
+            const resultContainer = document.getElementById('videoResultContainer');
+
+            // Reset UI
+            resultContainer.style.display = 'none';
+            btn.disabled = true;
+            statusDiv.style.display = 'block'; // Ensure this class exists or allow default
+            statusDiv.classList.remove('display-none'); 
+            
+            if (useTalkingHead) {
+                statusText.innerText = 'Đang xử lý: Tạo MC ảo và ghép video (có thể mất vài phút)...';
+            } else {
+                statusText.innerText = 'Đang xử lý: Ghép nối video slides...';
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('use_talking_head', useTalkingHead);
+                
+                if (useTalkingHead) {
+                    const avatarInput = document.getElementById('talkingHeadAvatarInput');
+                    if (avatarInput.files.length > 0) {
+                        formData.append('avatar', avatarInput.files[0]);
+                    } else {
+                        alert('Vui lòng chọn ảnh Avatar cho MC ảo!');
+                        btn.disabled = false;
+                        statusDiv.style.display = 'none';
+                        return;
+                    }
+                }
+
+                const response = await fetch(`/api/presentation/${currentPresentationId}/generate_final_video_v2`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusText.innerText = '✅ Hoàn tất!';
+                    
+                    const video = document.getElementById('finalVideo');
+                    const downloadBtn = document.getElementById('downloadVideoBtn');
+                    
+                    // Add timestamp to prevent caching
+                    video.src = data.video_url + '?t=' + new Date().getTime();
+                    video.load();
+                    
+                    downloadBtn.href = data.video_url;
+                    downloadBtn.download = `presentation_${currentPresentationId}.mp4`;
+                    
+                    resultContainer.style.display = 'block';
+                    
+                    // Scroll to result
+                    resultContainer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('Lỗi: ' + data.error);
+                }
+
+            } catch (error) {
+                console.error('Error generating final video:', error);
+                alert('Đã xảy ra lỗi khi kết nối server.');
+            } finally {
+                btn.disabled = false;
+                statusDiv.style.display = 'none';
+            }
+        }
     </script>
-
 </body>
-
 </html>

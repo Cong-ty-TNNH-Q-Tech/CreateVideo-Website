@@ -201,3 +201,74 @@ class PresentationVideoExporter:
                     print("🧹 Cleaned up temp slides")
                 except Exception as e:
                     print(f"Warning: Could not clean up temp dir: {e}")
+
+    def overlay_talking_head(self, background_video_path, talking_head_video_path, output_path):
+        """
+        Overlay talking head video on top of background video (slides)
+        talking head will be resized and positioned at bottom-right
+        """
+        try:
+            from moviepy.editor import VideoFileClip, CompositeVideoClip
+            import math
+            
+            # Load videos
+            background_clip = VideoFileClip(background_video_path)
+            talking_head_clip = VideoFileClip(talking_head_video_path)
+            
+            # Calculate size for talking head (e.g., 30% of background height)
+            bg_w, bg_h = background_clip.size
+            th_w, th_h = talking_head_clip.size
+            
+            target_h = int(bg_h * 0.3)
+            ratio = target_h / th_h
+            target_w = int(th_w * ratio)
+            
+            # Resize talking head
+            talking_head_resized = talking_head_clip.resize(height=target_h)
+            
+            # Position at bottom-right with padding
+            padding = 20
+            pos_x = bg_w - target_w - padding
+            pos_y = bg_h - target_h - padding
+            
+            talking_head_positioned = talking_head_resized.set_position((pos_x, pos_y))
+            
+            # Create composite
+            final_composite = CompositeVideoClip([background_clip, talking_head_positioned])
+            final_composite.duration = background_clip.duration
+            
+            # Use unique temp audio filename
+            temp_dir = os.path.dirname(output_path)
+            temp_audio_filename = os.path.join(temp_dir, f"temp_audio_overlay_{uuid.uuid4().hex}.m4a")
+            
+            # Write output
+            print(f"Writing composite video to {output_path}...")
+            final_composite.write_videofile(
+                output_path,
+                codec='libx264',
+                audio_codec='aac',
+                temp_audiofile=temp_audio_filename,
+                remove_temp=True,
+                preset='ultrafast',
+                threads=4,
+                logger=None
+            )
+            
+            # Cleanup
+            background_clip.close()
+            talking_head_clip.close()
+            final_composite.close()
+            
+            # Clean up temp audio file
+            if os.path.exists(temp_audio_filename):
+                try:
+                    time.sleep(0.5)
+                    os.remove(temp_audio_filename)
+                except:
+                    pass
+            
+            return {'success': True}
+            
+        except Exception as e:
+            traceback.print_exc()
+            return {'success': False, 'error': str(e)}
