@@ -425,7 +425,7 @@ class AudioService:
 # Global instance
 _audio_service = None
 
-def get_audio_service(force_gtts=True) -> AudioService:
+def get_audio_service(force_gtts=False) -> AudioService:
     """Get or create the global AudioService instance
     
     Args:
