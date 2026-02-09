@@ -28,6 +28,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set lowercase image name
+        id: image_name
+        run: |
+          IMAGE_NAME_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME_LOWER=${IMAGE_NAME_LOWER}" >> $GITHUB_ENV
+          echo "image_name=${IMAGE_NAME_LOWER}" >> $GITHUB_OUTPUT
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
@@ -47,7 +54,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -65,7 +72,7 @@ jobs:
           target: application
           push: false
           load: true
-          tags: ${{ env.IMAGE_NAME }}:pre-slim
+          tags: ${{ env.IMAGE_NAME_LOWER }}:pre-slim
           cache-from: type=gha
           cache-to: type=gha,mode=max
           labels: ${{ steps.meta.outputs.labels }}
@@ -92,8 +99,8 @@ jobs:
           
           # Run docker-slim with comprehensive settings
           docker-slim build \
-            --target ${{ env.IMAGE_NAME }}:pre-slim \
-            --tag ${{ env.IMAGE_NAME }}:slim \
+            --target ${{ env.IMAGE_NAME_LOWER }}:pre-slim \
+            --tag ${{ env.IMAGE_NAME_LOWER }}:slim \
             --http-probe=false \
             --continue-after=30 \
             --show-clogs \
@@ -117,15 +124,15 @@ jobs:
             || echo "docker-slim completed with warnings"
           
           # Get image sizes
-          ORIGINAL_SIZE=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME }}:pre-slim)
-          SLIM_SIZE=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME }}:slim)
+          ORIGINAL_SIZE=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME_LOWER }}:pre-slim)
+          SLIM_SIZE=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME_LOWER }}:slim)
           
           echo "original_size=${ORIGINAL_SIZE}" >> $GITHUB_OUTPUT
           echo "slim_size=${SLIM_SIZE}" >> $GITHUB_OUTPUT
           
           # Calculate reduction percentage
-          ORIGINAL_BYTES=$(docker inspect ${{ env.IMAGE_NAME }}:pre-slim --format='{{.Size}}')
-          SLIM_BYTES=$(docker inspect ${{ env.IMAGE_NAME }}:slim --format='{{.Size}}')
+          ORIGINAL_BYTES=$(docker inspect ${{ env.IMAGE_NAME_LOWER }}:pre-slim --format='{{.Size}}')
+          SLIM_BYTES=$(docker inspect ${{ env.IMAGE_NAME_LOWER }}:slim --format='{{.Size}}')
           REDUCTION=$(python3 -c "print(f'{(1 - ${SLIM_BYTES}/${ORIGINAL_BYTES})*100:.1f}')")
           echo "reduction_percent=${REDUCTION}" >> $GITHUB_OUTPUT
 
@@ -137,7 +144,7 @@ jobs:
             -p 5000:5000 \
             -e FLASK_APP=run.py \
             -e FLASK_ENV=production \
-            ${{ env.IMAGE_NAME }}:slim
+            ${{ env.IMAGE_NAME_LOWER }}:slim
           
           # Wait for container to be ready
           sleep 15
@@ -159,7 +166,7 @@ jobs:
           # Tag the slim image with all the metadata tags
           IFS=',' read -ra TAGS <<< "${{ steps.meta.outputs.tags }}"
           for tag in "${TAGS[@]}"; do
-            docker tag ${{ env.IMAGE_NAME }}:slim ${tag}
+            docker tag ${{ env.IMAGE_NAME_LOWER }}:slim ${tag}
             echo "Tagged: ${tag}"
           done
 
@@ -196,7 +203,7 @@ jobs:
             
             ### Pull Command
             \`\`\`bash
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
             \`\`\`
             
             ### Run Command
@@ -205,7 +212,7 @@ jobs:
               -p 5000:5000 \\
               -e GEMINI_API_KEY=your_key \\
               --gpus all \\
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
             \`\`\`
             `;
             
@@ -219,5 +226,5 @@ jobs:
       - name: Clean up
         if: always()
         run: |
-          docker rmi ${{ env.IMAGE_NAME }}:pre-slim || true
-          docker rmi ${{ env.IMAGE_NAME }}:slim || true
+          docker rmi ${{ env.IMAGE_NAME_LOWER }}:pre-slim || true
+          docker rmi ${{ env.IMAGE_NAME_LOWER }}:slim || true
