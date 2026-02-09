@@ -129,12 +129,29 @@ class AudioService:
             else:
                 # Simple fallback language detection
                 text_lower = text.lower()
+                
+                # Check for Vietnamese characters (diacritics)
                 if any(char in text_lower for char in ['á', 'à', 'ả', 'ã', 'ạ', 'đ', 'ê', 'ô', 'ơ', 'ư']):
-                    return 'vi'  # Vietnamese characters
-                elif any(word in text_lower for word in ['the', 'and', 'is', 'in', 'you', 'that', 'it', 'for']):
-                    return 'en'  # Common English words
-                else:
-                    return 'vi'  # Default to Vietnamese
+                    print("  🇻🇳 Detected Vietnamese (diacritics)")
+                    return 'vi'
+                
+                # Check for common English words
+                common_english_words = [
+                    'the', 'and', 'is', 'in', 'you', 'that', 'it', 'for', 'with', 
+                    'as', 'on', 'at', 'be', 'have', 'to', 'of', 'this', 'from', 
+                    'or', 'by', 'not', 'but', 'are', 'was', 'were', 'been', 'has'
+                ]
+                words = text_lower.split()
+                english_word_count = sum(1 for word in words if word in common_english_words)
+                
+                # If more than 20% are common English words, consider it English
+                if len(words) > 0 and english_word_count / len(words) > 0.2:
+                    print(f"  🇬🇧 Detected English ({english_word_count}/{len(words)} common words)")
+                    return 'en'
+                
+                # Default to Vietnamese
+                print("  🇻🇳 Defaulting to Vietnamese")
+                return 'vi'
                     
         except Exception as e:
             print(f"  ⚠️  Language detection failed: {e}")

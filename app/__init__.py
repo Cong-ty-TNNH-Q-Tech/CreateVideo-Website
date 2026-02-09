@@ -1,3 +1,26 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+
+# Ensure UTF-8 encoding on Windows for all modules
+if sys.platform == 'win32':
+    # Set environment variable for UTF-8 encoding
+    os.environ['PYTHONIOENCODING'] = 'utf-8:replace'
+    
+    # Instead of wrapping stdout/stderr (which can break Flask debugger),
+    # we'll just set the default encoding at import time
+    # This approach is less invasive and safer for Flask
+    import locale
+    try:
+        # Try to set console to UTF-8 mode if possible
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        if hasattr(sys.stderr, 'reconfigure'):
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        # If reconfigure fails, just continue - environment variable will help
+        pass
+
 from flask import Flask
 from config import Config
 from app.models.presentation_model import PresentationModel
