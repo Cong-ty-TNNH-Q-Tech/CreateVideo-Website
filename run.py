@@ -1,6 +1,24 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+
+# Fix Windows console encoding issues with Unicode (emojis, Vietnamese text)
+if sys.platform == 'win32':
+    # Set environment variable for UTF-8 encoding with error replacement
+    os.environ['PYTHONIOENCODING'] = 'utf-8:replace'
+    
+    # Use reconfigure instead of wrapping to avoid Flask debugger issues
+    try:
+        if hasattr(sys.stdout, 'reconfigure'):
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        if hasattr(sys.stderr, 'reconfigure'):
+            sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        # Silently continue if reconfigure fails
+        pass
+
 from app import create_app
 from download_models import ensure_models
-import sys
 
 # Check and download SadTalker models if needed
 print("Initializing VideoTeaching application...")

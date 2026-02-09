@@ -287,16 +287,21 @@ def get_available_voices():
 def preview_voice():
     """Generate a short preview audio with selected voice"""
     try:
-        # Check if content type is multipart/form-data (file upload) or json
-        if request.content_type and 'multipart/form-data' in request.content_type:
-            text = request.form.get('text', 'Xin chào, đây là giọng nói mẫu.')
-            voice_id = request.form.get('voice_id')
-            clone_file = request.files.get('clone_file')
-        else:
-            data = request.json or {}
+        # Try to get data from potential JSON body safely (silent=True returns None if not JSON)
+        data = request.get_json(silent=True)
+        
+        if data:
+            # Handle JSON request
             text = data.get('text', 'Xin chào, đây là giọng nói mẫu.')
             voice_id = data.get('voice_id')
             clone_file = None
+            clone_voice_path = data.get('clone_voice_path')
+        else:
+            # Handle Form Data (multipart/form-data)
+            text = request.form.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_id = request.form.get('voice_id')
+            clone_file = request.files.get('clone_file')
+            clone_voice_path = None # Will be set later if clone_file exists
 
         # Limit text length for preview
         if len(text) > 100:
@@ -313,15 +318,15 @@ def preview_voice():
         filename = f"preview_{uuid.uuid4().hex}.wav"
         output_path = os.path.join(temp_dir, filename)
         
-        clone_voice_path = None
         if clone_file:
             # Save uploaded clone file temporarily
             clone_filename = f"clone_source_{uuid.uuid4().hex}.wav"
             clone_voice_path = os.path.join(temp_dir, clone_filename)
             clone_file.save(clone_voice_path)
-        elif request.json:
-             # Handle clone path if passed directly (less likely for preview but good for API)
-             clone_voice_path = request.json.get('clone_voice_path')
+            # If both clone_file and clone_voice_path (from JSON) were somehow present (unlikely), 
+            # the file upload takes precedence here.
+        
+        # clone_voice_path is already set from data if JSON was used
 
         
         # Generate audio
