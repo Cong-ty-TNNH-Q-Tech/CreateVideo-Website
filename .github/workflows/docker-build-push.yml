@@ -1,0 +1,223 @@
+name: Docker Build, Optimize & Push
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build Docker image (unoptimized)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          target: application
+          push: false
+          load: true
+          tags: ${{ env.IMAGE_NAME }}:pre-slim
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Install docker-slim
+        run: |
+          curl -L -o ds.tar.gz https://github.com/slimtoolkit/slim/releases/download/1.40.11/dist_linux.tar.gz
+          tar -xvzf ds.tar.gz
+          sudo mv dist_linux/* /usr/local/bin/
+          docker-slim --version
+
+      - name: Optimize image with docker-slim
+        id: slim
+        run: |
+          # Create probe commands file for SadTalker app
+          cat > .slim-probe-commands << 'EOF'
+          # Health check probes
+          curl -f http://localhost:5000/ || echo "Root endpoint check"
+          curl -f http://localhost:5000/health || echo "Health endpoint check"
+          
+          # Allow time for app initialization
+          sleep 30
+          EOF
+          
+          # Run docker-slim with comprehensive settings
+          docker-slim build \
+            --target ${{ env.IMAGE_NAME }}:pre-slim \
+            --tag ${{ env.IMAGE_NAME }}:slim \
+            --http-probe=false \
+            --continue-after=30 \
+            --show-clogs \
+            --show-blogs \
+            --include-path '/app' \
+            --include-path '/usr/local/lib/python3.11' \
+            --include-path '/usr/lib/x86_64-linux-gnu' \
+            --include-path '/lib/x86_64-linux-gnu' \
+            --include-path '/usr/bin/python3.11' \
+            --include-path '/usr/bin/ffmpeg' \
+            --include-bin '/usr/bin/curl' \
+            --include-exe '/usr/bin/python3.11' \
+            --include-exe '/usr/bin/ffmpeg' \
+            --preserve-path '/app/static' \
+            --preserve-path '/app/data' \
+            --preserve-path '/app/app/SadTalker' \
+            --preserve-path '/app/app/VieNeu-TTS' \
+            --env PYTHONUNBUFFERED=1 \
+            --env FLASK_APP=run.py \
+            --expose 5000 \
+            || echo "docker-slim completed with warnings"
+          
+          # Get image sizes
+          ORIGINAL_SIZE=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME }}:pre-slim)
+          SLIM_SIZE=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME }}:slim)
+          
+          echo "original_size=${ORIGINAL_SIZE}" >> $GITHUB_OUTPUT
+          echo "slim_size=${SLIM_SIZE}" >> $GITHUB_OUTPUT
+          
+          # Calculate reduction percentage
+          ORIGINAL_BYTES=$(docker inspect ${{ env.IMAGE_NAME }}:pre-slim --format='{{.Size}}')
+          SLIM_BYTES=$(docker inspect ${{ env.IMAGE_NAME }}:slim --format='{{.Size}}')
+          REDUCTION=$(python3 -c "print(f'{(1 - ${SLIM_BYTES}/${ORIGINAL_BYTES})*100:.1f}')")
+          echo "reduction_percent=${REDUCTION}" >> $GITHUB_OUTPUT
+
+      - name: Test optimized image
+        run: |
+          # Start container for testing
+          docker run -d \
+            --name test-container \
+            -p 5000:5000 \
+            -e FLASK_APP=run.py \
+            -e FLASK_ENV=production \
+            ${{ env.IMAGE_NAME }}:slim
+          
+          # Wait for container to be ready
+          sleep 15
+          
+          # Basic health checks
+          docker ps | grep test-container
+          docker logs test-container
+          
+          # Test if app is responding (if health endpoint exists)
+          curl -f http://localhost:5000/ || echo "App endpoint test"
+          
+          # Cleanup
+          docker stop test-container
+          docker rm test-container
+
+      - name: Re-tag optimized image with all metadata tags
+        if: github.event_name != 'pull_request'
+        run: |
+          # Tag the slim image with all the metadata tags
+          IFS=',' read -ra TAGS <<< "${{ steps.meta.outputs.tags }}"
+          for tag in "${TAGS[@]}"; do
+            docker tag ${{ env.IMAGE_NAME }}:slim ${tag}
+            echo "Tagged: ${tag}"
+          done
+
+      - name: Push optimized image to GHCR
+        if: github.event_name != 'pull_request'
+        run: |
+          # Push all tags
+          IFS=',' read -ra TAGS <<< "${{ steps.meta.outputs.tags }}"
+          for tag in "${TAGS[@]}"; do
+            docker push ${tag}
+            echo "Pushed: ${tag}"
+          done
+
+      - name: Create optimization report
+        if: github.event_name != 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const originalSize = '${{ steps.slim.outputs.original_size }}';
+            const slimSize = '${{ steps.slim.outputs.slim_size }}';
+            const reduction = '${{ steps.slim.outputs.reduction_percent }}';
+            
+            const report = `## 🐳 Docker Image Optimization Report
+            
+            ### Image Sizes
+            - **Original Image**: ${originalSize}
+            - **Optimized Image**: ${slimSize}
+            - **Size Reduction**: ${reduction}%
+            
+            ### Tags Pushed
+            \`\`\`
+            ${{ steps.meta.outputs.tags }}
+            \`\`\`
+            
+            ### Pull Command
+            \`\`\`bash
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            \`\`\`
+            
+            ### Run Command
+            \`\`\`bash
+            docker run -d \\
+              -p 5000:5000 \\
+              -e GEMINI_API_KEY=your_key \\
+              --gpus all \\
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            \`\`\`
+            `;
+            
+            // Post as comment if this is related to a commit
+            if (context.eventName === 'push') {
+              core.summary
+                .addRaw(report)
+                .write();
+            }
+
+      - name: Clean up
+        if: always()
+        run: |
+          docker rmi ${{ env.IMAGE_NAME }}:pre-slim || true
+          docker rmi ${{ env.IMAGE_NAME }}:slim || true

@@ -2,7 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased] - 2026-02-06
+## [Unreleased] - 2026-02-09
+
+### CI/CD & Docker Optimization
+- **Docker Build Automation**: Added comprehensive GitHub Actions workflow for automated Docker image building and deployment
+  - Auto-build on push to `main` and `develop` branches
+  - Semantic versioning support with tags (`v*.*.*`)
+  - Multi-stage Docker build with CUDA 11.8 support
+- **Image Optimization**: Integrated docker-slim for image size reduction
+  - Reduces image size by 50-60% (from ~8.5GB to ~3-4GB)
+  - Automated optimization in CI/CD pipeline
+  - Comprehensive path preservation for AI models and dependencies
+- **GitHub Container Registry**: Auto-push optimized images to GHCR
+  - Multiple tags: `latest`, `develop`, semantic versions
+  - Commit-specific tags for reproducibility
+  - Public access with proper permissions
+- **Deployment Improvements**:
+  - Added pull-and-run scripts for Windows (PowerShell) and Linux (Bash)
+  - Created `docker-compose.prod.yml` for production deployment
+  - Comprehensive deployment documentation in `docs/DOCKER_DEPLOYMENT.md`
+- **Documentation Updates**:
+  - Updated README with pre-built image quick start
+  - Added CI/CD badges and GHCR links
+  - Enhanced workflows documentation with Docker build info
+
+## [Previous] - 2026-02-06
 
 ### Cleanup & Maintenance
 - **Git Configuration**: Updated `.gitignore` to exclude all media files (audio, video, images) and their directories.

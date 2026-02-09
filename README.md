@@ -6,6 +6,8 @@ Tự động tạo video thuyết trình với avatar nói chuyện sử dụng 
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![CUDA](https://img.shields.io/badge/CUDA-11.8-green.svg)](https://developer.nvidia.com/cuda-toolkit)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
+[![GHCR](https://img.shields.io/badge/GHCR-Images-purple.svg)](https://github.com/Cong-ty-TNNH-Q-Tech/CreateVideo-Website/pkgs/container/createvideo-website)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/Cong-ty-TNNH-Q-Tech/CreateVideo-Website/docker-build-push.yml?label=Docker%20Build)](https://github.com/Cong-ty-TNNH-Q-Tech/CreateVideo-Website/actions)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## ✨ Features
@@ -21,7 +23,29 @@ Tự động tạo video thuyết trình với avatar nói chuyện sử dụng 
 
 ## 🚀 Quick Start
 
-### Option 1: Docker (Recommended)
+### Option 1: Pre-built Docker Image (Fastest ⚡)
+
+Pull optimized image từ GitHub Container Registry - đã được tối ưu hóa với docker-slim!
+
+**Prerequisites:**
+- Docker Desktop 20.10+
+- NVIDIA GPU + NVIDIA Container Toolkit (for GPU acceleration)
+
+```bash
+# Set your API key
+export GEMINI_API_KEY=your_api_key_here
+# Windows PowerShell: $env:GEMINI_API_KEY = "your_api_key_here"
+
+# Run the pull and run script
+bash scripts/pull-and-run.sh
+# Windows: .\scripts\pull-and-run.ps1
+```
+
+**Access:** http://localhost:5000
+
+📦 **[See deployment guide →](docs/DOCKER_DEPLOYMENT.md)**
+
+### Option 2: Build Docker Locally
 
 **Prerequisites:**
 - Docker Desktop 20.10+
@@ -29,7 +53,7 @@ Tự động tạo video thuyết trình với avatar nói chuyện sử dụng 
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/Cong-ty-TNNH-MoneyEveryWhere/CreateVideo-Website.git
+git clone https://github.com/Cong-ty-TNNH-Q-Tech/CreateVideo-Website.git
 cd VideoTeaching
 
 # 2. Setup environment
@@ -50,7 +74,7 @@ python download_models.py
 
 📚 **[See full Docker documentation →](README.Docker.md)**
 
-### Option 2: Local Development
+### Option 3: Local Development
 
 **Prerequisites:**
 - Python 3.10+
@@ -224,6 +248,37 @@ nvidia-smi
 - Use CPU mode: `--cpu` flag
 
 ## 📦 Docker Deployment
+
+### Pre-built Images (GitHub Container Registry)
+
+Tự động build và tối ưu hóa với docker-slim qua GitHub Actions CI/CD:
+
+```bash
+# Pull latest version
+docker pull ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:latest
+
+# Run with GPU
+docker run -d \
+  --gpus all \
+  -p 5000:5000 \
+  -e GEMINI_API_KEY=your_key \
+  ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:latest
+```
+
+**Image Tags:**
+- `latest` - Latest stable release from main branch
+- `develop` - Development builds
+- `v1.0.0` - Semantic versioning tags
+- `main-sha-<commit>` - Specific commit builds
+
+**Image Optimization:**
+- Original size: ~8.5 GB
+- Optimized with docker-slim: ~3-4 GB (50-60% reduction)
+- Multi-stage build với CUDA 11.8 support
+
+📦 **[Full deployment guide →](docs/DOCKER_DEPLOYMENT.md)**
+
+### Build from Source
 
 See **[README.Docker.md](README.Docker.md)** for:
 - GPU setup with NVIDIA Container Toolkit

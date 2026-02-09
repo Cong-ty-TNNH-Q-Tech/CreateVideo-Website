@@ -1,0 +1,64 @@
+services:
+  # ============================================================
+  # VideoTeaching Web Application - Production with GHCR
+  # ============================================================
+  videoteaching:
+    image: ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:${IMAGE_TAG:-latest}
+    container_name: videoteaching-prod
+    restart: unless-stopped
+
+    # GPU support - requires NVIDIA Docker runtime
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+    # Environment variables
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - CUDA_VISIBLE_DEVICES=0
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+    # Port mapping
+    ports:
+      - "5000:5000"
+
+    # Volume mounts for data persistence
+    volumes:
+      # Data persistence
+      - ./data:/app/data:rw
+      - uploads:/app/static/uploads:rw
+      - results:/app/static/results:rw
+      
+      # Model checkpoints (download separately)
+      - ./app/SadTalker/checkpoints:/app/app/SadTalker/checkpoints:ro
+      - ./app/SadTalker/gfpgan/weights:/app/app/SadTalker/gfpgan/weights:ro
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volumes
+volumes:
+  uploads:
+    driver: local
+  results:
+    driver: local
