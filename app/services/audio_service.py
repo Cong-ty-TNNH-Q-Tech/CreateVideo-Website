@@ -174,6 +174,90 @@ class AudioService:
             print(f"Error getting voices: {e}")
             return []
     
+    def generate_audio(self, text: str, output_path: str, voice_type: str = None, voice_id: str = None, clone_voice_path: str = None) -> Tuple[bool, str]:
+        """
+        Generate audio from text using specified TTS engine
+        
+        Args:
+            text: Text to convert to speech
+            output_path: Path where audio file should be saved
+            voice_type: TTS engine to use ('vieneu', 'gtts', 'clone'). If None, auto-detect based on language
+            voice_id: Optional preset voice ID for VieNeu-TTS
+            clone_voice_path: Optional path to audio file for voice cloning
+            
+        Returns:
+            Tuple of (success: bool, message: str)
+        """
+        try:
+            # Ensure output directory exists
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            
+            # Clean up text for TTS
+            clean_text = self._clean_text_for_tts(text)
+            if not clean_text.strip():
+                return False, "No valid text provided"
+            
+            # Detect language
+            detected_lang = self.detect_language(clean_text)
+            print(f"🌐 Language: {detected_lang}")
+            
+            # If voice_type is explicitly set, use that engine
+            if voice_type == 'gtts':
+                # Force gTTS
+                print("🎯 User selected gTTS - skipping VieNeu")
+                if self._generate_with_gtts(clean_text, output_path, detected_lang):
+                    return True, f"Generated using gTTS ({detected_lang})"
+                else:
+                    return False, f"gTTS failed for language {detected_lang}"
+                    
+            elif voice_type == 'clone':
+                # Force VieNeu with voice cloning
+                print("🎯 User selected Voice Clone")
+                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
+                    return True, f"Generated using Voice Clone ({detected_lang})"
+                else:
+                    print("⚠️  Voice cloning failed, falling back to gTTS...")
+                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
+                        return True, f"Generated using gTTS fallback ({detected_lang})"
+                    else:
+                        return False, "Both Voice Clone and gTTS failed"
+                        
+            elif voice_type == 'vieneu':
+                # Force VieNeu-TTS
+                print("🎯 User selected VieNeu-TTS")
+                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
+                    return True, f"Generated using VieNeu-TTS ({detected_lang})"
+                else:
+                    print("⚠️  VieNeu-TTS failed, falling back to gTTS...")
+                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
+                        return True, f"Generated using gTTS fallback ({detected_lang})"
+                    else:
+                        return False, "Both VieNeu-TTS and gTTS failed"
+            else:
+                # Auto-detect based on language (legacy behavior)
+                if self.should_use_vieneu(detected_lang):
+                    # Dùng VieNeu-TTS cho tiếng Việt
+                    if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
+                        return True, f"Generated using VieNeu-TTS ({detected_lang})"
+                    else:
+                        print("⚠️  VieNeu-TTS failed, falling back to gTTS...")
+                        if self._generate_with_gtts(clean_text, output_path, detected_lang):
+                            return True, f"Generated using gTTS fallback ({detected_lang})"
+                        else:
+                            return False, "Both VieNeu-TTS and gTTS failed"
+                else:
+                    # Dùng gTTS cho các ngôn ngữ khác
+                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
+                        return True, f"Generated using gTTS ({detected_lang})"
+                    else:
+                        return False, f"gTTS failed for language {detected_lang}"
+                
+        except Exception as e:
+            error_msg = f"Audio generation failed: {str(e)}"
+            print(f"❌ {error_msg}")
+            traceback.print_exc()
+            return False, error_msg
+    
     def _generate_with_vieneu(self, text: str, output_path: str, voice_id: str = None, clone_voice_path: str = None) -> bool:
         """Generate audio using VieNeu-TTS engine
         
@@ -305,55 +389,7 @@ class AudioService:
             traceback.print_exc()
             return False
     
-    def generate_audio(self, text: str, output_path: str, voice_id: str = None, clone_voice_path: str = None) -> Tuple[bool, str]:
-        """
-        Generate audio from text using VieNeu-TTS with gTTS fallback
-        
-        Args:
-            text: Text to convert to speech
-            output_path: Path where audio file should be saved
-            voice_id: Optional preset voice ID for VieNeu-TTS
-            clone_voice_path: Optional path to audio file for voice cloning
-            
-        Returns:
-            Tuple of (success: bool, message: str)
-        """
-        try:
-            # Ensure output directory exists
-            os.makedirs(os.path.dirname(output_path), exist_ok=True)
-            
-            # Clean up text for TTS
-            clean_text = self._clean_text_for_tts(text)
-            if not clean_text.strip():
-                return False, "No valid text provided"
-            
-            # Detect language
-            detected_lang = self.detect_language(clean_text)
-            print(f"🌐 Language: {detected_lang}")
-            
-            # Chọn engine phù hợp
-            if self.should_use_vieneu(detected_lang):
-                # Dùng VieNeu-TTS cho tiếng Việt
-                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
-                    return True, f"Generated using VieNeu-TTS ({detected_lang})"
-                else:
-                    print("⚠️  VieNeu-TTS failed, falling back to gTTS...")
-                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                        return True, f"Generated using gTTS fallback ({detected_lang})"
-                    else:
-                        return False, "Both VieNeu-TTS and gTTS failed"
-            else:
-                # Dùng gTTS cho các ngôn ngữ khác
-                if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                    return True, f"Generated using gTTS ({detected_lang})"
-                else:
-                    return False, f"gTTS failed for language {detected_lang}"
-                
-        except Exception as e:
-            error_msg = f"Audio generation failed: {str(e)}"
-            print(f"❌ {error_msg}")
-            traceback.print_exc()
-            return False, error_msg
+
     
     def _clean_text_for_tts(self, text: str) -> str:
         """Clean and prepare text for TTS generation"""

@@ -8563,8 +8563,8 @@
         "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
         "notes": "",
         "total_slides": 3,
-        "generated_text": "",
-        "edited_text": "",
+        "generated_text": "Hello everyone. Today, I'm excited to present our project: the Smart Home Control Dashboard, specifically focusing on its Single Screen User Interface.\n\nOur main objective for this project is to design a visually intuitive, single-page dashboard UI. We're leveraging the power of .NET MAUI and XAML to create a control panel that effectively represents a smart home environment. It's crucial to note that our primary focus here is on the architectural aspects of the UI: the layout, establishing a clear visual hierarchy, developing reusable components, and ensuring a responsive design across different form factors. We are not delving into the underlying application logic at this stage.\n\nTo keep our efforts concentrated, the scope of this project is strictly limited to a single screen. Furthermore, our approach to layout and styling is entirely XAML-focused, allowing us to build a robust and maintainable interface.\n\nNow, let's look at the UI requirements, beginning with the screen layout. We plan to utilize a combination of Grid and StackLayout or VerticalStackLayout to structure our content effectively.\n\nImagine the screen's structure from top to bottom: At the very top, we'll have a prominent Header, clearly labeled as the Smart Home Dashboard. Immediately below that, you'll find a dedicated Weather Card, displaying essential information such as temperature, an illustrative icon, and the current weather status. Moving down, the core of our dashboard will feature a two-by-two grid of Device Control Cards. These cards will allow users to manage various smart home elements, including lights, fans, air conditioners, and security systems. Finally, at the bottom of the screen, we'll incorporate an Energy Usage Summary, providing a quick overview of consumption.\n\nFollowing the overall layout, our next requirement is to detail the Header Section itself...",
+        "edited_text": "Hello everyone. Today, I'm excited to present our project: the Smart Home Control Dashboard, specifically focusing on its Single Screen User Interface.\n\nOur main objective for this project is to design a visually intuitive, single-page dashboard UI. We're leveraging the power of .NET MAUI and XAML to create a control panel that effectively represents a smart home environment. It's crucial to note that our primary focus here is on the architectural aspects of the UI: the layout, establishing a clear visual hierarchy, developing reusable components, and ensuring a responsive design across different form factors. We are not delving into the underlying application logic at this stage.\n\nTo keep our efforts concentrated, the scope of this project is strictly limited to a single screen. Furthermore, our approach to layout and styling is entirely XAML-focused, allowing us to build a robust and maintainable interface.\n\nNow, let's look at the UI requirements, beginning with the screen layout. We plan to utilize a combination of Grid and StackLayout or VerticalStackLayout to structure our content effectively.\n\nImagine the screen's structure from top to bottom: At the very top, we'll have a prominent Header, clearly labeled as the Smart Home Dashboard. Immediately below that, you'll find a dedicated Weather Card, displaying essential information such as temperature, an illustrative icon, and the current weather status. Moving down, the core of our dashboard will feature a two-by-two grid of Device Control Cards. These cards will allow users to manage various smart home elements, including lights, fans, air conditioners, and security systems. Finally, at the bottom of the screen, we'll incorporate an Energy Usage Summary, providing a quick overview of consumption.\n\nFollowing the overall layout, our next requirement is to detail the Header Section itself...",
         "audio_path": null,
         "video_path": null,
         "status": "pending",
@@ -8610,5 +8610,1532 @@
     "full_audio_url": "/static/audio/95d653b1-d674-4394-bb23-89245ee2d628/full_presentation_474e5fd7732c4c00bfdd6cf797d7a7fa.mp3",
     "full_audio_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\95d653b1-d674-4394-bb23-89245ee2d628\\full_presentation_474e5fd7732c4c00bfdd6cf797d7a7fa.mp3",
     "final_video_url": "/static/videos/95d653b1-d674-4394-bb23-89245ee2d628/base_presentation_eaaadec1ef7f46309a45e5d4c57f0aaf.mp4"
+  },
+  "c846dbe1-3232-4b04-b301-c01617b1c6cb": {
+    "id": "c846dbe1-3232-4b04-b301-c01617b1c6cb",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Good morning everyone. Today, I'm excited to share a glimpse into our project: the Smart Home Control Dashboard, focusing specifically on its Single Screen User Interface.\n\nOur main objective with this project is to design a compelling, single-page dashboard UI using .NET MAUI and XAML. This dashboard will serve as a visual control panel for a smart home. Our primary focus is on establishing an intuitive layout, a clear visual hierarchy, and creating reusable components, all while ensuring a responsive design across various devices. It's important to note that for this particular phase, we are concentrating purely on the user interface and design elements, not on the underlying application logic or backend functionality.\n\nIn terms of scope and constraints, this project is strictly limited to a single screen. Our layout and styling will be entirely XAML-focused, leveraging its power for declarative UI definitions.\n\nNow, let's look at the proposed UI requirements, starting with the screen layout itself. We plan to utilize a combination of Grid and StackLayouts, including VerticalStackLayouts, to structure the content effectively. Imagine the screen divided into several distinct sections.\n\nAt the very top, we'll have a clear Header section, prominently displaying \"Smart Home Dashboard.\" Immediately below that, we envision a dedicated Weather Card, providing essential information like the current temperature, an indicative icon, and a brief status update.\n\nMoving down the screen, the central part of our dashboard will feature a two-by-two grid of Device Control Cards. These cards will allow users to manage various smart home devices, including lights, fans, the air conditioner, and the security system. Each card will offer quick access and control for its respective device.\n\nFinally, at the bottom of the screen, we'll include an Energy Usage Summary section, providing a concise overview of the home's power consumption.\n\nThis structured approach ensures a clean, organized, and user-friendly interface. We'll now delve deeper into the specifics, beginning with the Header section.",
+        "edited_text": "Good morning everyone. Today, I'm excited to share a glimpse into our project: the Smart Home Control Dashboard, focusing specifically on its Single Screen User Interface.\n\nOur main objective with this project is to design a compelling, single-page dashboard UI using .NET MAUI and XAML. This dashboard will serve as a visual control panel for a smart home. Our primary focus is on establishing an intuitive layout, a clear visual hierarchy, and creating reusable components, all while ensuring a responsive design across various devices. It's important to note that for this particular phase, we are concentrating purely on the user interface and design elements, not on the underlying application logic or backend functionality.\n\nIn terms of scope and constraints, this project is strictly limited to a single screen. Our layout and styling will be entirely XAML-focused, leveraging its power for declarative UI definitions.\n\nNow, let's look at the proposed UI requirements, starting with the screen layout itself. We plan to utilize a combination of Grid and StackLayouts, including VerticalStackLayouts, to structure the content effectively. Imagine the screen divided into several distinct sections.\n\nAt the very top, we'll have a clear Header section, prominently displaying \"Smart Home Dashboard.\" Immediately below that, we envision a dedicated Weather Card, providing essential information like the current temperature, an indicative icon, and a brief status update.\n\nMoving down the screen, the central part of our dashboard will feature a two-by-two grid of Device Control Cards. These cards will allow users to manage various smart home devices, including lights, fans, the air conditioner, and the security system. Each card will offer quick access and control for its respective device.\n\nFinally, at the bottom of the screen, we'll include an Energy Usage Summary section, providing a concise overview of the home's power consumption.\n\nThis structured approach ensures a clean, organized, and user-friendly interface. We'll now delve deeper into the specifics, beginning with the Header section.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/c846dbe1-3232-4b04-b301-c01617b1c6cb/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\slide_1.wav",
+        "slide_video_url": "/static/videos/c846dbe1-3232-4b04-b301-c01617b1c6cb/slides/slide_1.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\slides\\slide_1.mp4"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Ladies and gentlemen, let's dive into the core components of our application's user interface, highlighting both the design and the underlying XAML concepts we've practiced.\n\nStarting with the very top of our application, you'll find the main app title, often accompanied by a descriptive subtitle such as \"Living Room Overview.\" We've also incorporated an optional icon for quick visual identification. From a technical standpoint, we practiced essential XAML concepts here, including efficient grid column layouts for precise positioning, controlling text appearance with FontSize and FontAttributes, and refining the visual spacing using Margin and Padding to achieve a clean look.\n\nNext, let's examine the Information Card, designed to display crucial details like weather or device status. This visually appealing component features a rounded aesthetic, achieved using either a Frame or Border element, complete with a soft shadow for depth. Inside, you'll see a clear icon paired with relevant text. The key XAML concepts employed here include the use of Frame or Border for the card's structure, applying CornerRadius for the rounded edges, and utilizing a HorizontalStackLayout to neatly arrange the icon and text. We also focused on precise image and label alignment for optimal readability.\n\nMoving on to what we consider the main focus of this interface: the Device Control Cards. We've developed four reusable UI cards, each designed to manage a specific device. Each card includes an intuitive icon, the device name, a clear status label indicating \"ON\" or \"OFF,\" and a toggle switch for user interaction – though for this demonstration, the switch is purely for UI representation without backend logic. These cards are meticulously arranged in a two-column by two-row grid layout. The XAML concepts we honed here were setting up precise grid row and column definitions, implementing the Switch control, ensuring consistent spacing across all cards, and establishing a clear visual hierarchy to guide the user's eye.\n\nFinally, we have the Energy Usage Summary. This section provides a quick overview, typically displaying \"Today's Energy Usage\" through a ProgressBar, complemented by a percentage label for immediate understanding. The primary XAML concept practiced here was, of course, the ProgressBar itself, ensuring it effectively communicates data to the user.\n\nEach of these components demonstrates a thoughtful approach to UI design and a solid grasp of fundamental XAML development principles.",
+        "edited_text": "Ladies and gentlemen, let's dive into the core components of our application's user interface, highlighting both the design and the underlying XAML concepts we've practiced.\n\nStarting with the very top of our application, you'll find the main app title, often accompanied by a descriptive subtitle such as \"Living Room Overview.\" We've also incorporated an optional icon for quick visual identification. From a technical standpoint, we practiced essential XAML concepts here, including efficient grid column layouts for precise positioning, controlling text appearance with FontSize and FontAttributes, and refining the visual spacing using Margin and Padding to achieve a clean look.\n\nNext, let's examine the Information Card, designed to display crucial details like weather or device status. This visually appealing component features a rounded aesthetic, achieved using either a Frame or Border element, complete with a soft shadow for depth. Inside, you'll see a clear icon paired with relevant text. The key XAML concepts employed here include the use of Frame or Border for the card's structure, applying CornerRadius for the rounded edges, and utilizing a HorizontalStackLayout to neatly arrange the icon and text. We also focused on precise image and label alignment for optimal readability.\n\nMoving on to what we consider the main focus of this interface: the Device Control Cards. We've developed four reusable UI cards, each designed to manage a specific device. Each card includes an intuitive icon, the device name, a clear status label indicating \"ON\" or \"OFF,\" and a toggle switch for user interaction – though for this demonstration, the switch is purely for UI representation without backend logic. These cards are meticulously arranged in a two-column by two-row grid layout. The XAML concepts we honed here were setting up precise grid row and column definitions, implementing the Switch control, ensuring consistent spacing across all cards, and establishing a clear visual hierarchy to guide the user's eye.\n\nFinally, we have the Energy Usage Summary. This section provides a quick overview, typically displaying \"Today's Energy Usage\" through a ProgressBar, complemented by a percentage label for immediate understanding. The primary XAML concept practiced here was, of course, the ProgressBar itself, ensuring it effectively communicates data to the user.\n\nEach of these components demonstrates a thoughtful approach to UI design and a solid grasp of fundamental XAML development principles.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/c846dbe1-3232-4b04-b301-c01617b1c6cb/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\slide_2.wav",
+        "slide_video_url": "/static/videos/c846dbe1-3232-4b04-b301-c01617b1c6cb/slides/slide_2.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\slides\\slide_2.mp4"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Alright everyone, let's dive into the details of our next project. We'll be focusing on refining our user interfaces, paying close attention to precise label alignment and ensuring optimal spacing within our StackLayouts for a polished look.\n\nA key aspect of this project involves robust styling. We will leverage the ResourceDictionary, a powerful tool for managing our visual assets. Specifically, you will use it to define all your colors and font sizes, establishing a clear visual hierarchy by defining both a primary and a secondary color for consistent theming throughout the application.\n\nThis approach will provide hands-on practice with essential XAML concepts such as StaticResource, which is fundamental for applying that consistent theming efficiently across your UI.\n\nRegarding your expected deliverables, we're looking for your MainPage dot xaml file and a minimal or empty MainPage dot xaml dot cs file. Crucially, we expect clean, readable XAML code and a responsive layout that adapts seamlessly across different device types, working well on both phones and tablets.\n\nTo help you manage your time effectively, here's a suggested breakdown for the three hours allocated to this task: We recommend forty-five minutes for setting up the layout skeleton using Grid and its sections, followed by sixty minutes dedicated to building out the device cards user interface. Another forty-five minutes should be spent on applying all your styling and ensuring proper spacing, leaving thirty minutes at the end for final polish and alignment adjustments.\n\nUpon completing this project, you will achieve several important learning outcomes. You'll be proficient in designing a complex single-page user interface within MAUI, you'll be able to use the Grid layout effectively for sophisticated arrangements, you'll master applying consistent styling through resources, and you'll gain practical experience in building the card-based layouts commonly seen in real-world applications. This project is designed to equip you with valuable, real-world UI development skills.",
+        "edited_text": "Alright everyone, let's dive into the details of our next project. We'll be focusing on refining our user interfaces, paying close attention to precise label alignment and ensuring optimal spacing within our StackLayouts for a polished look.\n\nA key aspect of this project involves robust styling. We will leverage the ResourceDictionary, a powerful tool for managing our visual assets. Specifically, you will use it to define all your colors and font sizes, establishing a clear visual hierarchy by defining both a primary and a secondary color for consistent theming throughout the application.\n\nThis approach will provide hands-on practice with essential XAML concepts such as StaticResource, which is fundamental for applying that consistent theming efficiently across your UI.\n\nRegarding your expected deliverables, we're looking for your MainPage dot xaml file and a minimal or empty MainPage dot xaml dot cs file. Crucially, we expect clean, readable XAML code and a responsive layout that adapts seamlessly across different device types, working well on both phones and tablets.\n\nTo help you manage your time effectively, here's a suggested breakdown for the three hours allocated to this task: We recommend forty-five minutes for setting up the layout skeleton using Grid and its sections, followed by sixty minutes dedicated to building out the device cards user interface. Another forty-five minutes should be spent on applying all your styling and ensuring proper spacing, leaving thirty minutes at the end for final polish and alignment adjustments.\n\nUpon completing this project, you will achieve several important learning outcomes. You'll be proficient in designing a complex single-page user interface within MAUI, you'll be able to use the Grid layout effectively for sophisticated arrangements, you'll master applying consistent styling through resources, and you'll gain practical experience in building the card-based layouts commonly seen in real-world applications. This project is designed to equip you with valuable, real-world UI development skills.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/c846dbe1-3232-4b04-b301-c01617b1c6cb/slide_3.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\slide_3.wav",
+        "slide_video_url": "/static/videos/c846dbe1-3232-4b04-b301-c01617b1c6cb/slides/slide_3.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\slides\\slide_3.mp4"
+      }
+    ],
+    "created_at": "2026-02-08 23:02:36",
+    "avatar_path": null,
+    "final_video_path": null,
+    "full_audio_url": "/static/audio/c846dbe1-3232-4b04-b301-c01617b1c6cb/full_presentation_e3ac86ea4239441c9f5f101f01e4943f.mp3",
+    "full_audio_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\c846dbe1-3232-4b04-b301-c01617b1c6cb\\full_presentation_e3ac86ea4239441c9f5f101f01e4943f.mp3"
+  },
+  "8928ae98-2cb1-49bd-9d0f-56ba76bc3309": {
+    "id": "8928ae98-2cb1-49bd-9d0f-56ba76bc3309",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Good morning, everyone. I'm excited to introduce our project: the Smart Home Control Dashboard, with a particular focus on its Single Screen User Interface.\n\nOur main objective is to design a clean, single-page dashboard UI using .NET MAUI and XAML. This dashboard will visually represent the central control panel for a smart home. Our primary focus is on the core design principles: creating an intuitive layout, establishing a clear visual hierarchy, developing reusable components, and ensuring a responsive design that works seamlessly across different devices. It's important to note that for this project, our emphasis is on the user interface and design, not on the underlying application logic.\n\nIn terms of scope and constraints, this project is strictly limited to a single screen. All our layout and styling will be exclusively XAML-focused.\n\nNow, let's delve into the UI requirements, beginning with the screen layout itself. We plan to utilize a combination of Grid and StackLayout or VerticalStackLayout to achieve a flexible and well-organized structure. Imagine our screen divided into distinct sections, flowing from top to bottom. At the very top, we will have a clear Header, simply displaying \"Smart Home Dashboard.\" Immediately below that, a dedicated Weather Card will provide essential information, including the current temperature, an indicative icon, and the weather status. Moving further down, the central part of our control panel will feature Device Control Cards, thoughtfully arranged in a two-by-two grid. This section will allow users to manage key smart home devices such as lights, fans, air conditioning units, and the security system. Finally, at the bottom of the screen, we'll include an Energy Usage Summary, offering users a quick overview of their consumption.",
+        "edited_text": "Good morning, everyone. I'm excited to introduce our project: the Smart Home Control Dashboard, with a particular focus on its Single Screen User Interface.\n\n",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\slide_1.wav",
+        "slide_video_url": "/static/videos/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/slides/slide_1.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\slides\\slide_1.mp4"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Let's delve into the structural elements and design principles behind our application's user interface. We will explore how various components are built and the core XAML concepts applied in their creation.\n\nStarting at the top, we have the app title, accompanied by a subtitle such as \"Living Room Overview.\" This initial section allows us to practice fundamental XAML concepts like grid column layout for proper positioning, and styling attributes such as font size and font attributes, along with essential margin and padding for visual spacing.\n\nNext, we move to an information card, perhaps displaying weather or status updates. This visually appealing component is crafted as a rounded card, typically using a Frame or Border element. It elegantly combines an icon with descriptive text and features a subtle, soft shadow to give it depth. Here, we reinforce our understanding of Frame or Border controls, how to apply CornerRadius for those smooth edges, and utilize HorizontalStackLayout for arranging the icon and text seamlessly, ensuring precise image and label alignment.\n\nOur main focus, and arguably the most interactive part of the UI, involves the device control cards. We will create four reusable UI cards, each designed to manage a specific device. Each card will feature an icon, the device name, a status label indicating \"ON\" or \"OFF,\" and a toggle switch for user interaction, though for now, without backend logic. These cards are efficiently arranged within a grid using a simple two-column by two-row layout. This section provides excellent practice with grid row and column definitions, implementing the Switch control, maintaining consistent spacing for a clean look, and establishing a clear visual hierarchy to guide the user's eye.\n\nFinally, we conclude with an energy usage summary. This section prominently features a ProgressBar, perhaps labeled \"Today's Energy Usage,\" alongside a corresponding percentage label. This component is straightforward yet effective, primarily focusing on the practical application of the ProgressBar control in XAML.",
+        "edited_text": "Let's delve into the structural elements and design principles behind our application's user interface. We will explore how various components are built and the core XAML concepts applied in their creation.\n\n",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\slide_2.wav",
+        "slide_video_url": "/static/videos/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/slides/slide_2.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\slides\\slide_2.mp4"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Welcome! Let's walk through the key aspects of our upcoming project, focusing on both design and implementation best practices.\n\nFirst, regarding layout and spacing, we'll be paying close attention to label alignment and StackLayout spacing. These details are crucial for creating a visually balanced and professional user interface.\n\nFor styling, we're standardizing our approach by utilizing a ResourceDictionary. This will house our core colors and font sizes, ensuring consistency across the application. Specifically, you'll define a primary and a secondary color to establish a clear visual brand for your UI.\n\nThrough this, you'll gain hands-on experience with StaticResource, a fundamental XAML concept for referencing shared styles. This practice directly supports our goal of achieving consistent theming throughout the user interface.\n\nYour final submission will include a MainPage.xaml file, with a minimal or empty MainPage.xaml.cs. The emphasis is on clean, readable XAML and, critically, a responsive layout that adapts seamlessly across both phone and tablet devices.\n\nTo help you manage your efforts, we've allocated a three-hour timeframe for this project. We suggest dedicating about 45 minutes to laying out the basic Grid structure and sections, followed by 60 minutes for developing the specific device cards UI. Another 45 minutes should be set aside for styling and fine-tuning spacing, and finally, 30 minutes for polishing and ensuring perfect alignment.\n\nUpon completion, you will have developed several valuable skills. You'll be able to design a complex single-page user interface in MAUI, effectively utilize the Grid layout for sophisticated arrangements, and confidently apply consistent styling through resources. Furthermore, you'll master building card-based layouts, a highly common and essential pattern in modern applications.",
+        "edited_text": "Welcome! Let's walk through the key aspects of our upcoming project, focusing on both design and implementation best practices.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/slide_3.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\slide_3.wav",
+        "slide_video_url": "/static/videos/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/slides/slide_3.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\slides\\slide_3.mp4"
+      }
+    ],
+    "created_at": "2026-02-08 23:18:25",
+    "avatar_path": null,
+    "final_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\base_presentation_64f8a4652eff40ba8cb387bebff277b0.mp4",
+    "full_audio_url": "/static/audio/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/full_presentation_2ec25b4ce2f34c19a46b2dd561d6037e.mp3",
+    "full_audio_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\8928ae98-2cb1-49bd-9d0f-56ba76bc3309\\full_presentation_2ec25b4ce2f34c19a46b2dd561d6037e.mp3",
+    "final_video_url": "/static/videos/8928ae98-2cb1-49bd-9d0f-56ba76bc3309/base_presentation_64f8a4652eff40ba8cb387bebff277b0.mp4"
+  },
+  "2d761c48-ce93-4179-90d7-5c03bab7d524": {
+    "id": "2d761c48-ce93-4179-90d7-5c03bab7d524",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\2d761c48-ce93-4179-90d7-5c03bab7d524\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-08 23:37:01",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "cf3db035-3188-4e26-b257-7adcf7b098dc": {
+    "id": "cf3db035-3188-4e26-b257-7adcf7b098dc",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\cf3db035-3188-4e26-b257-7adcf7b098dc\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 00:06:00",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "76d6cf7e-d1dc-410e-9b25-e67eb541799d": {
+    "id": "76d6cf7e-d1dc-410e-9b25-e67eb541799d",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\76d6cf7e-d1dc-410e-9b25-e67eb541799d\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 00:15:54",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "76abbfc3-291c-41bf-b0bb-148fd76505d9": {
+    "id": "76abbfc3-291c-41bf-b0bb-148fd76505d9",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\76abbfc3-291c-41bf-b0bb-148fd76505d9\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 00:22:11",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "7a912003-301b-4736-b4d4-97cd0b8e4632": {
+    "id": "7a912003-301b-4736-b4d4-97cd0b8e4632",
+    "filename": "Open_Agri.pdf",
+    "file_path": "static/uploads/presentations\\7a912003-301b-4736-b4d4-97cd0b8e4632\\Open_Agri.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Open Agri",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "Ladies and gentlemen, we are here today to explore a truly transformative concept that is reshaping the future of food and farming: Open Agri.\n\nAt its heart, Open Agri represents a powerful movement towards greater transparency, collaboration, and accessibility across the entire agricultural sector. It's about breaking down traditional silos and fostering an environment where data, knowledge, and innovation are shared openly for the benefit of all.\n\nImagine a world where farmers can easily access the latest sustainable practices, where researchers can collaborate on open-source technologies, and where consumers have clear, verifiable information about their food's journey from farm to table. This is the vision that Open Agri aims to realize.\n\nBy embracing principles of openness, we can accelerate innovation, improve efficiency, enhance sustainability, and ultimately empower every stakeholder in the food supply chain. Open Agri is not just a buzzword; it's a strategic imperative for building a more resilient, equitable, and productive agricultural system for generations to come.",
+        "edited_text": "chào mừng các bạn đến với dự án open agri",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "Về dự án của\nchúng tôi\nOpenAgri – Nền tảng hỗ trợ ra quyết định cho người nông dân.\nHiện nay, rất nhiều bà con nông dân vẫn phải dựa vào kinh nghiệm và… may mắn để quyết định: trồng cây gì, khi\nnào gieo, khi nào phun thuốc, khi nào thu hoạch.\nTrong khi đó, thời tiết thay đổi thất thường, sâu bệnh xuất hiện khó lường, giá nông sản lên xuống mỗi ngày. Nếu\nquyết định sai, bà con có thể mất mùa, lỗ vốn, thậm chí nợ nần.\nOpenAgri ra đời với mong muốn trở thành một người trợ lý thông minh cho người nông dân và nhà quản lý, giúp\ngiảm rủi ro, tăng năng suất và tăng thu nhập.\nThay vì phải tự đoán, bà con chỉ cần mở ứng dụng trên điện thoại là có thể:\nXem được tình trạng sức khỏe ruộng của mình qua màu sắc hiển thị trên bản đồ: vùng nào cây đang khỏe,\nvùng nào có dấu hiệu bất thường cần kiểm tra.\nNhận cảnh báo sớm về nguy cơ sâu bệnh tại khu vực của mình, dựa trên dữ liệu lịch sử và điều kiện thời tiết.\nXem thời tiết nông vụ trong 7 ngày tới để quyết định thời điểm gieo trồng, tưới nước, phun thuốc, thu hoạch\ncho phù hợp.\nTheo dõi giá cả một số loại nông sản hằng ngày, giúp lựa chọn thời điểm bán ra hợp lý hơn.\nQuản lý các thửa ruộng, diện tích, loại cây trồng, lịch sử canh tác ngay trên bản đồ, dễ dàng tra cứu và tổng\nhợp.\nVề phía cơ quan quản lý và hợp tác xã, OpenAgri hỗ trợ:\nNắm được bức tranh tổng thể vùng trồng, diện tích, cơ cấu cây trồng.\nTheo dõi tình hình sâu bệnh, năng suất dự kiến, từ đó đưa ra khuyến cáo phù hợp và kịp thời cho bà con.\nCó thêm dữ liệu để lập kế hoạch sản xuất, tiêu thụ, kết nối với doanh nghiệp thu mua.",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "Kính thưa quý vị, nghề nông từ bao đời nay vẫn là trụ cột của đất nước. Tuy nhiên, đằng sau sự cần mẫn là vô vàn thách thức mà bà con nông dân phải đối mặt hàng ngày. Người nông dân của chúng ta thường phải đưa ra những quyết định quan trọng như trồng cây gì, khi nào gieo hạt, khi nào phun thuốc, hay thời điểm vàng để thu hoạch, mà đôi khi chỉ dựa vào kinh nghiệm cha ông truyền lại hoặc thậm chí là may mắn.\n\nTrong bối cảnh biến đổi khí hậu diễn biến phức tạp, sâu bệnh khó lường, và giá nông sản bấp bênh từng ngày, một quyết định sai lầm có thể dẫn đến mất mùa, thua lỗ, thậm chí là gánh nặng nợ nần.\n\nThấu hiểu những khó khăn đó, chúng tôi tự hào giới thiệu OpenAgri – nền tảng hỗ trợ ra quyết định thông minh, được thiết kế để trở thành người trợ lý đắc lực cho bà con nông dân và các nhà quản lý nông nghiệp. Mục tiêu của OpenAgri là giảm thiểu rủi ro, tối ưu hóa năng suất, và cuối cùng là tăng thu nhập bền vững cho người nông dân.\n\nVậy OpenAgri mang lại những gì?\n\nThay vì phải tự mình phán đoán, giờ đây, chỉ với một chiếc điện thoại thông minh, bà con có thể dễ dàng theo dõi sức khỏe của từng thửa ruộng qua màu sắc hiển thị trực quan trên bản đồ số. Vùng nào cây đang phát triển tốt, vùng nào có dấu hiệu bất thường cần kiểm tra sẽ được nhận diện ngay lập tức. Bà con sẽ nhận được cảnh báo sớm về nguy cơ sâu bệnh tại khu vực của mình, dựa trên phân tích dữ liệu lịch sử và điều kiện thời tiết thực tế, giúp chủ động phòng ngừa, giảm thiểu thiệt hại. Kế hoạch canh tác sẽ trở nên chính xác hơn bao giờ hết với dự báo thời tiết nông vụ chi tiết trong bảy ngày tới, hỗ trợ bà con quyết định thời điểm gieo trồng, tưới tiêu, phun thuốc và thu hoạch một cách hợp lý nhất. Không chỉ vậy, việc theo dõi giá cả một số loại nông sản hàng ngày cũng giúp bà con lựa chọn thời điểm bán ra tối ưu, đảm bảo lợi nhuận cao nhất. Tất cả thông tin về thửa ruộng, diện tích, loại cây trồng, và lịch sử canh tác đều được quản lý tập trung trên bản đồ, giúp việc tra cứu và tổng hợp dữ liệu trở nên nhanh chóng và dễ dàng.\n\nKhông chỉ dừng lại ở việc hỗ trợ trực tiếp người nông dân, OpenAgri còn là công cụ hữu ích cho các cơ quan quản lý và hợp tác xã. Họ có thể nắm bắt bức tranh tổng thể về vùng trồng, diện tích, và cơ cấu cây trồng, từ đó đưa ra những định hướng phát triển phù hợp. Việc theo dõi tình hình sâu bệnh, ước tính năng suất dự kiến giúp các nhà quản lý đưa ra khuyến cáo kịp thời và chính xác cho bà con, hạn chế tối đa rủi ro cho toàn vùng. Đặc biệt, OpenAgri cung cấp nguồn dữ liệu quý giá để lập kế hoạch sản xuất, tiêu thụ, và kết nối hiệu quả với các doanh nghiệp thu mua, tạo ra chuỗi giá trị bền vững hơn cho nông sản Việt.\n\nOpenAgri không chỉ là một nền tảng công nghệ, mà là một lời cam kết đồng hành cùng ngành nông nghiệp Việt Nam vươn tới một tương lai hiệu quả và thịnh vượng hơn. Cảm ơn quý vị đã lắng nghe.",
+        "edited_text": "Kính thưa quý vị, nghề nông từ bao đời nay vẫn là trụ cột của đất nước. Tuy nhiên, đằng sau sự cần mẫn là vô vàn thách thức mà bà con nông dân phải đối mặt hàng ngày. Người nông dân của chúng ta thường phải đưa ra những quyết định quan trọng như trồng cây gì, khi nào gieo hạt, khi nào phun thuốc, hay thời điểm vàng để thu hoạch, mà đôi khi chỉ dựa vào kinh nghiệm cha ông truyền lại hoặc thậm chí là may mắn.\n\nTrong bối cảnh biến đổi khí hậu diễn biến phức tạp, sâu bệnh khó lường, và giá nông sản bấp bênh từng ngày, một quyết định sai lầm có thể dẫn đến mất mùa, thua lỗ, thậm chí là gánh nặng nợ nần.\n\nThấu hiểu những khó khăn đó, chúng tôi tự hào giới thiệu OpenAgri – nền tảng hỗ trợ ra quyết định thông minh, được thiết kế để trở thành người trợ lý đắc lực cho bà con nông dân và các nhà quản lý nông nghiệp. Mục tiêu của OpenAgri là giảm thiểu rủi ro, tối ưu hóa năng suất, và cuối cùng là tăng thu nhập bền vững cho người nông dân.\n\nVậy OpenAgri mang lại những gì?\n\nThay vì phải tự mình phán đoán, giờ đây, chỉ với một chiếc điện thoại thông minh, bà con có thể dễ dàng theo dõi sức khỏe của từng thửa ruộng qua màu sắc hiển thị trực quan trên bản đồ số. Vùng nào cây đang phát triển tốt, vùng nào có dấu hiệu bất thường cần kiểm tra sẽ được nhận diện ngay lập tức. Bà con sẽ nhận được cảnh báo sớm về nguy cơ sâu bệnh tại khu vực của mình, dựa trên phân tích dữ liệu lịch sử và điều kiện thời tiết thực tế, giúp chủ động phòng ngừa, giảm thiểu thiệt hại. Kế hoạch canh tác sẽ trở nên chính xác hơn bao giờ hết với dự báo thời tiết nông vụ chi tiết trong bảy ngày tới, hỗ trợ bà con quyết định thời điểm gieo trồng, tưới tiêu, phun thuốc và thu hoạch một cách hợp lý nhất. Không chỉ vậy, việc theo dõi giá cả một số loại nông sản hàng ngày cũng giúp bà con lựa chọn thời điểm bán ra tối ưu, đảm bảo lợi nhuận cao nhất. Tất cả thông tin về thửa ruộng, diện tích, loại cây trồng, và lịch sử canh tác đều được quản lý tập trung trên bản đồ, giúp việc tra cứu và tổng hợp dữ liệu trở nên nhanh chóng và dễ dàng.\n\nKhông chỉ dừng lại ở việc hỗ trợ trực tiếp người nông dân, OpenAgri còn là công cụ hữu ích cho các cơ quan quản lý và hợp tác xã. Họ có thể nắm bắt bức tranh tổng thể về vùng trồng, diện tích, và cơ cấu cây trồng, từ đó đưa ra những định hướng phát triển phù hợp. Việc theo dõi tình hình sâu bệnh, ước tính năng suất dự kiến giúp các nhà quản lý đưa ra khuyến cáo kịp thời và chính xác cho bà con, hạn chế tối đa rủi ro cho toàn vùng. Đặc biệt, OpenAgri cung cấp nguồn dữ liệu quý giá để lập kế hoạch sản xuất, tiêu thụ, và kết nối hiệu quả với các doanh nghiệp thu mua, tạo ra chuỗi giá trị bền vững hơn cho nông sản Việt.\n\nOpenAgri không chỉ là một nền tảng công nghệ, mà là một lời cam kết đồng hành cùng ngành nông nghiệp Việt Nam vươn tới một tương lai hiệu quả và thịnh vượng hơn. Cảm ơn quý vị đã lắng nghe.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "Dự báo thời tiết và\nđưa ra lời khuyên\ncho nông dân\nTrong sản xuất nông nghiệp, chỉ  cần lệch một trận mưa hay một đợt nắng nóng là bà con có thể\nmất trắng cả vụ. Nhưng thực tế, nhiều khi bà con không kịp xem dự báo thời tiết, hoặc bản tin\nchỉ nói chung chung cho cả tỉnh, không sát với ruộng của mình.\nVì vậy, trong ứng dụng OpenAg ri, chúng em xây dựng một mục thời tiết nông vụ riêng cho từng\nkhu ruộng.\nChỉ cần mở điện thoại, bà con sẽ thấy ngay:\nThời tiết hôm nay và 7 ngày tới tại đúng vị trí ruộng của mình: có mưa hay không, nhiệt độ,\nđộ ẩm, khả năng nắng nóng kéo dài…\nNhững cảnh báo ngắn gọn, dễ hiểu, ví dụ như:\n“2–3 ngày tới khả năng mưa lớn, nên hạn chế phun thuốc trừ sâu để tránh bị rửa trôi.”\n“Nắng nóng kéo dài, nên chú ý tưới bổ sung cho lúa/gia tăng che phủ cho rau màu.”\n“Trời âm u, ẩm độ cao, nguy c ơ một số bệnh lá phát triển mạ nh, nên kiểm tra đồng\nruộng thường xuyên hơn.”\nKhông chỉ dừng ở việc “báo thời tiết”, OpenAgri cố gắng dịch thông tin thời tiết thành lời\nkhuyên nông vụ cụ thể cho bà con: nên gieo khi nào, nên tránh phun thuốc vào lúc nào, đâu là\nthời điểm thuận lợi để thu hoạch để giảm rủi ro và tiết kiệm chi phí.\nNhờ đó, thay vì phải đoán “không biết mấy hôm nữa có mưa kh ông”, bà con có thêm một công\ncụ hỗ trợ ra quyết định, giúp chủ động hơn trong canh tác, bảo vệ sức khỏe cây trồng và nâng\ncao năng suất.",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/slide_3.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\slide_3.wav"
+      },
+      {
+        "slide_num": 4,
+        "content": "b ả n  đ ồ  \nv ù n g  t r ồ n g\nN ế u  n h ư  p h ầ n  t h ờ i  t i ế t  v à  l ờ i  k h u y ê n  n ô n g  v ụ  g i ú p  b à  c o n  q u y ế t  đ ị n h  “ k h i  n à o\nl à m ” ,  t h ì  p h ầ n  b ả n  đ ồ  s ẽ  g i ú p  t r ả  l ờ i  c â u  h ỏ i  “ l à m  ở  đ â u ,  t r ê n  d i ệ n  t í c h  n à o ,  t ì n h\nt r ạ n g  r a  s a o ” .\nT r o n g  ứ n g  d ụ n g ,  m ỗ i  t h ử a  r u ộ n g ,  m ỗ i  v ù n g  t r ồ n g  s ẽ  đ ư ợ c  v ẽ  v à  l ư u  l ạ i  t r ê n  b ả n  đ ồ .\nB à  c o n  c ó  t h ể :\nP h ó n g  t o  n g a y  k h u  v ự c  c ủ a  m ì n h ,  k h o a n h  v ù n g  t h ử a  r u ộ n g ,  đ ặ t  t ê n ,  g h i  d i ệ n\nt í c h ,  l o ạ i  c â y  t r ồ n g .\nN h ì n  t r ê n  b ả n  đ ồ  s ẽ  t h ấ y  t o à n  b ộ  h ệ  t h ố n g  r u ộ n g  c ủ a  g i a  đ ì n h :  r u ộ n g  n à o  đ a n g\ng i e o ,  r u ộ n g  n à o  c h u ẩ n  b ị  t h u  h o ạ c h ,  r u ộ n g  n à o  c ó  c ả n h  b á o  s â u  b ệ n h  h o ặ c  t h ờ i\nt i ế t  b ấ t  l ợ i .\nK h i  r a  đ ồ n g ,  c h ỉ  c ầ n  m ở  đ i ệ n  t h o ạ i  l à  x á c  đ ị n h  đ ú n g  v ị  t r í  l ô  t h ử a ,  t r á n h  n h ầ m\nl ẫ n ,  r ấ t  t i ệ n  k h i  l à m  v i ệ c  v ớ i  h ợ p  t á c  x ã  h o ặ c  c á n  b ộ  k ỹ  t h u ậ t .\nV ớ i  h ợ p  t á c  x ã  v à  đ ị a  p h ư ơ n g ,  b ả n  đ ồ  g i ú p :\nN h ì n  t h ấ y  b ứ c  t r a n h  c h u n g  c ủ a  c ả  v ù n g :  d i ệ n  t í c h ,  c ơ  c ấ u  c â y  t r ồ n g ,  k h u  v ự c\nđ a n g  g ặ p  r ủ i  r o .\nD ễ  d à n g  l ậ p  k ế  h o ạ c h  h ỗ  t r ợ ,  p h â n  b ổ  v ậ t  t ư ,  l ê n  l ị c h  p h u n  p h ò n g ,  t h u  h o ạ c h  t ậ p\nt r u n g .",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 5,
+        "content": "C h ẩ n  đ o á n  b ệ n h\nt r ê n  c â y  t r ồ n g\nT r o n g  t h ự c  t ế ,  k h ô n g  p h ả i  b à  c o n  n à o  c ũ n g  c ó  đ i ề u  k i ệ n  g ặ p  c á n  b ộ  k ỹ\nt h u ậ t  t h ư ờ n g  x u y ê n ,  n h i ề u  l o ạ i  b ệ n h  l á  n h ì n  k h á  g i ố n g  n h a u ,  n ế u  đ o á n\ns a i  v à  p h u n  n h ầ m  t h u ố c  t h ì  t ố n  t i ề n  m à  b ệ n h  v ẫ n  k h ô n g  k h ỏ i ,  t h ậ m  c h í\nc â y  c ò n  y ế u  h ơ n .\nV ớ i  O p e n A g r i ,  b à  c o n  c h ỉ  c ầ n  d ù n g  đ i ệ n  t h o ạ i  c h ụ p  l ạ i  h ì n h  c h i ế c  l á\nđ a n g  b ị  b ệ n h ,  s a u  đ ó  g ử i  l ê n  ứ n g  d ụ n g .  H ệ  t h ố n g  s ẽ  s o  s á n h  v ớ i  k h o\nh ì n h  ả n h  đ ã  đ ư ợ c  “ h ọ c ”  t r ư ớ c  đ ó ,  r ồ i  đ ư a  r a  g ợ i  ý :  l á  đ a n g  c ó  d ấ u  h i ệ u\ng i ố n g  v ớ i  m ộ t  s ố  l o ạ i  b ệ n h  n à o ,  t h ư ờ n g  g ặ p  t r ê n  l o ạ i  c â y  g ì ,  ở  g i a i  đ o ạ n\nn à o .\nT r ê n  m à n  h ì n h ,  b à  c o n  s ẽ  n h ậ n  đ ư ợ c  m ộ t  s ố  p h ư ơ n g  á n  b ệ n h  c ó  k h ả\nn ă n g  c a o ,  k è m  t h e o  m ô  t ả  t r i ệ u  c h ứ n g  d ễ  h i ể u  v à  g ợ i  ý  h ư ớ n g  x ử  l ý  c ơ\nb ả n  ( v í  d ụ :  n ê n  k i ể m  t r a  t h ê m  g ì ,  n ê n  h ỏ i  c á n  b ộ  k ỹ  t h u ậ t  v ề  l o ạ i  t h u ố c\nn à o ,  c ầ n  c h ú  ý  đ i ề u  k i ệ n  ẩ m  đ ộ ,  t h o á t  n ư ớ c … ) .\nM ụ c  t i ê u  c ủ a  t í n h  n ă n g  n à y  k h ô n g  p h ả i  l à  t h a y  t h ế  c h u y ê n  g i a ,  m à  l à\ng i ú p  b à  c o n  “ n g h i  n g ờ  đ ú n g  h ư ớ n g ”  s ớ m  h ơ n ,  t r á n h  đ ể  b ệ n h  l â y  l a n\nr ộ n g  m ớ i  p h á t  h i ệ n .  N h ờ  đ ó ,  b à  c o n  c ó  t h ể  t i ế t  k i ệ m  c h i  p h í  t h u ố c ,  g i ả m\ns ố  l ầ n  p h u n ,  b ả o  v ệ  s ứ c  k h ỏ e  c h o  m ì n h  v à  m ô i  t r ư ờ n g ,  đ ồ n g  t h ờ i  g i ữ\nđ ư ợ c  n ă n g  s u ấ t  v à  c h ấ t  l ư ợ n g  n ô n g  s ả n  t ố t  h ơ n .",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/slide_5.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\slide_5.wav"
+      },
+      {
+        "slide_num": 6,
+        "content": "D ự  b á o  r ủ i  r o\nT r o n g  s ả n  x u ấ t ,  đ i ề u  b à  c o n  l o  n h ấ t  k h ô n g  c h ỉ  l à  “ h i ệ n  t ạ i  đ a n g  b ị  g ì ”  m à  l à  “ s ắ p  t ớ i  c ó\nn g u y  c ơ  g ì  k h ô n g ” :  c ó  đ ợ t  s â u  b ệ n h  n à o  d ễ  b ù n g  l ê n ,  c ó  g i a i  đ o ạ n  t h ờ i  t i ế t  n à o  b ấ t  l ợ i\nc h o  c â y  t r ồ n g ,  c ó  n g u y  c ơ  m ấ t  m ù a  ở  k h u  v ự c  n à o …  N ế u  b i ế t  t r ư ớ c ,  b à  c o n  c ó  t h ể  c h ủ\nđ ộ n g  p h ò n g  h ơ n  l à  c h ữ a .\nT ừ  c á c  n g u ồ n  d ữ  l i ệ u  l ị c h  s ử  v ề  s â u  b ệ n h ,  t h ờ i  t i ế t  v à  v ù n g  t r ồ n g ,  h ệ  t h ố n g  s ẽ  t ổ n g\nh ợ p  l ạ i  t h à n h  n h ữ n g  c ả n h  b á o  r ủ i  r o  r ấ t  d ễ  h i ể u ,  v í  d ụ :\n“ T r o n g  7 – 1 0  n g à y  t ớ i ,  k h u  v ự c  n à y  c ó  n g u y  c ơ  c a o  x u ấ t  h i ệ n  s â u / b ệ n h  X  t r ê n  c â y\nt r ồ n g  Y . ”\n“ Đ ộ  ẩ m  c a o ,  m ư a  k é o  d à i ,  n g u y  c ơ  b ệ n h  l á  t ă n g ,  n ê n  k i ể m  t r a  đ ồ n g  r u ộ n g  t h ư ờ n g\nx u y ê n  h ơ n . ”\n“ T h ờ i  g i a n  n à y ,  n ế u  g i e o  t r ồ n g  m u ộ n ,  n g u y  c ơ  g ặ p  h ạ n  c u ố i  v ụ  s ẽ  c a o  h ơ n . ”\nT h a y  v ì  b ắ t  b à  c o n  đ ọ c  n h ữ n g  b á o  c á o  d à i  v à  p h ứ c  t ạ p ,  I C T U - O p e n A g r i  h i ể n  t h ị  m ứ c\nđ ộ  r ủ i  r o  t h e o  m à u  s ắ c ,  t h e o  k h u  v ự c ,  k è m  t h e o  l ờ i  k h u y ê n  c ụ  t h ể :  n ê n  t ă n g  c ư ờ n g\nt h ă m  đ ồ n g ,  n ê n  c h u ẩ n  b ị  p h ư ơ n g  á n  p h ò n g  t r ừ ,  h a y  n ê n  đ i ề u  c h ỉ n h  l ị c h  g i e o  t r ồ n g .\nN h ờ  v ậ y ,  n g ư ờ i  n ô n g  d â n  v à  h ợ p  t á c  x ã  k h ô n g  c ò n  b ị  đ ộ n g  c h ạ y  t h e o  t h ờ i  t i ế t  v à  s â u\nb ệ n h ,  m à  c ó  t h ê m  m ộ t  c ô n g  c ụ  d ự  b á o  s ớ m ,  g i ú p  g i ả m  t h i ệ t  h ạ i ,  t ố i  ư u  c h i  p h í  v à  ổ n\nđ ị n h  n ă n g  s u ấ t  c h o  c ả  v ụ .",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/slide_6.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\slide_6.wav"
+      },
+      {
+        "slide_num": 7,
+        "content": "Cảm ơnvì lắngnghe",
+        "notes": "",
+        "total_slides": 7,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/slide_7.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\slide_7.wav"
+      }
+    ],
+    "created_at": "2026-02-09 00:24:25",
+    "avatar_path": null,
+    "final_video_path": null,
+    "full_audio_url": "/static/audio/7a912003-301b-4736-b4d4-97cd0b8e4632/full_presentation_c802d3e67d264953a12728991aa12a52.mp3",
+    "full_audio_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\7a912003-301b-4736-b4d4-97cd0b8e4632\\full_presentation_c802d3e67d264953a12728991aa12a52.mp3"
+  },
+  "39622f32-a104-47d5-a5b3-699ce9e2ad08": {
+    "id": "39622f32-a104-47d5-a5b3-699ce9e2ad08",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\39622f32-a104-47d5-a5b3-699ce9e2ad08\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:27:37",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "02f215ab-0981-4cef-85d3-1bc44655e4ae": {
+    "id": "02f215ab-0981-4cef-85d3-1bc44655e4ae",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\02f215ab-0981-4cef-85d3-1bc44655e4ae\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:29:38",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "6a95dcab-3041-42ce-8f8a-b410d6f4fd0e": {
+    "id": "6a95dcab-3041-42ce-8f8a-b410d6f4fd0e",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\6a95dcab-3041-42ce-8f8a-b410d6f4fd0e\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:34:10",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "c5f04f02-cb5a-43e5-b618-be54c73d811f": {
+    "id": "c5f04f02-cb5a-43e5-b618-be54c73d811f",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\c5f04f02-cb5a-43e5-b618-be54c73d811f\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:37:40",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "77f52971-aaca-44e1-a529-9c44e9059a81": {
+    "id": "77f52971-aaca-44e1-a529-9c44e9059a81",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\77f52971-aaca-44e1-a529-9c44e9059a81\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Welcome, everyone. Today, I am pleased to introduce you to our project: the Smart Home Control Dashboard, with a particular focus on its single-screen user interface.\n\nOur primary objective for this project is to design a compelling single-page dashboard UI. We are leveraging the power of .NET MAUI and XAML to create a visual representation of a smart home's control panel. The core emphasis here is on fundamental UI and UX principles: achieving an excellent layout, establishing a clear visual hierarchy, building reusable components, and ensuring a responsive design that looks great on any device. It is crucial to note that our focus is entirely on the front-end user experience and design, not on the underlying application logic or backend functionality.\n\nTo keep our efforts targeted, we have defined a clear scope and set some constraints. This project will concentrate solely on a single screen. Furthermore, our approach is heavily XAML-focused, meaning all layout and styling will be handled declaratively within XAML.\n\nLet us now dive into the UI requirements, starting with the overall screen layout. We will be utilizing a combination of Grid and StackLayout or VerticalStackLayout to structure our interface effectively. Imagine the screen divided into distinct, logical sections.\n\nAt the very top, we will have a prominent Header, clearly labeled \"Smart Home Dashboard.\" Below that, occupying its own section, will be a concise Weather Card, displaying essential information like the current temperature, an icon representing current conditions, and a status message.\n\nMoving down, the bulk of our interactive elements will reside in the Device Control Cards. These will be arranged in a clear two-by-two grid, allowing for easy access and management of various smart home devices. This includes dedicated controls for lighting, the fan, the air conditioner, and the security system. Finally, at the bottom of the screen, we will feature an Energy Usage Summary, providing users with a quick overview of their consumption.\n\nFollowing this, we will delve deeper into the specifics of the Header Section design.",
+        "edited_text": "Welcome, everyone. Today, I am pleased to introduce you to our project: the Smart Home Control Dashboard, with a particular focus on its single-screen user interface.\n",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Good morning everyone. Today, we're going to walk through the user interface elements of our application and highlight the key XAML concepts employed in their creation.\n\nStarting at the very top, we have our application's main title area. This includes the app title itself, a descriptive subtitle—like 'Living Room Overview'—and an optional icon for visual branding. To structure this header effectively, we practiced fundamental XAML concepts such as grid column layout for precise positioning, along with setting font sizes and attributes for clear typography, and carefully adjusting margins and padding to ensure a clean visual separation.\n\nNext, we incorporated an information card, perfect for displaying dynamic content like weather updates or status messages. This card features a rounded design, typically achieved using a Frame or Border element, complete with an icon and accompanying text. To give it a modern feel, we applied a soft shadow. The XAML techniques here involved defining the CornerRadius for that smooth, rounded look, utilizing a HorizontalStackLayout to arrange the icon and text side-by-side, and ensuring proper alignment between the image and label.\n\nMoving on to a central component of our interface, and indeed a main focus of this exercise, are the device control cards. We designed four reusable UI cards, each serving as a control for a specific device. Each card includes an icon, the device's name, a status label indicating 'ON' or 'OFF', and an interactive toggle switch. While the toggle switch is purely for UI demonstration in this context, it showcases a common interactive element. These four cards are neatly organized within a grid layout, specifically a two-column by two-row configuration. Crafting these cards reinforced our understanding of grid row and column definitions, the implementation of the Switch control, and the importance of consistent spacing and visual hierarchy to create an intuitive and pleasing user experience.\n\nFinally, we have an energy usage summary section. This provides a quick overview, featuring a ProgressBar—for example, showing 'Today's Energy Usage'—alongside a percentage label. This element primarily allowed us to practice the implementation and styling of the ProgressBar control in XAML.\n\nIn essence, these components demonstrate how various XAML concepts combine to build a functional, aesthetically pleasing, and user-friendly interface. Thank you.",
+        "edited_text": "Good morning everyone. Today, we're going to walk through the user interface elements of our application and highlight the key XAML concepts employed in their creation.\n\n",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Let's review the key requirements and expectations for this project. First, pay close attention to the fundamental aspects of your user interface. We'll be focusing on precise label alignment and effective spacing within your StackLayouts to ensure a clean and professional appearance.\n\nMoving on to styling, a crucial requirement is the consistent use of a ResourceDictionary. This is where you'll define your application's colors and font sizes. Specifically, please establish both a primary and a secondary color to maintain a cohesive visual theme throughout your application. In doing so, you'll gain practical experience with essential XAML concepts, particularly the use of StaticResource for applying these defined styles consistently across your UI. This approach is key to achieving consistent theming, making your application look polished and professional.\n\nRegarding deliverables, we expect a well-structured MainPage.xaml file. While MainPage.xaml.cs can remain empty or minimal, the XAML itself must be clean and highly readable. Furthermore, your layout needs to be responsive, functioning seamlessly across both phone and tablet devices.\n\nTo help you manage your time effectively, we've provided a suggested breakdown for the three-hour project. Allocate approximately 45 minutes for the initial layout skeleton using Grid and sections, followed by 60 minutes for building the device cards user interface. Dedicate another 45 minutes to styling and spacing, and finally, 30 minutes for polish and alignment to refine the user experience.\n\nUpon successful completion of this project, you will have achieved several key learning outcomes. You'll be proficient in designing a complex single-page user interface within MAUI, effectively utilizing the Grid layout. You'll also master applying consistent styling through resources and gain valuable experience in building the card-based layouts that are so commonly used in modern real-world applications. These guidelines will ensure a successful and valuable learning experience.",
+        "edited_text": "Let's review the key requirements and expectations for this project. First, pay close attention to the fundamental aspects of your user interface. We'll be focusing on precise label alignment and effective spacing within your StackLayouts to ensure a clean and professional appearance.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:38:00",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "ec2367c7-8290-46b6-a8a8-e11348451665": {
+    "id": "ec2367c7-8290-46b6-a8a8-e11348451665",
+    "filename": "Chung_nhan_nhom.pdf",
+    "file_path": "static/uploads/presentations\\ec2367c7-8290-46b6-a8a8-e11348451665\\Chung_nhan_nhom.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nN G U Y Ễ N  K Ế  L Ư Ơ N G  –  C N T T  K 2 1  C L C\nT R I Ệ U  H U Y  M Ạ N H  –  C N T T  K 2 1  C L C\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  N H Ì  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nN G U Y Ễ N  B Á  H Ư N G  –  C N T T  K 2 1  C L C\nĐ Ỗ  T Ú  D Ư Ơ N G  –  C N T T  K 2 1  C L C\nN G U Y Ễ N  G I A  D Ư Ơ N G  –  C N T T  K 2 1  C L C\nN G U Y Ễ N  T H Ị  A N H  L Ý  –  C N T T  K 2 1  C L C\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  K H U Y Ê \u0000 N  K Í C H  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nP H Ạ M  C Ô N G  H O À N G  A N H  –  C N T T  K 2 1 A\nT R I Ệ U  M Ạ N H  T H Ắ N G  –  C N T T  K 2 1 A\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  K H U Y Ê \u0000 N  K Í C H  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 4,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nN G U Y Ễ N  V Ă N  T U Â N  –  C N T T Q T  K 2 2 A\nĐ Ỗ  V Ă N  N G U Y Ê N  –  C N T T Q T  K 2 2 A\nT R Ầ N  T H U Ỳ  D U Y Ê N  –  C N T T Q T  K 2 2 A\nL Ư U  H Ồ N G  S Ơ N  –  C N T T Q T  K 2 2 A\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  K H U Y Ê \u0000 N  K Í C H  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 5,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nN G U Y Ễ N  V Ă N  Đ Ứ C  –  C N T T Q T  K 2 2 A\nG I Á P  Đ Ứ C  A N H  –  C N T T Q T  K 2 2 A\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  K H U Y Ê \u0000 N  K Í C H  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 6,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nT R Ầ N  T H Ị  H U Y Ề N  T R A N G  –  C N T T Q T  K 2 2 B\nP H Ạ M  N G U Y Ê N  A N  –  C N T T Q T  K 2 2 B\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  B A  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 7,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nN G U Y Ễ N  Đ Ạ I  H O À N G  –  C N T T Q T  K 2 2 B\nB Ù I  T H U  H Ư Ơ N G  –  C N T T Q T  K 2 2 B\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  N H Ì  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 8,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nN G U Y Ễ N  T H À N H  T R U N G  –  C N T T Q T  K 2 2 A\nH O À N G  M Ạ N H  C Ư Ờ N G  –  C N T T Q T  K 2 2 B\nN G U Y Ễ N  T R Ầ N  A N H  H O À N G  –  C N T T Q T  K 2 2 B\nL Ư U  T H Ế  H À  –  C N T T Q T  K 2 2 B\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  N H Â \u0000 T  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 9,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nP H Ạ M  N G Ọ C  Q U Ý  –  K T P M  K 2 1 C\nN G U Y Ễ N  M Ạ N H  C Ư Ờ N G  –  K T P M  K 2 1 C\nĐ À O  T I Ế N  D Ũ N G  –  K T P M  K 2 1 C\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  B A  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 10,
+        "content": "“ P H Á T  T R I Ể N  Ứ N G  D Ụ N G  A I\nT R O N G  G I Á O  D Ụ C  2 0 2 5 ”\nV Ũ  K I M  T H I Ệ N  –  K T P M  K 2 2 A\nT Ạ  N H Ư  Q U Â N  –  K T P M  K 2 2 A\nN G Ô  T H A N H  S Ơ N  –  K T P M  K 2 2 A\nĐ Ạ I H Ọ C THÁI NGUYÊN\nC H Ứ N G  N H Ậ N\nT R Ư Ờ N G  Đ Ạ I  H Ọ C  C Ô N G  N G H Ệ  T H Ô N G  T I N  V À  T R U Y Ê \u0000 N  T H Ô N G\nĐ Ã  Đ Ạ T  G I Ả I  B A  C U Ộ C  T H I",
+        "notes": "",
+        "total_slides": 10,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:39:19",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "63f8593c-98bd-4c65-be19-dc62436db6ae": {
+    "id": "63f8593c-98bd-4c65-be19-dc62436db6ae",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\63f8593c-98bd-4c65-be19-dc62436db6ae\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "đây là dự án MAUI",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "xin chào các bạn",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "các bạn khỏe không",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 11:39:36",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "dcf082f2-7e02-4bf0-a659-6e09a6dcbed9": {
+    "id": "dcf082f2-7e02-4bf0-a659-6e09a6dcbed9",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "hello everyone",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\slide_1.wav",
+        "slide_video_url": "/static/videos/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/slides/slide_1.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\slides\\slide_1.mp4"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "today i will present about",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\slide_2.wav",
+        "slide_video_url": "/static/videos/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/slides/slide_2.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\slides\\slide_2.mp4"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "my name is Ha",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/slide_3.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\slide_3.wav",
+        "slide_video_url": "/static/videos/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/slides/slide_3.mp4",
+        "slide_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\slides\\slide_3.mp4"
+      }
+    ],
+    "created_at": "2026-02-09 11:40:31",
+    "avatar_path": null,
+    "final_video_path": "D:\\CreateVideo-Website\\app\\../static\\videos\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\base_presentation_e799c19c2414414085d032314b145cbb.mp4",
+    "full_audio_url": "/static/audio/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/full_presentation_8aecca55e1304259911393b50ab10c1a.mp3",
+    "full_audio_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\dcf082f2-7e02-4bf0-a659-6e09a6dcbed9\\full_presentation_8aecca55e1304259911393b50ab10c1a.mp3",
+    "final_video_url": "/static/videos/dcf082f2-7e02-4bf0-a659-6e09a6dcbed9/base_presentation_e799c19c2414414085d032314b145cbb.mp4"
+  },
+  "213f067a-ce7d-4c7e-a0a5-fe2441a47b14": {
+    "id": "213f067a-ce7d-4c7e-a0a5-fe2441a47b14",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\213f067a-ce7d-4c7e-a0a5-fe2441a47b14\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/213f067a-ce7d-4c7e-a0a5-fe2441a47b14/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\213f067a-ce7d-4c7e-a0a5-fe2441a47b14\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/213f067a-ce7d-4c7e-a0a5-fe2441a47b14/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\213f067a-ce7d-4c7e-a0a5-fe2441a47b14\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:40:56",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "d2990cee-3dbe-4347-a237-98a4eb00a465": {
+    "id": "d2990cee-3dbe-4347-a237-98a4eb00a465",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\d2990cee-3dbe-4347-a237-98a4eb00a465\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:45:35",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "2994513d-3482-4452-a096-8c225305bc7f": {
+    "id": "2994513d-3482-4452-a096-8c225305bc7f",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\2994513d-3482-4452-a096-8c225305bc7f\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "hello",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/2994513d-3482-4452-a096-8c225305bc7f/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\2994513d-3482-4452-a096-8c225305bc7f\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "hi everyone",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/2994513d-3482-4452-a096-8c225305bc7f/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\2994513d-3482-4452-a096-8c225305bc7f\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "Alright, let's dive into the specifics for this project. When building our user interface, we'll pay close attention to details like precise label alignment and effective spacing within our StackLayouts to ensure a clean and professional look across the board.\n\nFor styling, we have some clear requirements. We'll be utilizing a ResourceDictionary, which is absolutely crucial for maintaining consistency throughout our application. Specifically, all colors and font sizes should be defined within this dictionary. Make sure to establish both a primary and a secondary color to guide your overall design choices and create a cohesive visual theme.\n\nIn terms of XAML concepts, this project will give you excellent practice with StaticResource, which you'll use to efficiently access those defined styles from your ResourceDictionary. The ultimate goal here is to achieve consistent theming across your entire application, creating a unified and polished user experience.\n\nNow, regarding the expected deliverables. We're looking for your MainPage.xaml file. The MainPage.xaml.cs file can be empty or contain only minimal code, as the primary focus is on the UI implementation in XAML. Your XAML should be clean and readable, and importantly, the layout must be responsive, working seamlessly across both phone and tablet devices.\n\nTo help you manage your time effectively, here's a suggested breakdown for the three hours allocated for this task. We recommend spending about 45 minutes on setting up the fundamental layout skeleton using Grid and defining your main sections. Dedicate an hour to building out the device cards user interface. Then, allocate 45 minutes specifically for applying all your styling and ensuring proper spacing. Finally, allow 30 minutes for polish and alignment, making sure everything looks perfectly finished.\n\nBy the time you complete this project, you'll have gained several valuable learning outcomes. You'll be able to design a complex single-page UI within MAUI, effectively use the Grid layout panel for sophisticated arrangements, apply consistent styling through the power of resources, and confidently build the kind of card-based layouts that are commonly found in real-world applications. This will be a significant addition to your development skillset.",
+        "edited_text": "Alright, let's dive into the specifics for this project. When building our user interface, we'll pay close attention to details like precise label alignment and effective spacing within our StackLayouts to ensure a clean and professional look across the board.\n\nFor styling, we have some clear requirements. We'll be utilizing a ResourceDictionary, which is absolutely crucial for maintaining consistency throughout our application. Specifically, all colors and font sizes should be defined within this dictionary. Make sure to establish both a primary and a secondary color to guide your overall design choices and create a cohesive visual theme.\n\nIn terms of XAML concepts, this project will give you excellent practice with StaticResource, which you'll use to efficiently access those defined styles from your ResourceDictionary. The ultimate goal here is to achieve consistent theming across your entire application, creating a unified and polished user experience.\n\nNow, regarding the expected deliverables. We're looking for your MainPage.xaml file. The MainPage.xaml.cs file can be empty or contain only minimal code, as the primary focus is on the UI implementation in XAML. Your XAML should be clean and readable, and importantly, the layout must be responsive, working seamlessly across both phone and tablet devices.\n\nTo help you manage your time effectively, here's a suggested breakdown for the three hours allocated for this task. We recommend spending about 45 minutes on setting up the fundamental layout skeleton using Grid and defining your main sections. Dedicate an hour to building out the device cards user interface. Then, allocate 45 minutes specifically for applying all your styling and ensuring proper spacing. Finally, allow 30 minutes for polish and alignment, making sure everything looks perfectly finished.\n\nBy the time you complete this project, you'll have gained several valuable learning outcomes. You'll be able to design a complex single-page UI within MAUI, effectively use the Grid layout panel for sophisticated arrangements, apply consistent styling through the power of resources, and confidently build the kind of card-based layouts that are commonly found in real-world applications. This will be a significant addition to your development skillset.",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:48:11",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "81f9dd94-2276-4ea1-8a61-e7bb7ee611bf": {
+    "id": "81f9dd94-2276-4ea1-8a61-e7bb7ee611bf",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\81f9dd94-2276-4ea1-8a61-e7bb7ee611bf\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:50:08",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "0efdb93a-a5e5-42a9-89ea-2df127f817cc": {
+    "id": "0efdb93a-a5e5-42a9-89ea-2df127f817cc",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\0efdb93a-a5e5-42a9-89ea-2df127f817cc\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:51:30",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "c111ba84-e4d8-4e60-a79b-f7f9e3047ecc": {
+    "id": "c111ba84-e4d8-4e60-a79b-f7f9e3047ecc",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\c111ba84-e4d8-4e60-a79b-f7f9e3047ecc\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:53:36",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "6c0e88bb-a0e9-460d-9919-a7a0f7c6ee0f": {
+    "id": "6c0e88bb-a0e9-460d-9919-a7a0f7c6ee0f",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\6c0e88bb-a0e9-460d-9919-a7a0f7c6ee0f\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:54:32",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "ef9817d7-b126-4c48-9ac2-46b76f100803": {
+    "id": "ef9817d7-b126-4c48-9ac2-46b76f100803",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\ef9817d7-b126-4c48-9ac2-46b76f100803\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 16:58:49",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "9fd11679-9b1e-4d71-9041-d9dc8a8ac40e": {
+    "id": "9fd11679-9b1e-4d71-9041-d9dc8a8ac40e",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\9fd11679-9b1e-4d71-9041-d9dc8a8ac40e\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "hello everyone, my name is Ha",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/9fd11679-9b1e-4d71-9041-d9dc8a8ac40e/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\9fd11679-9b1e-4d71-9041-d9dc8a8ac40e\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "Hi everyone",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/9fd11679-9b1e-4d71-9041-d9dc8a8ac40e/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\9fd11679-9b1e-4d71-9041-d9dc8a8ac40e\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "good bye",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:01:39",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "befdaed0-3b3e-4cac-91df-65428b31e3d5": {
+    "id": "befdaed0-3b3e-4cac-91df-65428b31e3d5",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\befdaed0-3b3e-4cac-91df-65428b31e3d5\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/befdaed0-3b3e-4cac-91df-65428b31e3d5/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\befdaed0-3b3e-4cac-91df-65428b31e3d5\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/befdaed0-3b3e-4cac-91df-65428b31e3d5/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\befdaed0-3b3e-4cac-91df-65428b31e3d5\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:08:05",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "f3295c2f-ddfb-495a-aa97-418c82fbdf2f": {
+    "id": "f3295c2f-ddfb-495a-aa97-418c82fbdf2f",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\f3295c2f-ddfb-495a-aa97-418c82fbdf2f\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/f3295c2f-ddfb-495a-aa97-418c82fbdf2f/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\f3295c2f-ddfb-495a-aa97-418c82fbdf2f\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/f3295c2f-ddfb-495a-aa97-418c82fbdf2f/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\f3295c2f-ddfb-495a-aa97-418c82fbdf2f\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:12:07",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "81253cc2-d3f9-40fe-a8ed-63105a074477": {
+    "id": "81253cc2-d3f9-40fe-a8ed-63105a074477",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\81253cc2-d3f9-40fe-a8ed-63105a074477\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:15:04",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "86a38280-7066-4d65-9477-0802be2a17af": {
+    "id": "86a38280-7066-4d65-9477-0802be2a17af",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\86a38280-7066-4d65-9477-0802be2a17af\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:27:20",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b": {
+    "id": "5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\5b75aa0c-0a00-45c6-91ab-cc4e20d59c4b\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "goodbye everyone",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:32:21",
+    "avatar_path": null,
+    "final_video_path": null
+  },
+  "8de9aac9-a083-4190-8f8c-3affda1ee80b": {
+    "id": "8de9aac9-a083-4190-8f8c-3affda1ee80b",
+    "filename": "MAUI_Project_1.pdf",
+    "file_path": "static/uploads/presentations\\8de9aac9-a083-4190-8f8c-3affda1ee80b\\MAUI_Project_1.pdf",
+    "type": ".pdf",
+    "slides": [
+      {
+        "slide_num": 1,
+        "content": "Project Title \nSmart Home Control Dashboard (Single Screen UI) \n \nProject Objective \nDesign a single-page dashboard UI using .NET MAUI + XAML that visually represents the control \npanel of a smart home. The focus is on layout, visual hierarchy, reusable components, and \nresponsive design, not application logic. \n \nScope & Constraints \nSingle screen only \nXAML-focused layout & styling \n \nUI Requirements \n1. Screen Layout \nUse Grid + StackLayout / VerticalStackLayout \n \n------------------------------------------------- \n|  Header: Smart Home Dashboard       | \n|-----------------------------------------------| \n|  Weather Card (Temp, Icon, Status)    | \n|-----------------------------------------------| \n|  Device Control Cards (2 x 2 Grid)        | \n|  - Light                                                               | \n|  - Fan                                                                 | \n|  - Air Conditioner                                         | \n|  - Security                                                        | \n|---------------------------------------------- | \n|  Energy Usage Summary                          | \n------------------------------------------------- \n \n2. Header Section",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/8de9aac9-a083-4190-8f8c-3affda1ee80b/slide_1.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\8de9aac9-a083-4190-8f8c-3affda1ee80b\\slide_1.wav"
+      },
+      {
+        "slide_num": 2,
+        "content": "App title \nSubtitle (e.g. “Living Room Overview”) \nOptional icon (Image) \nXAML concepts practiced: \n- Grid column layout \n- FontSize, FontAttributes \n- Margin & Padding \n3. Information Card (Weather / Status) \nRounded card using Frame or Border \nIcon + text \nSoft shadow \nXAML concepts practiced: \n- Frame / Border \n- CornerRadius \n- HorizontalStackLayout \n- Image + Label alignment \n4. Device Control Cards (Main Focus) \nCreate 4 reusable UI cards, each with: \n- Icon \n- Device name \n- Status label (ON / OFF) \n- Toggle Switch (UI only, no logic) \nLayout: Grid with 2 columns × 2 rows \nXAML concepts practiced: \n- Grid row/column definitions \n- Switch control \n- Consistent spacing \n- Visual hierarchy \n5. Energy Usage Summary \n- ProgressBar (e.g. “Today’s Energy Usage”) \n- Percentage label \nXAML concepts practiced: \n- ProgressBar",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending",
+        "audio_url": "/static/audio/8de9aac9-a083-4190-8f8c-3affda1ee80b/slide_2.wav",
+        "audio_file_path": "D:\\CreateVideo-Website\\app\\../static\\audio\\8de9aac9-a083-4190-8f8c-3affda1ee80b\\slide_2.wav"
+      },
+      {
+        "slide_num": 3,
+        "content": "- Label alignment \n- StackLayout spacing \nStyling Requirements \n- Use ResourceDictionary for: \no Colors \no Font sizes \n- Define: \no Primary color \no Secondary color \nXAML concepts practiced: \n- StaticResource \n- Consistent theming \nExpected Deliverables \n- MainPage.xaml \n- MainPage.xaml.cs (empty or minimal) \n- Clean, readable XAML \n- Responsive layout (works on phone & tablet) \nTime Breakdown (3 Hours) \nTask Time \nLayout skeleton (Grid + sections) 45 min \nDevice cards UI 60 min \nStyling & spacing 45 min \nPolish & alignment 30 min \nLearning Outcomes \n- After completing this project, the student will be able to: \n- Design a complex single-page UI in MAUI \n- Use Grid effectively \n- Apply consistent styling via resources \n- Build card-based layouts commonly used in real apps",
+        "notes": "",
+        "total_slides": 3,
+        "generated_text": "",
+        "edited_text": "",
+        "audio_path": null,
+        "video_path": null,
+        "status": "pending"
+      }
+    ],
+    "created_at": "2026-02-09 17:36:07",
+    "avatar_path": null,
+    "final_video_path": null
   }
 }

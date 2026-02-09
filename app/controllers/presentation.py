@@ -9,6 +9,8 @@ from app.services.audio_service import get_audio_service
 from app.services.video_generator import VideoGenerationService
 from app.services.presentation_video_exporter import PresentationVideoExporter
 
+print("DEBUG: Importing PresentationVideoExporter", flush=True)
+
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')
 
 # Allowed file extensions for avatar upload
@@ -329,7 +331,7 @@ def preview_voice():
         # clone_voice_path is already set from data if JSON was used
 
         
-        # Generate audio
+        # Generate audio (voice_type not used in preview, always auto-detect)
         success, message = audio_service.generate_audio(
             text, 
             output_path, 
@@ -386,6 +388,7 @@ def generate_audio(pres_id):
             data = request.get_json(silent=True) or {}
         except:
             data = {}
+        voice_type = data.get('voice_type')  # 'vieneu', 'gtts', or 'clone'
         voice_id = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
         
@@ -413,6 +416,7 @@ def generate_audio(pres_id):
                 success, message = audio_service.generate_audio(
                     text_to_convert, 
                     audio_file_path,
+                    voice_type=voice_type,
                     voice_id=voice_id,
                     clone_voice_path=clone_voice_path
                 )
@@ -585,6 +589,7 @@ def regenerate_audio(pres_id, slide_num):
             data = request.get_json(silent=True) or {}
         except:
             data = {}
+        voice_type = data.get('voice_type')
         voice_id = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
         
@@ -596,6 +601,7 @@ def regenerate_audio(pres_id, slide_num):
         success, message = audio_service.generate_audio(
             text_to_convert, 
             audio_file_path,
+            voice_type=voice_type,
             voice_id=voice_id,
             clone_voice_path=clone_voice_path
         )
@@ -604,7 +610,9 @@ def regenerate_audio(pres_id, slide_num):
             # Update slide with audio URL
             current_app.presentation_model.update_slide(pres_id, slide_num, {
                 'audio_url': audio_url,
-                'audio_file_path': audio_file_path
+                'audio_file_path': audio_file_path,
+                'video_url': None, # Reset video if audio changes
+                'video_path': None
             })
             
             return jsonify({
@@ -622,6 +630,7 @@ def regenerate_audio(pres_id, slide_num):
     except Exception as e:
         print(f"Error in regenerate_audio: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @presentation_bp.route('/presentation/<pres_id>/generate_video', methods=['POST'])
 def generate_video(pres_id):
