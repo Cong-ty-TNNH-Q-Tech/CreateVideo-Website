@@ -6,7 +6,8 @@ services:
     deploy:
       resources:
         reservations:
-          devices: []
+          devices: !reset []
     environment:
       - CUDA_VISIBLE_DEVICES=""
       - NVIDIA_VISIBLE_DEVICES=void
+      - NVIDIA_DRIVER_CAPABILITIES=
