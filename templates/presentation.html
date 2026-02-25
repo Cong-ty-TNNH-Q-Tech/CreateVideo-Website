@@ -560,17 +560,33 @@
 
             // Update Script Editor
             dom.scriptEditor.value = slide.script || '';
-            dom.scriptEditor.onblur = saveCurrentScriptState; // Auto-save local state on blur
+            dom.scriptEditor.onblur = saveCurrentScriptState;
 
-            // Update Visual Preview (Basic Parsing mostly)
-            let contentHtml = `
-                <h2 class="text-primary mb-4" id="previewTitle">Slide ${slide.slide_num}</h2>
-                <div class="text-start text-white" style="font-size: 1.25rem; line-height: 1.6; opacity: 1;">
-                    ${slide.content ? slide.content.replace(/\n/g, '<br>') : 'No Text Content'}
-                </div>
-            `;
+            // Update Visual Preview - show slide image if available, else show text
+            let contentHtml = '';
+            if (slide.image_url) {
+                contentHtml = `
+                    <img src="${slide.image_url}" alt="Slide ${slide.slide_num}"
+                        style="width:100%; height:100%; object-fit:contain; display:block; border-radius:4px;"
+                        onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+                    <div style="display:none; padding:1.5rem;">
+                        <h2 class="text-primary mb-3">Slide ${slide.slide_num}</h2>
+                        <div class="text-start text-white" style="font-size:1.1rem; line-height:1.6;">
+                            ${slide.content ? slide.content.replace(/\n/g, '<br>') : 'No Text Content'}
+                        </div>
+                    </div>
+                `;
+            } else {
+                contentHtml = `
+                    <h2 class="text-primary mb-4" id="previewTitle">Slide ${slide.slide_num}</h2>
+                    <div class="text-start text-white" style="font-size: 1.25rem; line-height: 1.6; opacity: 1;">
+                        ${slide.content ? slide.content.replace(/\n/g, '<br>') : 'No Text Content'}
+                    </div>
+                `;
+            }
             dom.slideVisual.innerHTML = contentHtml;
         }
+
 
         function saveCurrentScriptState() {
             if (state.slides[state.currentSlideIndex]) {

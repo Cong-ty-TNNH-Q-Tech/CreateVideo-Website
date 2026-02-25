@@ -47,12 +47,29 @@ def upload_presentation():
         file_path = os.path.join(pres_dir, filename)
         file.save(file_path)
         
-        # Read presentation content
+        # Read presentation content (text)
         reader = PresentationReader()
         slides = reader.extract_text_from_file(file_path)
         
         if not slides:
             return jsonify({'success': False, 'error': 'No content found in file'}), 400
+        
+        # Extract slide images (PNG) for preview
+        slides_image_dir = os.path.join(pres_dir, 'slides')
+        image_urls_by_num = {}
+        try:
+            image_paths = reader.extract_slide_images(file_path, slides_image_dir)
+            for i, img_path in enumerate(image_paths):
+                # Build URL relative to static folder
+                rel_path = os.path.relpath(img_path, current_app.static_folder).replace('\\', '/')
+                image_urls_by_num[i + 1] = '/static/' + rel_path
+        except Exception as img_err:
+            print(f"⚠️ Could not extract slide images: {img_err}")
+
+        # Attach image_url to each slide
+        for slide in slides:
+            slide_num = slide.get('slide_num', 0)
+            slide['image_url'] = image_urls_by_num.get(slide_num, '')
         
         # Add to model
         presentation_data = current_app.presentation_model.add(filename, file_path, ext, slides, pres_id=pres_id)
@@ -68,6 +85,7 @@ def upload_presentation():
     except Exception as e:
         print(f"Error uploading presentation: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @presentation_bp.route('/presentation/<pres_id>', methods=['GET'])
 def get_presentation(pres_id):
