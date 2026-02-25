@@ -6,6 +6,9 @@ from pypdf import PdfReader
 import fitz  # pymupdf
 from PIL import Image
 import os
+import sys
+import platform
+import subprocess
 from typing import List, Dict
 
 class PresentationReader:
@@ -89,33 +92,98 @@ class PresentationReader:
     
     @staticmethod
     def _convert_ppt_to_pdf(ppt_path: str, pdf_path: str):
-        """Convert PPT/PPTX to PDF using COM Automation (Thread-Safe)"""
-        # Imports here to avoid global dependencies and ensure visibility
-        import pythoncom
-        import comtypes.client
-        
+        """Convert PPT/PPTX to PDF.
+        - Windows: dùng COM Automation (yêu cầu Microsoft PowerPoint).
+        - Linux/macOS: dùng LibreOffice headless.
+        """
         ppt_path = os.path.abspath(ppt_path)
-        pdf_path = os.path.abspath(pdf_path)
-        
+        pdf_path  = os.path.abspath(pdf_path)
         print(f"🔄 Converting PPT to PDF: {ppt_path} -> {pdf_path}")
-        
-        # Initialize COM for this thread
+
+        if platform.system() == "Windows":
+            PresentationReader._convert_ppt_to_pdf_windows(ppt_path, pdf_path)
+        else:
+            PresentationReader._convert_ppt_to_pdf_libreoffice(ppt_path, pdf_path)
+
+    @staticmethod
+    def _convert_ppt_to_pdf_windows(ppt_path: str, pdf_path: str):
+        """Windows-only: dùng COM Automation."""
+        try:
+            import pythoncom
+            import comtypes.client
+        except ImportError:
+            raise Exception(
+                "comtypes / pythoncom không được cài. "
+                "Chạy: pip install comtypes pywin32"
+            )
+
         pythoncom.CoInitialize()
-        
         try:
             powerpoint = comtypes.client.CreateObject("Powerpoint.Application")
-            # powerpoint.Visible = 1
-            
             presentation = powerpoint.Presentations.Open(ppt_path, WithWindow=False)
-            presentation.SaveAs(pdf_path, 32) # 32 = ppSaveAsPDF
+            presentation.SaveAs(pdf_path, 32)  # 32 = ppSaveAsPDF
             presentation.Close()
-            
         except Exception as e:
-            print(f"❌ PPT Conversion Error: {e}")
-            raise Exception(f"PPT Conversion failed: {e}. Ensure Microsoft PowerPoint is installed.")
+            raise Exception(
+                f"PPT Conversion failed (COM): {e}. "
+                "Ensure Microsoft PowerPoint is installed."
+            )
         finally:
-            # Clean up COM
             pythoncom.CoUninitialize()
+
+    @staticmethod
+    def _convert_ppt_to_pdf_libreoffice(ppt_path: str, pdf_path: str):
+        """Linux/macOS: dùng LibreOffice headless."""
+        output_dir = os.path.dirname(pdf_path)
+
+        # Tìm LibreOffice executable
+        candidates = ["libreoffice", "soffice", "/usr/bin/libreoffice", "/usr/bin/soffice"]
+        lo_bin = None
+        for c in candidates:
+            try:
+                result = subprocess.run(
+                    [c, "--version"],
+                    capture_output=True, timeout=5
+                )
+                if result.returncode == 0:
+                    lo_bin = c
+                    break
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                continue
+
+        if lo_bin is None:
+            raise Exception(
+                "LibreOffice không được tìm thấy. "
+                "Cài bằng: sudo apt-get install -y libreoffice"
+            )
+
+        cmd = [
+            lo_bin,
+            "--headless",
+            "--convert-to", "pdf",
+            "--outdir", output_dir,
+            ppt_path
+        ]
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+            if result.returncode != 0:
+                raise Exception(
+                    f"LibreOffice exited with code {result.returncode}:\n"
+                    f"{result.stderr}"
+                )
+        except subprocess.TimeoutExpired:
+            raise Exception("LibreOffice conversion timed out (>120s).")
+
+        # LibreOffice đặt tên file theo tên gốc, đảm bảo đúng đường dẫn đầu ra
+        generated = os.path.join(
+            output_dir,
+            os.path.splitext(os.path.basename(ppt_path))[0] + ".pdf"
+        )
+        if generated != pdf_path and os.path.exists(generated):
+            os.rename(generated, pdf_path)
+
+        if not os.path.exists(pdf_path):
+            raise Exception(f"Conversion succeeded but output file not found: {pdf_path}")
 
     @staticmethod
     def extract_slide_images(file_path: str, output_dir: str) -> List[str]:

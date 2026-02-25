@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y software-properties-common && \
     libxrender-dev \
     libgomp1 \
     libglib2.0-0 \
+    libreoffice \
     && rm -rf /var/lib/apt/lists/*
 
 # Install pip for Python 3.11
