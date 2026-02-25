@@ -9,6 +9,7 @@ import os
 import sys
 import traceback
 import uuid
+import threading
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -57,6 +58,8 @@ class AudioService:
         self.vieneu_available = False
         self.preferred_voice = None
         self.force_gtts = force_gtts
+        # Protects GPU/CPU model inference — only VieNeu acquires this
+        self._vieneu_lock = threading.Lock()
         
         # Chỉ thử VieNeu-TTS nếu không bị force dùng gTTS
         if not force_gtts:
@@ -259,57 +262,45 @@ class AudioService:
             return False, error_msg
     
     def _generate_with_vieneu(self, text: str, output_path: str, voice_id: str = None, clone_voice_path: str = None) -> bool:
-        """Generate audio using VieNeu-TTS engine
-        
-        Args:
-            text: Text to convert to speech
-            output_path: Where to save the audio file  
-            voice_id: Preset voice ID to use (e.g., 'tuyen', 'ngoc')
-            clone_voice_path: Path to audio file for voice cloning
-        """
+        """Generate audio using VieNeu-TTS engine (thread-safe: serializes GPU inference)"""
         try:
             if not self.vieneu_engine or not self.vieneu_available:
                 return False
-            
+
             print(f"🎧 Generating audio with VieNeu-TTS...")
-            
-            # Determine which voice to use
-            voice_to_use = None
-            
-            if clone_voice_path and os.path.exists(clone_voice_path):
-                # Use cloned voice
-                print(f"  🎤 Using cloned voice from: {clone_voice_path}")
-                try:
-                    voice_to_use = self.vieneu_engine.clone_voice(clone_voice_path)
-                except Exception as e:
-                    print(f"  ⚠️ Voice cloning failed: {e}, using preset")
-                    voice_to_use = None
-            
-            if not voice_to_use and voice_id:
-                # Use specified preset voice
-                print(f"  👤 Using preset voice: {voice_id}")
-                try:
-                    voice_to_use = self.vieneu_engine.get_preset_voice(voice_id)
-                except Exception as e:
-                    print(f"  ⚠️ Failed to get voice {voice_id}: {e}")
-                    voice_to_use = None
-            
-            if not voice_to_use:
-                # Fallback to preferred voice or default
-                voice_to_use = self.preferred_voice
+
+            # Serialize GPU inference — gTTS threads are NOT blocked by this lock
+            with self._vieneu_lock:
+                # Determine which voice to use
+                voice_to_use = None
+
+                if clone_voice_path and os.path.exists(clone_voice_path):
+                    print(f"  🎤 Using cloned voice from: {clone_voice_path}")
+                    try:
+                        voice_to_use = self.vieneu_engine.clone_voice(clone_voice_path)
+                    except Exception as e:
+                        print(f"  ⚠️ Voice cloning failed: {e}, using preset")
+
+                if not voice_to_use and voice_id:
+                    print(f"  👤 Using preset voice: {voice_id}")
+                    try:
+                        voice_to_use = self.vieneu_engine.get_preset_voice(voice_id)
+                    except Exception as e:
+                        print(f"  ⚠️ Failed to get voice {voice_id}: {e}")
+
+                if not voice_to_use:
+                    voice_to_use = self.preferred_voice
+                    if voice_to_use:
+                        print(f"  👤 Using default preferred voice")
+
+                # GPU inference
                 if voice_to_use:
-                    print(f"  👤 Using default preferred voice")
-            
-            # Generate audio using VieNeu
-            if voice_to_use:
-                audio_spec = self.vieneu_engine.infer(text=text, voice=voice_to_use)
-            else:
-                # Use default voice if no voice specified
-                audio_spec = self.vieneu_engine.infer(text=text)
-            
-            # Save the audio
+                    audio_spec = self.vieneu_engine.infer(text=text, voice=voice_to_use)
+                else:
+                    audio_spec = self.vieneu_engine.infer(text=text)
+
+            # Save outside lock — pure I/O
             self.vieneu_engine.save(audio_spec, output_path)
-            
             print(f"✅ VieNeu-TTS audio saved to: {output_path}")
             return True
             

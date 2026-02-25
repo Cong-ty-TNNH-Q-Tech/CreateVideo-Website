@@ -3,9 +3,11 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 import traceback
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
-from app.services.audio_service import get_audio_service
+from app.services.audio_service import get_audio_service, AudioService
 from app.services.video_generator import VideoGenerationService
 from app.services.presentation_video_exporter import PresentationVideoExporter
 
@@ -430,96 +432,111 @@ def preview_voice():
 
 @presentation_bp.route('/presentation/<pres_id>/generate_audio', methods=['POST'])
 def generate_audio(pres_id):
-    """Generate audio files for all slides in a presentation"""
+    """Generate audio files for all slides — runs in parallel threads."""
     try:
         presentation = current_app.presentation_model.get_by_id(pres_id)
         if not presentation:
             return jsonify({'success': False, 'error': 'Presentation not found'}), 404
-        
-        # Get audio service
-        audio_service = get_audio_service()
-        
-        # Get static folder for saving audio files
-        static_folder = current_app.static_folder
-        
+
         slides = presentation.get('slides', [])
         if not slides:
             return jsonify({'success': False, 'error': 'No slides found'}), 400
-        
-        
-        # Get voice settings from request body (optional)
+
         try:
             data = request.get_json(silent=True) or {}
         except:
             data = {}
-        voice_type = data.get('voice_type')  # 'vieneu', 'gtts', or 'clone'
-        voice_id = data.get('voice_id')
+        voice_type      = data.get('voice_type')
+        voice_id        = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
-        
-        results = []
-        success_count = 0
-        
-        for i, slide in enumerate(slides):
-            try:
-                # Use slide_num (1-based) to match slide image filenames (slide_1.png, slide_2.png...)
-                slide_num = slide.get('slide_num', i + 1)
-                
-                # Get the text to convert (edited_text takes priority over generated_text)
-                text_to_convert = slide.get('edited_text') or slide.get('generated_text') or slide.get('content', '')
-                
-                if not text_to_convert.strip():
-                    results.append({
-                        'slide_index': i,
-                        'slide_num': slide_num,
-                        'success': False,
-                        'message': 'No text available for this slide'
-                    })
-                    continue
-                
-                # Generate audio file path using slide_num (1-based) to match slide images
-                audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
-                audio_url = audio_service.get_audio_url(pres_id, slide_num)
-                
-                # Generate audio
-                success, message = audio_service.generate_audio(
-                    text_to_convert, 
-                    audio_file_path,
-                    voice_type=voice_type,
-                    voice_id=voice_id,
-                    clone_voice_path=clone_voice_path
-                )
-                
-                if success:
-                    # Update slide with audio URL (use slide_num to match model's indexing)
-                    current_app.presentation_model.update_slide(pres_id, slide_num, {
-                        'audio_url': audio_url,
+        # VieNeu-TTS (GPU): workers=1-2 recommended (model serialized internally)
+        # gTTS (network):   workers=4-8 is fine
+        max_workers = int(data.get('max_workers', 4))
+        max_workers = min(max(1, max_workers), 8)
+
+        # Reuse the singleton — model loads only once
+        svc = get_audio_service()
+
+        # Capture Flask app object + data needed inside threads
+        app             = current_app._get_current_object()
+        static_folder   = app.static_folder
+        pres_model      = app.presentation_model
+
+        # Lock for writing back to the shared presentation model only
+        _model_write = threading.Lock()
+
+        results        = [None] * len(slides)
+        success_count  = 0
+        _count_lock    = threading.Lock()
+
+        def _generate_one(idx, slide):
+            nonlocal success_count
+            slide_num = slide.get('slide_num', idx + 1)
+            text = (slide.get('edited_text') or
+                    slide.get('generated_text') or
+                    slide.get('content', ''))
+
+            if not text.strip():
+                return {
+                    'slide_index': idx,
+                    'slide_num':   slide_num,
+                    'success':     False,
+                    'message':     'No text available for this slide'
+                }
+
+            audio_file_path = svc.get_audio_file_path(pres_id, slide_num, static_folder)
+            audio_url       = svc.get_audio_url(pres_id, slide_num)
+
+            # VieNeu-TTS serializes GPU inference internally via _vieneu_lock.
+            # gTTS calls run truly in parallel (no lock inside service).
+            ok, message = svc.generate_audio(
+                text, audio_file_path,
+                voice_type=voice_type,
+                voice_id=voice_id,
+                clone_voice_path=clone_voice_path
+            )
+
+            if ok:
+                with _model_write:
+                    pres_model.update_slide(pres_id, slide_num, {
+                        'audio_url':       audio_url,
                         'audio_file_path': audio_file_path
                     })
+                with _count_lock:
                     success_count += 1
-                    
-                results.append({
-                    'slide_index': i,
-                    'slide_num': slide_num,
-                    'success': success,
-                    'audio_url': audio_url if success else None,
-                    'message': message
-                })
-                
-            except Exception as e:
-                print(f"Error processing slide {slide_num if 'slide_num' in locals() else i}: {str(e)}")
-                results.append({
-                    'slide_index': i,
-                    'success': False,
-                    'message': str(e)
-                })
-        
+
+            return {
+                'slide_index': idx,
+                'slide_num':   slide_num,
+                'success':     ok,
+                'audio_url':   audio_url if ok else None,
+                'message':     message
+            }
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_map = {
+                executor.submit(_generate_one, i, slide): i
+                for i, slide in enumerate(slides)
+            }
+            for future in as_completed(future_map):
+                idx = future_map[future]
+                try:
+                    results[idx] = future.result()
+                except Exception as exc:
+                    results[idx] = {
+                        'slide_index': idx,
+                        'success':     False,
+                        'message':     str(exc)
+                    }
+
         return jsonify({
-            'success': True,
-            'total_slides': len(slides),
+            'success':       True,
+            'total_slides':  len(slides),
             'success_count': success_count,
-            'results': results
+            'workers_used':  max_workers,
+            'results':       results
         })
-        
+
     except Exception as e:
         print(f"Error generating audio: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -928,7 +945,148 @@ def export_presentation_video(pres_id):
             'error': f"Lỗi không mong đợi: {str(e)}"
         }), 500
 
-@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/generate_slide_video', methods=['POST'])
+@presentation_bp.route('/presentation/<pres_id>/generate_all_slide_videos', methods=['POST'])
+def generate_all_slide_videos(pres_id):
+    """Generate slide videos for ALL slides in parallel using ThreadPoolExecutor.
+    Each ffmpeg subprocess is independent so this is fully safe to parallelize.
+    """
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        slides = presentation.get('slides', [])
+        if not slides:
+            return jsonify({'success': False, 'error': 'No slides found'}), 400
+
+        data        = request.get_json(silent=True) or {}
+        max_workers = int(data.get('max_workers', os.cpu_count() or 4))
+        max_workers = min(max(1, max_workers), 8)
+
+        # Resolve presentation file + slide image dir upfront
+        pres_file_path = presentation.get('file_path')
+        if not pres_file_path or not os.path.exists(pres_file_path):
+            return jsonify({'success': False, 'error': 'Presentation file not found'}), 400
+
+        pres_upload_dir  = os.path.dirname(pres_file_path)
+        slides_image_dir = os.path.join(pres_upload_dir, 'slides')
+
+        # Extract all slide images once (if any are missing)
+        needs_extraction = any(
+            not os.path.exists(os.path.join(slides_image_dir, f'slide_{s.get("slide_num", i+1)}.png'))
+            for i, s in enumerate(slides)
+        )
+        if needs_extraction:
+            print(f"📄 Extracting slide images from: {pres_file_path}")
+            try:
+                PresentationReader.extract_slide_images(pres_file_path, slides_image_dir)
+            except Exception as e:
+                return jsonify({'success': False, 'error': f'Failed to extract slide images: {str(e)}'}), 500
+
+        app         = current_app._get_current_object()
+        static_folder = app.static_folder
+        pres_model  = app.presentation_model
+        _write_lock = threading.Lock()
+
+        video_dir = os.path.join(static_folder, 'videos', pres_id, 'slides')
+        os.makedirs(video_dir, exist_ok=True)
+
+        results       = [None] * len(slides)
+        success_count = 0
+        _count_lock   = threading.Lock()
+
+        def _generate_slide_video(idx, slide):
+            nonlocal success_count
+            slide_num  = slide.get('slide_num', idx + 1)
+            audio_path = slide.get('audio_file_path')
+
+            if not audio_path or not os.path.exists(audio_path):
+                return {
+                    'slide_index': idx,
+                    'slide_num':   slide_num,
+                    'success':     False,
+                    'message':     f'Audio not found for slide {slide_num}. Generate audio first.'
+                }
+
+            slide_image_path = os.path.join(slides_image_dir, f'slide_{slide_num}.png')
+            if not os.path.exists(slide_image_path):
+                return {
+                    'slide_index': idx,
+                    'slide_num':   slide_num,
+                    'success':     False,
+                    'message':     f'Image not found: slide_{slide_num}.png'
+                }
+
+            output_filename = f'slide_{slide_num}.mp4'
+            output_path     = os.path.join(video_dir, output_filename)
+
+            print(f"🎬 [{slide_num}/{len(slides)}] Generating slide video...")
+
+            # ffmpeg subprocess — safe to run in parallel
+            exporter   = PresentationVideoExporter()
+            slides_data = [{'image_path': slide_image_path, 'audio_path': audio_path}]
+            result      = exporter.create_presentation_video(slides_data, output_path)
+
+            if result['success']:
+                video_url = f'/static/videos/{pres_id}/slides/{output_filename}'
+                with _write_lock:
+                    pres_model.update_slide(pres_id, slide_num, {
+                        'slide_video_url':  video_url,
+                        'slide_video_path': output_path
+                    })
+                with _count_lock:
+                    success_count += 1
+                print(f"✅ Slide {slide_num} video done")
+                return {
+                    'slide_index': idx,
+                    'slide_num':   slide_num,
+                    'success':     True,
+                    'video_url':   video_url,
+                    'message':     'OK'
+                }
+            else:
+                err = result.get('error', 'Unknown ffmpeg error')
+                print(f"❌ Slide {slide_num} failed: {err}")
+                return {
+                    'slide_index': idx,
+                    'slide_num':   slide_num,
+                    'success':     False,
+                    'message':     err
+                }
+
+        print(f"🚀 Generating {len(slides)} slide videos with {max_workers} workers...")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_map = {
+                executor.submit(_generate_slide_video, i, slide): i
+                for i, slide in enumerate(slides)
+            }
+            for future in as_completed(future_map):
+                idx = future_map[future]
+                try:
+                    results[idx] = future.result()
+                except Exception as exc:
+                    results[idx] = {
+                        'slide_index': idx,
+                        'success':     False,
+                        'message':     str(exc)
+                    }
+
+        print(f"✅ Done: {success_count}/{len(slides)} slide videos generated")
+        return jsonify({
+            'success':       True,
+            'total_slides':  len(slides),
+            'success_count': success_count,
+            'workers_used':  max_workers,
+            'results':       results
+        })
+
+    except Exception as e:
+        print(f"❌ Error generating all slide videos: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@presentation_bp.route('/presentation/<pres_id>/generate_slide_video', methods=['POST'])
 def generate_slide_video(pres_id, slide_num):
     """Generate video for a single slide (slide image + audio)"""
     try:
