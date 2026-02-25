@@ -1,95 +1,138 @@
 # ============================================================
 # VideoTeaching - Unified Requirements
+# Phiên bản thực tế được cài trong venv (pip freeze)
+# Last updated: 2026-02-25
 # ============================================================
 
-# -------------------- PyTorch (CUDA 11.8) --------------------
+# -------------------- PyTorch (CUDA 12.4) --------------------
 # Install with: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-torch==2.5.1
-torchvision==0.20.1
-torchaudio==2.5.1
+torch>=2.6.0
+torchvision>=0.21.0
+torchaudio>=2.6.0
 
 # -------------------- Web Framework --------------------
-Flask>=3.0.0
-werkzeug>=3.0.1
+Flask>=3.1.0
+Werkzeug>=3.1.0
+itsdangerous>=2.2.0
+click>=8.1.0
+blinker>=1.9.0
+Jinja2>=3.1.0
+MarkupSafe>=3.0.0
 
-# -------------------- AI Services --------------------
-google-generativeai>=0.3.2
-huggingface-hub>=0.36.0
-transformers>=4.40.0
-accelerate>=1.0.0
-safetensors>=0.4.0
+# -------------------- AI / Google Gemini --------------------
+# New Google GenAI SDK (uses `from google import genai`)
+google-genai>=1.64.0
+google-generativeai>=0.8.0
+google-api-core>=2.30.0
+google-api-python-client>=2.190.0
+google-auth>=2.48.0
+google-auth-httplib2>=0.3.0
+googleapis-common-protos>=1.72.0
+grpcio>=1.78.0
+grpcio-status>=1.71.0
+proto-plus>=1.27.0
+protobuf>=5.29.0
 
-# -------------------- VieNeu-TTS (Vietnamese TTS) --------------------
-# Core dependencies for app/VieNeu-TTS
-# Note: neucodec might not be available in public PyPI
-einops>=0.8.0
-phonemizer>=3.3.0
-sentencepiece>=0.2.0
-peft>=0.10.0
-llama-cpp-python>=0.3.16
-torchao>=0.8.0
-
-# -------------------- SadTalker Dependencies --------------------
-face_alignment>=1.3.5
-kornia>=0.6.8
-basicsr>=1.4.2
-facexlib>=0.3.0
-gfpgan>=1.3.8
-yacs>=0.1.8
-tb-nightly  # Required for basicsr
+# -------------------- HuggingFace / Transformers --------------------
+huggingface-hub>=1.4.0
+transformers>=5.2.0
+accelerate>=1.12.0
+safetensors>=0.7.0
+tokenizers>=0.22.0
+hf-xet>=1.3.0
 
 # -------------------- Audio Processing --------------------
-librosa>=0.10.0
+gTTS>=2.5.0
 pydub>=0.25.1
-soundfile>=0.12.0
-resampy>=0.4.0
-audioread>=3.0.0
+soundfile>=0.13.0
+librosa>=0.11.0
+audioread>=3.1.0
+audioop-lts>=0.2.0
+soxr>=1.0.0
 
 # -------------------- Video Processing --------------------
-moviepy>=1.0.3
-opencv-python>=4.8.0
-imageio>=2.31.0
-imageio-ffmpeg>=0.4.9
-av
+# NOTE: Use moviepy<2.0 - v2 removed moviepy.editor module
+moviepy>=1.0.3,<2.0
+opencv-python>=4.13.0
+imageio>=2.37.0
+imageio-ffmpeg>=0.6.0
+proglog>=0.1.12
+decorator>=4.4.2
 
 # -------------------- Image Processing --------------------
-Pillow>=10.0.0
-scikit-image>=0.21.0
-
-# -------------------- Presentation Reading --------------------
-# -------------------- Text-to-Speech & Audio --------------------
-gTTS>=2.4.0
-pydub>=0.25.1
-soundfile>=0.12.1
-librosa>=0.10.1
-langdetect>=1.0.9
-# neucodec>=0.1.0  # Commented out - not available in public PyPI
+Pillow>=11.0.0
 
 # -------------------- Document Processing --------------------
-python-pptx>=0.6.21
-pypdf>=3.17.0
-pymupdf>=1.22.5
-# Windows-only dependencies (install manually on Windows)
-# comtypes>=1.2.0
-# pywin32>=306
+python-pptx>=1.0.0
+pypdf>=6.7.0
+PyMuPDF>=1.27.0
+
+# -------------------- Text-to-Speech & Language --------------------
+langdetect>=1.0.9
+
+# -------------------- ML / Data Science --------------------
+numpy>=2.3.0
+scipy>=1.17.0
+scikit-learn>=1.8.0
+pandas>=3.0.0
+numba>=0.64.0
+llvmlite>=0.46.0
+joblib>=1.5.0
 
 # -------------------- Utilities --------------------
-numpy>=1.23.0
-scipy>=1.10.0
-pandas>=2.0.0
-scikit-learn>=1.3.0
-tqdm>=4.65.0
-pyyaml>=6.0
-joblib>=1.3.0
-python-dotenv>=1.0.0
-requests>=2.31.0
-numba>=0.57.0
+tqdm>=4.67.0
+PyYAML>=6.0.3
+python-dotenv>=1.2.0
+requests>=2.32.0
+packaging>=26.0
+psutil>=7.2.0
+six>=1.17.0
+regex>=2026.0
+lxml>=6.0.0
+xlsxwriter>=3.2.0
+rich>=14.3.0
+pyasn1>=0.6.0
+pyasn1_modules>=0.4.0
+rsa>=4.9.0
+httplib2>=0.31.0
+httpx>=0.28.0
+httpcore>=1.0.0
+anyio>=4.12.0
+sniffio>=1.3.0
+certifi>=2026.0
+charset-normalizer>=3.4.0
+idna>=3.11
+urllib3>=2.6.0
 
-# -------------------- Optional: Gradio UI --------------------
-gradio>=4.0.0
+# -------------------- Async / HTTP --------------------
+aiohttp>=3.13.0
+aiosignal>=1.4.0
+aiohappyeyeballs>=2.6.0
+frozenlist>=1.8.0
+multidict>=6.7.0
+yarl>=1.22.0
+propcache>=0.4.0
+websockets>=15.0.0
+tenacity>=9.1.0
+
+# -------------------- Pydantic --------------------
+pydantic>=2.12.0
+pydantic_core>=2.41.0
+annotated-types>=0.7.0
+typing-inspection>=0.4.0
+typing_extensions>=4.15.0
+
+# -------------------- Audio (Standard) --------------------
+standard-aifc>=3.13.0
+standard-sunau>=3.13.0
+standard-chunk>=3.13.0
+
+# -------------------- Windows-specific --------------------
+# Install on Windows: pip install -r requirements-windows.txt
+# comtypes>=1.4.0
+# pywin32>=311
 
 # -------------------- Testing --------------------
 pytest>=7.4.0
 pytest-cov>=4.1.0
 coverage>=7.3.0
-
