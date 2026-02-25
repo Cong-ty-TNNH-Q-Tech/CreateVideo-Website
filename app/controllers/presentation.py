@@ -108,7 +108,53 @@ def get_slide(pres_id, slide_num):
         'slide': slide
     })
 
+@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>', methods=['DELETE'])
+def delete_slide(pres_id, slide_num):
+    """Delete a specific slide from presentation"""
+    try:
+        # Get slide first to clean up its files
+        slide = current_app.presentation_model.get_slide(pres_id, slide_num)
+        if not slide:
+            return jsonify({'success': False, 'error': 'Slide not found'}), 404
+
+        # Delete associated audio file if exists
+        audio_path = slide.get('audio_file_path')
+        if audio_path and os.path.exists(audio_path):
+            try:
+                os.remove(audio_path)
+                print(f"🧹 Deleted audio: {audio_path}")
+            except Exception as e:
+                print(f"⚠️ Could not delete audio: {e}")
+
+        # Delete associated video file if exists
+        video_path = slide.get('slide_video_path')
+        if video_path and os.path.exists(video_path):
+            try:
+                os.remove(video_path)
+                print(f"🧹 Deleted video: {video_path}")
+            except Exception as e:
+                print(f"⚠️ Could not delete video: {e}")
+
+        # Remove slide from model
+        if current_app.presentation_model.delete_slide(pres_id, slide_num):
+            # Return remaining slides count
+            presentation = current_app.presentation_model.get_by_id(pres_id)
+            remaining = len(presentation['slides']) if presentation else 0
+            print(f"✅ Deleted slide {slide_num}. Remaining: {remaining}")
+            return jsonify({
+                'success': True,
+                'message': f'Slide {slide_num} deleted successfully',
+                'remaining_slides': remaining
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Failed to delete slide'}), 500
+
+    except Exception as e:
+        print(f"❌ Error deleting slide: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ==================== GEMINI ROUTES ====================
+
 
 @presentation_bp.route('/generate-text', methods=['POST'])
 def generate_text():

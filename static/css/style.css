@@ -259,12 +259,53 @@ h6 {
   justify-content: center;
   font-size: 0.8rem;
   color: var(--text-secondary);
+  position: relative;
+  overflow: hidden;
 }
 
 .slide-thumbnail.active {
   border-color: var(--accent-blue);
   color: var(--accent-blue);
 }
+
+.slide-thumbnail .thumb-num {
+  font-size: 0.85rem;
+  color: inherit;
+  user-select: none;
+}
+
+/* Nút xóa slide hiện khi hover */
+.slide-thumbnail .thumb-delete-btn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background-color: rgba(239, 68, 68, 0.0);
+  color: transparent;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.slide-thumbnail:hover .thumb-delete-btn {
+  background-color: rgba(239, 68, 68, 0.85);
+  color: white;
+}
+
+.slide-thumbnail .thumb-delete-btn:hover {
+  background-color: var(--danger-color) !important;
+  transform: scale(1.1);
+}
+
+
 
 /* Voice Settings (Step 3) */
 .voice-persona-card {

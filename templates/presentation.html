@@ -531,12 +531,19 @@
             state.slides.forEach((slide, idx) => {
                 const el = document.createElement('div');
                 el.className = `slide-thumbnail ${idx === state.currentSlideIndex ? 'active' : ''}`;
-                el.textContent = idx + 1;
-                el.onclick = () => {
-                    saveCurrentScriptState(); // Save before switch
+                el.style.position = 'relative';
+                el.innerHTML = `
+                    <span class="thumb-num">${idx + 1}</span>
+                    <button class="thumb-delete-btn" title="Xóa slide này"
+                        onclick="event.stopPropagation(); deleteSlide(${idx})">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                `;
+                el.querySelector('.thumb-num').onclick = () => {
+                    saveCurrentScriptState();
                     state.currentSlideIndex = idx;
                     renderSlide(idx);
-                    renderThumbnails(); // Re-render to update active class
+                    renderThumbnails();
                 };
                 dom.thumbnailList.appendChild(el);
             });
@@ -658,13 +665,17 @@
                                 </div>
                                 <div class="text-white small">Slide ${idx + 1}</div>
                             </div>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 align-items-center">
                                 <span class="badge bg-${slide.audioUrl ? 'success' : 'secondary'} bg-opacity-25 text-${slide.audioUrl ? 'success' : 'light'}">
                                     Audio: ${slide.audioUrl ? 'Ready' : 'Pending'}
                                 </span>
                                 <span class="badge bg-${slide.videoUrl ? 'primary' : 'secondary'} bg-opacity-25 text-${slide.videoUrl ? 'primary' : 'light'}">
                                     Video: ${slide.videoUrl ? 'Ready' : 'Pending'}
                                 </span>
+                                <button class="btn btn-sm btn-outline-danger py-0 px-2" title="Xóa slide này"
+                                    onclick="deleteSlide(${idx})">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
                             </div>
                         </div>
                         
@@ -692,6 +703,48 @@
                 dom.audioList.appendChild(div);
             });
             dom.step4Btn.style.display = 'inline-block'; // Always show for now to allow proceeding
+        }
+
+        async function deleteSlide(idx) {
+            const slide = state.slides[idx];
+            if (!slide) return;
+
+            const slideLabel = `Slide ${idx + 1}`;
+            if (!confirm(`Bạn có chắc muốn xóa ${slideLabel} không?\nThao tác này không thể hoàn tác.`)) return;
+
+            try {
+                const res = await fetch(`/api/presentation/${state.presentationId}/slide/${slide.slide_num}`, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    // Remove from local state
+                    state.slides.splice(idx, 1);
+
+                    // Adjust currentSlideIndex if needed
+                    if (state.currentSlideIndex >= state.slides.length) {
+                        state.currentSlideIndex = Math.max(0, state.slides.length - 1);
+                    }
+
+                    // Re-render both Step 2 and Step 3 views
+                    renderThumbnails();
+                    if (state.slides.length > 0) {
+                        renderSlide(state.currentSlideIndex);
+                    } else {
+                        dom.slideVisual.innerHTML = '<p class="text-secondary text-center">Không còn slide nào.</p>';
+                        dom.scriptEditor.value = '';
+                    }
+                    // Re-render audio list if visible
+                    if (dom.audioList && dom.audioList.children.length > 0) {
+                        renderAudioList();
+                    }
+                } else {
+                    alert('Lỗi khi xóa slide: ' + data.error);
+                }
+            } catch (err) {
+                alert('Lỗi kết nối: ' + err.message);
+            }
         }
 
         async function generateVideoForSlide(idx) {
