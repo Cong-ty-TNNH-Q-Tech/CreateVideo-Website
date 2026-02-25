@@ -397,20 +397,24 @@ def generate_audio(pres_id):
         
         for i, slide in enumerate(slides):
             try:
+                # Use slide_num (1-based) to match slide image filenames (slide_1.png, slide_2.png...)
+                slide_num = slide.get('slide_num', i + 1)
+                
                 # Get the text to convert (edited_text takes priority over generated_text)
                 text_to_convert = slide.get('edited_text') or slide.get('generated_text') or slide.get('content', '')
                 
                 if not text_to_convert.strip():
                     results.append({
                         'slide_index': i,
+                        'slide_num': slide_num,
                         'success': False,
                         'message': 'No text available for this slide'
                     })
                     continue
                 
-                # Generate audio file path
-                audio_file_path = audio_service.get_audio_file_path(pres_id, i, static_folder)
-                audio_url = audio_service.get_audio_url(pres_id, i)
+                # Generate audio file path using slide_num (1-based) to match slide images
+                audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
+                audio_url = audio_service.get_audio_url(pres_id, slide_num)
                 
                 # Generate audio
                 success, message = audio_service.generate_audio(
@@ -422,8 +426,8 @@ def generate_audio(pres_id):
                 )
                 
                 if success:
-                    # Update slide with audio URL
-                    current_app.presentation_model.update_slide(pres_id, i, {
+                    # Update slide with audio URL (use slide_num to match model's indexing)
+                    current_app.presentation_model.update_slide(pres_id, slide_num, {
                         'audio_url': audio_url,
                         'audio_file_path': audio_file_path
                     })
@@ -431,13 +435,14 @@ def generate_audio(pres_id):
                     
                 results.append({
                     'slide_index': i,
+                    'slide_num': slide_num,
                     'success': success,
                     'audio_url': audio_url if success else None,
                     'message': message
                 })
                 
             except Exception as e:
-                print(f"Error processing slide {i}: {str(e)}")
+                print(f"Error processing slide {slide_num if 'slide_num' in locals() else i}: {str(e)}")
                 results.append({
                     'slide_index': i,
                     'success': False,

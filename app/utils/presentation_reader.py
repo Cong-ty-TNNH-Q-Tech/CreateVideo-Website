@@ -20,7 +20,14 @@ class PresentationReader:
             prs = Presentation(file_path)
             slides_data = []
             
-            for idx, slide in enumerate(prs.slides, 1):
+            for slide in prs.slides:
+                # Check if slide is hidden
+                # The 'show' attribute on the slide element indicates visibility (0 = hidden)
+                if slide.element.get('show') == '0':
+                    continue
+
+                idx = len(slides_data) + 1
+
                 content_parts = []
                 for shape in slide.shapes:
                     if hasattr(shape, "text") and shape.text.strip():
