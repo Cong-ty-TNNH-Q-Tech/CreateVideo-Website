@@ -38,8 +38,8 @@ services:
       - results:/app/static/results:rw
       
       # Model checkpoints (download separately)
-      - ./app/SadTalker/checkpoints:/app/app/SadTalker/checkpoints:ro
-      - ./app/SadTalker/gfpgan/weights:/app/app/SadTalker/gfpgan/weights:ro
+      - ./app/SadTalker/checkpoints:/app/app/SadTalker/checkpoints:rw
+      - ./app/SadTalker/gfpgan/weights:/app/app/SadTalker/gfpgan/weights:rw
 
     # Health check
     healthcheck:
