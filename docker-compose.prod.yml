@@ -3,7 +3,7 @@ services:
   # VideoTeaching Web Application - Production with GHCR
   # ============================================================
   videoteaching:
-    image: ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:${IMAGE_TAG:-latest}
+    image: ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:${IMAGE_TAG:-main}
     container_name: videoteaching-prod
     restart: unless-stopped
 
@@ -28,7 +28,7 @@ services:
 
     # Port mapping
     ports:
-      - "5000:5000"
+      - "8000:5000"
 
     # Volume mounts for data persistence
     volumes:
