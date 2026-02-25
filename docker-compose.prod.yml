@@ -28,7 +28,7 @@ services:
 
     # Port mapping
     ports:
-      - "8000:5000"
+      - "8000:8000"
 
     # Volume mounts for data persistence
     volumes:
@@ -43,7 +43,7 @@ services:
 
     # Health check
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
       interval: 30s
       timeout: 10s
       retries: 3
