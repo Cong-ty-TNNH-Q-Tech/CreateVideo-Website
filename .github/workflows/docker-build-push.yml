@@ -136,6 +136,50 @@ jobs:
           REDUCTION=$(python3 -c "print(f'{(1 - ${SLIM_BYTES}/${ORIGINAL_BYTES})*100:.1f}')")
           echo "reduction_percent=${REDUCTION}" >> $GITHUB_OUTPUT
 
+      - name: Compare image sizes
+        run: |
+          # ── raw byte counts ──────────────────────────────────────────────
+          BEFORE_BYTES=$(docker inspect ${{ env.IMAGE_NAME_LOWER }}:pre-slim --format='{{.Size}}')
+          AFTER_BYTES=$(docker inspect ${{ env.IMAGE_NAME_LOWER }}:slim --format='{{.Size}}')
+
+          # ── human-readable labels ─────────────────────────────────────────
+          BEFORE_HR=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME_LOWER }}:pre-slim)
+          AFTER_HR=$(docker images --format "{{.Size}}" ${{ env.IMAGE_NAME_LOWER }}:slim)
+
+          # ── reduction % ───────────────────────────────────────────────────
+          REDUCTION=$(python3 -c "print(f'{(1 - ${AFTER_BYTES}/${BEFORE_BYTES})*100:.1f}')")
+          SAVED=$(python3 -c "
+          saved = ${BEFORE_BYTES} - ${AFTER_BYTES}
+          if saved >= 1073741824:
+              print(f'{saved/1073741824:.2f} GB')
+          elif saved >= 1048576:
+              print(f'{saved/1048576:.0f} MB')
+          else:
+              print(f'{saved/1024:.0f} KB')
+          ")
+
+          # ── print to log ──────────────────────────────────────────────────
+          echo "============================================"
+          echo "  Docker Image Size Comparison"
+          echo "============================================"
+          echo "  Before optimisation : ${BEFORE_HR}  (${BEFORE_BYTES} bytes)"
+          echo "  After  optimisation : ${AFTER_HR}  (${AFTER_BYTES} bytes)"
+          echo "  Saved               : ${SAVED}  (${REDUCTION}% reduction)"
+          echo "============================================"
+
+          # ── write to GitHub Step Summary (visible in Actions UI) ──────────
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 📦 Image Size Comparison
+
+          | | Size | Bytes |
+          |---|---|---|
+          | **Before** (pre-slim) | ${BEFORE_HR} | ${BEFORE_BYTES} |
+          | **After** (slim) | ${AFTER_HR} | ${AFTER_BYTES} |
+          | **Saved** | ${SAVED} | ${REDUCTION}% reduction |
+
+          > Built on \`$(date -u '+%Y-%m-%d %H:%M UTC')\` — commit \`${{ github.sha }}\`
+          EOF
+
       - name: Test optimized image
         run: |
           # Start container for testing

@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y software-properties-common && \
     python3.11-dev \
     python3.11-venv \
     python3.11-distutils \
+    python3.11-full \
     git \
     wget \
     curl \
