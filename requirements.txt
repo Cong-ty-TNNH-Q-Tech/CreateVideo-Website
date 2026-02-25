@@ -72,6 +72,8 @@ PyMuPDF>=1.27.0
 
 # -------------------- Text-to-Speech & Language --------------------
 langdetect>=1.0.9
+neucodec>=0.0.4
+phonemizer>=3.2.2
 
 # -------------------- ML / Data Science --------------------
 numpy>=2.3.0
