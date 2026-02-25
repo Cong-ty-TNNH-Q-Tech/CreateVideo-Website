@@ -1086,7 +1086,7 @@ def generate_all_slide_videos(pres_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@presentation_bp.route('/presentation/<pres_id>/generate_slide_video', methods=['POST'])
+@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/generate_slide_video', methods=['POST'])
 def generate_slide_video(pres_id, slide_num):
     """Generate video for a single slide (slide image + audio)"""
     try:
