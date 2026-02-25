@@ -75,8 +75,13 @@ RUN pip install --no-cache-dir \
 # Fix BasicSR compatibility with newer TorchVision
 # Replace 'from torchvision.transforms.functional_tensor import rgb_to_grayscale'
 # with 'from torchvision.transforms.functional import rgb_to_grayscale'
-RUN sed -i 's/from torchvision.transforms.functional_tensor import rgb_to_grayscale/from torchvision.transforms.functional import rgb_to_grayscale/g' \
-    /usr/local/lib/python3.11/dist-packages/basicsr/data/degradations.py
+RUN BASICSR_FILE=$(python3.11 -c "import importlib.util, os; spec=importlib.util.find_spec('basicsr'); print(os.path.join(os.path.dirname(spec.origin),'data','degradations.py')) if spec else print('')" 2>/dev/null || echo "") && \
+    if [ -n "$BASICSR_FILE" ] && [ -f "$BASICSR_FILE" ]; then \
+        sed -i 's/from torchvision.transforms.functional_tensor import rgb_to_grayscale/from torchvision.transforms.functional import rgb_to_grayscale/g' "$BASICSR_FILE" && \
+        echo "✓ Patched basicsr: $BASICSR_FILE"; \
+    else \
+        echo "⚠ basicsr not found or degradations.py missing — skipping patch"; \
+    fi
 
 # ============================================================
 # Stage 3: Application
