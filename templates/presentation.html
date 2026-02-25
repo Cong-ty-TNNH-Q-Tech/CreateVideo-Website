@@ -964,35 +964,33 @@
         
         async function generateVideoForAll() {
             if (!state.slides || state.slides.length === 0) return;
-            
-            showLoading('Generating Videos for all slides...');
+
+            showLoading('Generating Videos for all slides in parallel...');
             try {
-                let completed = 0;
-                for (let i = 0; i < state.slides.length; i++) {
-                    const slide = state.slides[i];
-                    
-                    if (slide.audioUrl) {
-                        try {
-                            // Update loading text
-                            const loadingText = document.getElementById('loadingText');
-                            if(loadingText) loadingText.textContent = `Generating Video for Slide ${i+1}/${state.slides.length}...`;
-                            
-                            // Backend expects 1-based slide_num
-                            const slideNum = i + 1;
-                            const res = await fetch(`/api/presentation/${state.presentationId}/slide/${slideNum}/generate_slide_video`, {
-                                method: 'POST'
-                            });
-                            const data = await res.json();
-                            if (data.success && state.slides[i]) {
-                                state.slides[i].videoUrl = data.video_url;
+                const res = await fetch(`/api/presentation/${state.presentationId}/generate_all_slide_videos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ max_workers: 4 })
+                });
+                const data = await res.json();
+
+                if (data.success && data.results) {
+                    data.results.forEach(r => {
+                        if (r && r.success && r.slide_num) {
+                            const idx = r.slide_num - 1;
+                            if (state.slides[idx]) {
+                                state.slides[idx].videoUrl = r.video_url;
                             }
-                        } catch (e) {
-                            console.error(`Failed to gen video for slide ${i}`, e);
                         }
-                    }
-                    completed++;
+                    });
+                    showSuccess(`✅ ${data.success_count}/${data.total_slides} videos generated`);
+                } else {
+                    showError(data.error || 'Failed to generate videos');
                 }
                 renderAudioList();
+            } catch(e) {
+                console.error('generateVideoForAll error', e);
+                showError('Network error: ' + e.message);
             } finally {
                 hideLoading();
             }

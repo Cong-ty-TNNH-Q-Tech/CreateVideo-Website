@@ -94,8 +94,8 @@ class PresentationVideoExporter:
             if not slides or len(slides) == 0:
                 return {'success': False, 'error': 'No slides provided'}
             
-            # Create temp directory for styled slides
-            temp_dir = os.path.join(os.path.dirname(output_path), 'processed_slides')
+            # Use unique temp dir per call to avoid collisions when running in parallel
+            temp_dir = os.path.join(os.path.dirname(output_path), f'_tmp_{uuid.uuid4().hex}')
             os.makedirs(temp_dir, exist_ok=True)
             
             clips = []
