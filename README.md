@@ -41,7 +41,7 @@ bash scripts/pull-and-run.sh
 # Windows: .\scripts\pull-and-run.ps1
 ```
 
-**Access:** http://localhost:5000
+**Access:** http://localhost:8000
 
 📦 **[See deployment guide →](docs/DOCKER_DEPLOYMENT.md)**
 
@@ -70,51 +70,107 @@ python download_models.py
 .\docker-run.ps1 dev      # Start development mode
 ```
 
-**Access:** http://localhost:5000
+**Access:** http://localhost:8000
 
 📚 **[See full Docker documentation →](README.Docker.md)**
 
-### Option 3: Local Development
+### Option 3: Local Development (Không cần Docker)
 
-**Prerequisites:**
-- Python 3.10+
-- CUDA 11.8+ (for GPU acceleration)
+**Yêu cầu hệ thống:**
+- Python 3.10 hoặc 3.11
 - FFmpeg
+- Git
+- *(Tùy chọn)* CUDA 11.8+ và NVIDIA GPU để tăng tốc
 
-**Installation:**
+---
+
+#### 🐧 Linux / macOS
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/Cong-ty-TNNH-MoneyEveryWhere/CreateVideo-Website.git
-cd VideoTeaching
+# 1. Cài FFmpeg
+# Ubuntu/Debian:
+sudo apt-get install -y ffmpeg git build-essential
+# macOS:
+brew install ffmpeg
 
-# 2. Create virtual environment
-python -m venv venv
+# 2. Clone repository
+git clone https://github.com/Cong-ty-TNNH-Q-Tech/CreateVideo-Website.git
+cd CreateVideo-Website
 
-# 3. Activate virtual environment
-# Windows:
-venv\Scripts\activate
-# Linux/Mac:
+# 3. Tạo và kích hoạt virtual environment
+python3.11 -m venv venv
 source venv/bin/activate
 
-# 4. Install PyTorch with CUDA 11.8
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# 4a. Cài PyTorch — GPU (CUDA 11.8)
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
+  --index-url https://download.pytorch.org/whl/cu118
 
-# 5. Install dependencies
+# 4b. Cài PyTorch — CPU only
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 \
+  --index-url https://download.pytorch.org/whl/cpu
+
+# 5. Cài dependencies
 pip install -r requirements.txt
 
-# 6. Setup environment
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY
+# 6. Tạo file .env
+cp .env.example .env          # hoặc tạo thủ công nếu không có .env.example
+echo "GEMINI_API_KEY=your_api_key_here" >> .env
 
-# 7. Download AI models
+# 7. Tải AI models (SadTalker checkpoints ~4GB)
 python download_models.py
 
-# 8. Run application
+# 8. Chạy ứng dụng
 python run.py
 ```
 
-**Access:** http://localhost:5000
+---
+
+#### 🪟 Windows
+
+```powershell
+# 1. Cài FFmpeg (dùng winget hoặc tải từ https://ffmpeg.org/download.html)
+winget install ffmpeg
+
+# 2. Clone repository
+git clone https://github.com/Cong-ty-TNNH-Q-Tech/CreateVideo-Website.git
+cd CreateVideo-Website
+
+# 3. Tạo và kích hoạt virtual environment
+python -m venv venv
+venv\Scripts\Activate.ps1
+
+# (Nếu bị lỗi ExecutionPolicy)
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# 4a. Cài PyTorch — GPU (CUDA 11.8)
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 `
+  --index-url https://download.pytorch.org/whl/cu118
+
+# 4b. Cài PyTorch — CPU only
+pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 `
+  --index-url https://download.pytorch.org/whl/cpu
+
+# 5. Cài dependencies (Windows-specific)
+pip install -r requirements-windows.txt
+
+# 6. Tạo file .env (tạo thủ công hoặc copy)
+Copy-Item .env.example .env   # nếu có file mẫu
+# Mở .env và điền GEMINI_API_KEY
+
+# 7. Tải AI models
+python download_models.py
+
+# 8. Chạy ứng dụng
+python run.py
+```
+
+📖 **[Xem hướng dẫn cài đặt Windows chi tiết →](WINDOWS_INSTALL.md)**
+
+---
+
+**Access:** http://localhost:8000
+
+> **CPU mode:** Ứng dụng tự động chạy ở CPU mode nếu không có GPU. Chỉ nên dùng model `VieNeu-TTS-0.3B-q4-gguf` trên CPU để giữ tốc độ chấp nhận được.
 
 ## 📁 Project Structure
 
@@ -255,18 +311,21 @@ Tự động build và tối ưu hóa với docker-slim qua GitHub Actions CI/CD
 
 ```bash
 # Pull latest version
-docker pull ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:latest
+docker pull ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:main
 
 # Run with GPU
 docker run -d \
   --gpus all \
-  -p 5000:5000 \
+  -p 8000:8000 \
   -e GEMINI_API_KEY=your_key \
-  ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:latest
+  ghcr.io/cong-ty-tnnh-q-tech/createvideo-website:main
+
+# Run without GPU (CPU only)
+docker compose -f docker-compose.prod.yml -f docker-compose.cpu.yml up -d
 ```
 
 **Image Tags:**
-- `latest` - Latest stable release from main branch
+- `main` - Latest build từ main branch
 - `develop` - Development builds
 - `v1.0.0` - Semantic versioning tags
 - `main-sha-<commit>` - Specific commit builds
