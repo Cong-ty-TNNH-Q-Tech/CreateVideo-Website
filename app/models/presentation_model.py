@@ -104,3 +104,15 @@ class PresentationModel:
             self.save()
             return True
         return False
+
+    def delete_slide(self, pres_id, slide_num):
+        """Delete a slide from presentation by slide_num"""
+        presentation = self.get_by_id(pres_id)
+        if not presentation:
+            return False
+        original_len = len(presentation['slides'])
+        presentation['slides'] = [s for s in presentation['slides'] if s['slide_num'] != slide_num]
+        if len(presentation['slides']) < original_len:
+            self.save()
+            return True
+        return False

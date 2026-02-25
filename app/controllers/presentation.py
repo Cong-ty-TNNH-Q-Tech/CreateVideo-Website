@@ -9,6 +9,8 @@ from app.services.audio_service import get_audio_service
 from app.services.video_generator import VideoGenerationService
 from app.services.presentation_video_exporter import PresentationVideoExporter
 
+print("DEBUG: Importing PresentationVideoExporter", flush=True)
+
 presentation_bp = Blueprint('presentation', __name__, url_prefix='/api')
 
 # Allowed file extensions for avatar upload
@@ -45,12 +47,29 @@ def upload_presentation():
         file_path = os.path.join(pres_dir, filename)
         file.save(file_path)
         
-        # Read presentation content
+        # Read presentation content (text)
         reader = PresentationReader()
         slides = reader.extract_text_from_file(file_path)
         
         if not slides:
             return jsonify({'success': False, 'error': 'No content found in file'}), 400
+        
+        # Extract slide images (PNG) for preview
+        slides_image_dir = os.path.join(pres_dir, 'slides')
+        image_urls_by_num = {}
+        try:
+            image_paths = reader.extract_slide_images(file_path, slides_image_dir)
+            for i, img_path in enumerate(image_paths):
+                # Build URL relative to static folder
+                rel_path = os.path.relpath(img_path, current_app.static_folder).replace('\\', '/')
+                image_urls_by_num[i + 1] = '/static/' + rel_path
+        except Exception as img_err:
+            print(f"⚠️ Could not extract slide images: {img_err}")
+
+        # Attach image_url to each slide
+        for slide in slides:
+            slide_num = slide.get('slide_num', 0)
+            slide['image_url'] = image_urls_by_num.get(slide_num, '')
         
         # Add to model
         presentation_data = current_app.presentation_model.add(filename, file_path, ext, slides, pres_id=pres_id)
@@ -66,6 +85,7 @@ def upload_presentation():
     except Exception as e:
         print(f"Error uploading presentation: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @presentation_bp.route('/presentation/<pres_id>', methods=['GET'])
 def get_presentation(pres_id):
@@ -106,7 +126,53 @@ def get_slide(pres_id, slide_num):
         'slide': slide
     })
 
+@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>', methods=['DELETE'])
+def delete_slide(pres_id, slide_num):
+    """Delete a specific slide from presentation"""
+    try:
+        # Get slide first to clean up its files
+        slide = current_app.presentation_model.get_slide(pres_id, slide_num)
+        if not slide:
+            return jsonify({'success': False, 'error': 'Slide not found'}), 404
+
+        # Delete associated audio file if exists
+        audio_path = slide.get('audio_file_path')
+        if audio_path and os.path.exists(audio_path):
+            try:
+                os.remove(audio_path)
+                print(f"🧹 Deleted audio: {audio_path}")
+            except Exception as e:
+                print(f"⚠️ Could not delete audio: {e}")
+
+        # Delete associated video file if exists
+        video_path = slide.get('slide_video_path')
+        if video_path and os.path.exists(video_path):
+            try:
+                os.remove(video_path)
+                print(f"🧹 Deleted video: {video_path}")
+            except Exception as e:
+                print(f"⚠️ Could not delete video: {e}")
+
+        # Remove slide from model
+        if current_app.presentation_model.delete_slide(pres_id, slide_num):
+            # Return remaining slides count
+            presentation = current_app.presentation_model.get_by_id(pres_id)
+            remaining = len(presentation['slides']) if presentation else 0
+            print(f"✅ Deleted slide {slide_num}. Remaining: {remaining}")
+            return jsonify({
+                'success': True,
+                'message': f'Slide {slide_num} deleted successfully',
+                'remaining_slides': remaining
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Failed to delete slide'}), 500
+
+    except Exception as e:
+        print(f"❌ Error deleting slide: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 # ==================== GEMINI ROUTES ====================
+
 
 @presentation_bp.route('/generate-text', methods=['POST'])
 def generate_text():
@@ -329,7 +395,7 @@ def preview_voice():
         # clone_voice_path is already set from data if JSON was used
 
         
-        # Generate audio
+        # Generate audio (voice_type not used in preview, always auto-detect)
         success, message = audio_service.generate_audio(
             text, 
             output_path, 
@@ -386,6 +452,7 @@ def generate_audio(pres_id):
             data = request.get_json(silent=True) or {}
         except:
             data = {}
+        voice_type = data.get('voice_type')  # 'vieneu', 'gtts', or 'clone'
         voice_id = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
         
@@ -394,32 +461,37 @@ def generate_audio(pres_id):
         
         for i, slide in enumerate(slides):
             try:
+                # Use slide_num (1-based) to match slide image filenames (slide_1.png, slide_2.png...)
+                slide_num = slide.get('slide_num', i + 1)
+                
                 # Get the text to convert (edited_text takes priority over generated_text)
                 text_to_convert = slide.get('edited_text') or slide.get('generated_text') or slide.get('content', '')
                 
                 if not text_to_convert.strip():
                     results.append({
                         'slide_index': i,
+                        'slide_num': slide_num,
                         'success': False,
                         'message': 'No text available for this slide'
                     })
                     continue
                 
-                # Generate audio file path
-                audio_file_path = audio_service.get_audio_file_path(pres_id, i, static_folder)
-                audio_url = audio_service.get_audio_url(pres_id, i)
+                # Generate audio file path using slide_num (1-based) to match slide images
+                audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
+                audio_url = audio_service.get_audio_url(pres_id, slide_num)
                 
                 # Generate audio
                 success, message = audio_service.generate_audio(
                     text_to_convert, 
                     audio_file_path,
+                    voice_type=voice_type,
                     voice_id=voice_id,
                     clone_voice_path=clone_voice_path
                 )
                 
                 if success:
-                    # Update slide with audio URL
-                    current_app.presentation_model.update_slide(pres_id, i, {
+                    # Update slide with audio URL (use slide_num to match model's indexing)
+                    current_app.presentation_model.update_slide(pres_id, slide_num, {
                         'audio_url': audio_url,
                         'audio_file_path': audio_file_path
                     })
@@ -427,13 +499,14 @@ def generate_audio(pres_id):
                     
                 results.append({
                     'slide_index': i,
+                    'slide_num': slide_num,
                     'success': success,
                     'audio_url': audio_url if success else None,
                     'message': message
                 })
                 
             except Exception as e:
-                print(f"Error processing slide {i}: {str(e)}")
+                print(f"Error processing slide {slide_num if 'slide_num' in locals() else i}: {str(e)}")
                 results.append({
                     'slide_index': i,
                     'success': False,
@@ -585,6 +658,7 @@ def regenerate_audio(pres_id, slide_num):
             data = request.get_json(silent=True) or {}
         except:
             data = {}
+        voice_type = data.get('voice_type')
         voice_id = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
         
@@ -596,6 +670,7 @@ def regenerate_audio(pres_id, slide_num):
         success, message = audio_service.generate_audio(
             text_to_convert, 
             audio_file_path,
+            voice_type=voice_type,
             voice_id=voice_id,
             clone_voice_path=clone_voice_path
         )
@@ -604,7 +679,9 @@ def regenerate_audio(pres_id, slide_num):
             # Update slide with audio URL
             current_app.presentation_model.update_slide(pres_id, slide_num, {
                 'audio_url': audio_url,
-                'audio_file_path': audio_file_path
+                'audio_file_path': audio_file_path,
+                'video_url': None, # Reset video if audio changes
+                'video_path': None
             })
             
             return jsonify({
@@ -622,6 +699,7 @@ def regenerate_audio(pres_id, slide_num):
     except Exception as e:
         print(f"Error in regenerate_audio: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
 
 @presentation_bp.route('/presentation/<pres_id>/generate_video', methods=['POST'])
 def generate_video(pres_id):
