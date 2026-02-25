@@ -87,6 +87,18 @@ python download_models.py
 #### 🐧 Linux / macOS
 
 ```bash
+# 0. Cài Python 3.11 (nếu chưa có)
+# Ubuntu/Debian:
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt-get update
+sudo apt-get install -y python3.11 python3.11-venv python3.11-dev
+
+# macOS (dùng Homebrew):
+brew install python@3.11
+
+# Kiểm tra:
+python3.11 --version
+
 # 1. Cài FFmpeg
 # Ubuntu/Debian:
 sudo apt-get install -y ffmpeg git build-essential
@@ -128,6 +140,21 @@ python run.py
 #### 🪟 Windows
 
 ```powershell
+# 0. Cài Python 3.11 (nếu chưa có)
+# Cách 1 — winget (khuyên dùng):
+winget install Python.Python.3.11
+
+# Cách 2 — pyenv-win:
+pip install pyenv-win --target "$HOME\.pyenv"
+[System.Environment]::SetEnvironmentVariable('PYENV', "$HOME\.pyenv\pyenv-win", 'User')
+pyenv install 3.11.9
+pyenv global 3.11.9
+
+# Kiểm tra:
+py -3.11 --version
+# hoặc:
+python --version
+
 # 1. Cài FFmpeg (dùng winget hoặc tải từ https://ffmpeg.org/download.html)
 winget install ffmpeg
 
@@ -136,7 +163,7 @@ git clone https://github.com/Cong-ty-TNNH-Q-Tech/CreateVideo-Website.git
 cd CreateVideo-Website
 
 # 3. Tạo và kích hoạt virtual environment
-python -m venv venv
+py -3.11 -m venv venv
 venv\Scripts\Activate.ps1
 
 # (Nếu bị lỗi ExecutionPolicy)
