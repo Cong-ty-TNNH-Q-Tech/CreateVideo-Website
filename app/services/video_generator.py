@@ -60,6 +60,19 @@ class VideoGenerationService:
             command.append('--cpu')
             print("Force CPU mode enabled.")
         
+        # Ensure model weight directories exist and are writable
+        # SadTalker downloads weights to gfpgan/weights/ relative to its CWD
+        weights_dirs = [
+            os.path.join(self.sadtalker_dir, 'gfpgan', 'weights'),
+            os.path.join(self.sadtalker_dir, 'checkpoints'),
+        ]
+        for wd in weights_dirs:
+            os.makedirs(wd, exist_ok=True)
+            try:
+                os.chmod(wd, 0o755)
+            except Exception:
+                pass
+
         print(f"Running command: {' '.join(command)}")
         print(f"CWD: {self.sadtalker_dir}")
 
