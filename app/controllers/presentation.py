@@ -450,9 +450,9 @@ def generate_audio(pres_id):
         voice_id        = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
         # VieNeu-TTS (GPU): workers=1-2 recommended (model serialized internally)
-        # gTTS (network):   workers=4-8 is fine
+        # gTTS (network):   workers=4-16 is fine
         max_workers = int(data.get('max_workers', 4))
-        max_workers = min(max(1, max_workers), 8)
+        max_workers = min(max(1, max_workers), 16)
 
         # Reuse the singleton — model loads only once
         svc = get_audio_service()
@@ -961,7 +961,7 @@ def generate_all_slide_videos(pres_id):
 
         data        = request.get_json(silent=True) or {}
         max_workers = int(data.get('max_workers', os.cpu_count() or 4))
-        max_workers = min(max(1, max_workers), 8)
+        max_workers = min(max(1, max_workers), 16)
 
         # Resolve presentation file + slide image dir upfront
         pres_file_path = presentation.get('file_path')
