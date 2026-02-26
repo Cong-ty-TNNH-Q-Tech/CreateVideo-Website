@@ -171,6 +171,127 @@ def delete_slide(pres_id, slide_num):
         print(f"❌ Error deleting slide: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# ==================== SUBTITLE ROUTES ====================
+
+def generate_vtt_content(slides):
+    """
+    Generate WebVTT subtitle content from slide scripts and audio durations.
+    Uses moviepy to read actual audio duration of each slide.
+    Returns a VTT string ready to be saved/served.
+    """
+    try:
+        from moviepy.editor import AudioFileClip
+    except ImportError:
+        return None, "moviepy not available"
+
+    lines = ["WEBVTT", ""]
+    current_time = 0.0
+    cue_index = 1
+
+    for slide in slides:
+        audio_path = slide.get('audio_file_path')
+        text = (slide.get('edited_text') or slide.get('generated_text') or '').strip()
+
+        if not text:
+            # No text – skip subtitle for this slide (still advance time if audio exists)
+            if audio_path and os.path.exists(audio_path):
+                try:
+                    clip = AudioFileClip(audio_path)
+                    current_time += clip.duration
+                    clip.close()
+                except Exception:
+                    pass
+            continue
+
+        if not audio_path or not os.path.exists(audio_path):
+            # No audio file – give 5s default duration
+            duration = 5.0
+        else:
+            try:
+                clip = AudioFileClip(audio_path)
+                duration = clip.duration
+                clip.close()
+            except Exception:
+                duration = 5.0
+
+        start = current_time
+        end = current_time + duration
+        current_time = end
+
+        def fmt(t):
+            h = int(t // 3600)
+            m = int((t % 3600) // 60)
+            s = t % 60
+            return f"{h:02d}:{m:02d}:{s:06.3f}".replace('.', ',')  # WebVTT uses dot but comma also supported
+
+        # Break long text into lines of ~80 chars for readability
+        MAX_LINE = 80
+        words = text.split()
+        cue_lines = []
+        current_line = ""
+        for word in words:
+            if len(current_line) + len(word) + 1 > MAX_LINE and current_line:
+                cue_lines.append(current_line.strip())
+                current_line = word
+            else:
+                current_line = (current_line + " " + word).strip()
+        if current_line:
+            cue_lines.append(current_line.strip())
+
+        # Use proper dot for WebVTT timestamps
+        def fmt_vtt(t):
+            h = int(t // 3600)
+            m = int((t % 3600) // 60)
+            s = t % 60
+            return f"{h:02d}:{m:02d}:{s:06.3f}"
+
+        lines.append(str(cue_index))
+        lines.append(f"{fmt_vtt(start)} --> {fmt_vtt(end)}")
+        lines.extend(cue_lines)
+        lines.append("")
+        cue_index += 1
+
+    return "\n".join(lines), None
+
+
+@presentation_bp.route('/presentation/<pres_id>/subtitles', methods=['GET'])
+def get_subtitles(pres_id):
+    """Generate and serve a WebVTT subtitle file for the presentation"""
+    from flask import Response
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        slides = presentation.get('slides', [])
+        if not slides:
+            return jsonify({'success': False, 'error': 'No slides found'}), 400
+
+        # Check if we have a cached VTT and it's still valid (optional optimisation)
+        static_folder = current_app.static_folder
+        vtt_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(vtt_dir, exist_ok=True)
+        vtt_path = os.path.join(vtt_dir, 'subtitles.vtt')
+
+        # Always regenerate so changes to scripts are reflected
+        print(f"🎬 Generating VTT subtitles for {pres_id}...")
+        vtt_content, error = generate_vtt_content(slides)
+        if error:
+            return jsonify({'success': False, 'error': error}), 500
+
+        # Save to static file so browser can load it via URL
+        with open(vtt_path, 'w', encoding='utf-8') as f:
+            f.write(vtt_content)
+
+        print(f"✅ VTT saved to {vtt_path}")
+        return Response(vtt_content, mimetype='text/vtt; charset=utf-8')
+
+    except Exception as e:
+        print(f"❌ Error generating subtitles: {str(e)}")
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 # ==================== GEMINI ROUTES ====================
 
 
