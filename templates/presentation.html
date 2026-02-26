@@ -158,7 +158,10 @@
                         <div class="card-body p-0 d-flex flex-column">
                             <textarea id="currentScriptEditor" class="script-textarea border-0 w-100 h-100 p-3" style="resize: none; outline: none;" data-i18n-placeholder="step2.placeholder" placeholder="Nhập script thuyết minh cho slide này..."></textarea>
                         </div>
-                        <div class="card-footer bg-transparent border-top border-secondary p-3 text-end">
+                        <div class="card-footer bg-transparent border-top border-secondary p-3 d-flex justify-content-between align-items-center">
+                            <button class="btn btn-warning" onclick="generateTextForAllSlides()" id="btnGenAllText">
+                                <i class="bi bi-magic me-1"></i> Tạo Text tất cả slide
+                            </button>
                             <button class="btn btn-primary" onclick="goToStep3()">
                                 <span data-i18n="step2.nextBtn">Tiếp: Tạo Audio</span> <i class="bi bi-arrow-right ms-2"></i>
                             </button>
@@ -742,6 +745,58 @@
             if (state.slides[state.currentSlideIndex]) {
                 state.slides[state.currentSlideIndex].script = dom.scriptEditor.value;
             }
+        }
+
+        async function generateTextForAllSlides() {
+            const total = state.slides.length;
+            if (!total) return;
+
+            const btn = document.getElementById('btnGenAllText');
+            btn.disabled = true;
+
+            for (let i = 0; i < total; i++) {
+                const slide = state.slides[i];
+                btn.innerHTML = `<div class="spinner-border spinner-border-sm me-1"></div> Đang tạo slide ${i + 1}/${total}...`;
+
+                try {
+                    const res = await fetch('/api/generate-text', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            presentation_id: state.presentationId,
+                            slide_num: slide.slide_num,
+                            language: 'vi'
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        state.slides[i].script = data.text;
+                        // If currently viewing this slide, update the textarea
+                        if (i === state.currentSlideIndex) {
+                            dom.scriptEditor.value = data.text;
+                        }
+                        // Auto-save
+                        await fetch('/api/save-text', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                presentation_id: state.presentationId,
+                                slide_num: slide.slide_num,
+                                edited_text: data.text
+                            })
+                        });
+                    } else {
+                        console.error(`Slide ${slide.slide_num} error:`, data.error);
+                    }
+                } catch (err) {
+                    console.error(`Slide ${slide.slide_num} connection error:`, err);
+                }
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-magic me-1"></i> Tạo Text tất cả slide';
+            // Re-render current slide to show updated script
+            renderSlide(state.currentSlideIndex);
         }
 
         async function generateTextForCurrentSlide() {
