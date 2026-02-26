@@ -329,24 +329,42 @@ def download_with_subtitles(pres_id):
             with open(vtt_path, 'w', encoding='utf-8') as f:
                 f.write(vtt_content)
 
-        # Output file with burned-in subtitles
-        burned_filename = f'video_with_subtitles_{uuid.uuid4().hex[:8]}.mp4'
+        # --- Cache check: reuse burned video if source + vtt unchanged ---
+        burned_filename = 'video_with_subtitles.mp4'
         burned_path = os.path.join(vtt_dir, burned_filename)
 
-        # ffmpeg burn subtitles — use forward slashes for cross-platform filter
-        vtt_path_escaped = vtt_path.replace('\\', '/').replace(':', '\\:')
-        cmd = [
-            'ffmpeg', '-y',
-            '-i', final_video_path,
-            '-vf', f"subtitles='{vtt_path_escaped}':force_style='FontSize=20,PrimaryColour=&H00FFFFFF,BackColour=&H80000000,BorderStyle=3,Outline=0,Shadow=0'",
-            '-c:a', 'copy',
-            '-preset', 'ultrafast',
-            '-threads', '0',
-            burned_path
-        ]
+        if os.path.exists(burned_path):
+            burned_mtime = os.path.getmtime(burned_path)
+            src_mtime    = os.path.getmtime(final_video_path)
+            vtt_mtime    = os.path.getmtime(vtt_path)
+            if burned_mtime > src_mtime and burned_mtime > vtt_mtime:
+                print(f"⚡ Serving cached burned video: {burned_filename}")
+                return jsonify({'success': True, 'video_url': f'/static/videos/{pres_id}/{burned_filename}'})
 
-        print(f"🔥 Burning subtitles into video...")
-        proc = _sp.run(cmd, capture_output=True, text=True, timeout=600)
+        # ffmpeg burn subtitles — try GPU (NVENC) first, fall back to CPU ultrafast
+        vtt_path_escaped = vtt_path.replace('\\', '/').replace(':', '\\:')
+        sub_filter = f"subtitles='{vtt_path_escaped}':force_style='FontSize=20,PrimaryColour=&H00FFFFFF,BackColour=&H80000000,BorderStyle=3,Outline=0,Shadow=0'"
+
+        def _build_cmd(video_codec_args):
+            return [
+                'ffmpeg', '-y',
+                '-i', final_video_path,
+                '-vf', sub_filter,
+                *video_codec_args,
+                '-c:a', 'copy',
+                '-threads', '0',
+                burned_path
+            ]
+
+        gpu_cmd = _build_cmd(['-c:v', 'h264_nvenc', '-preset', 'p1', '-cq', '28'])
+        cpu_cmd = _build_cmd(['-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '28'])
+
+        print(f"🔥 Burning subtitles into video (trying GPU)...")
+        proc = _sp.run(gpu_cmd, capture_output=True, text=True, timeout=600)
+
+        if proc.returncode != 0:
+            print(f"⚠️ GPU encode failed (returncode={proc.returncode}), falling back to CPU...")
+            proc = _sp.run(cpu_cmd, capture_output=True, text=True, timeout=600)
 
         if proc.returncode != 0:
             print(f"ffmpeg stderr: {proc.stderr[-500:]}")
