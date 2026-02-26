@@ -74,6 +74,12 @@ RUN pip install --no-cache-dir \
     langdetect>=1.0.9 \
     soundfile>=0.12.1
 
+# Install llama-cpp-python with CUDA 11.8 support (VieNeu-TTS backend)
+# Uses pre-built CUDA wheel — much faster than compiling from source
+RUN pip install --no-cache-dir \
+    "llama-cpp-python>=0.3.16" \
+    --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu118
+
 # Fix BasicSR compatibility with newer TorchVision
 # Replace 'from torchvision.transforms.functional_tensor import rgb_to_grayscale'
 # with 'from torchvision.transforms.functional import rgb_to_grayscale'

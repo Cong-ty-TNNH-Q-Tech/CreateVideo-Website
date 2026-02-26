@@ -74,6 +74,8 @@ PyMuPDF>=1.27.0
 langdetect>=1.0.9
 neucodec>=0.0.4
 phonemizer>=3.2.2
+# llama-cpp-python: CPU build via pip. Docker uses CUDA build (see Dockerfile).
+llama-cpp-python>=0.3.16
 
 # -------------------- ML / Data Science --------------------
 numpy>=2.3.0
