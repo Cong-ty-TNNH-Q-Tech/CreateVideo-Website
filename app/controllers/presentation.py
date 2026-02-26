@@ -4,6 +4,7 @@ import os
 import uuid
 import traceback
 import threading
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from app.utils.presentation_reader import PresentationReader
 from app.services.gemini import get_gemini_service
@@ -1183,6 +1184,42 @@ def generate_slide_video(pres_id, slide_num):
             'error': f'Lỗi không mong đợi: {str(e)}'
         }), 500
 
+def _ffmpeg_concat(video_paths, output_path):
+    """
+    Merge a list of MP4 files using ffmpeg concat demuxer.
+    All inputs must have the same codec/resolution (guaranteed since all come from
+    create_single_slide_video_fast which uses libx264/aac at 1920x1080).
+    This is stream-copy only — no re-encode, very fast.
+    """
+    # Write a temporary filelist
+    list_path = output_path + '_filelist.txt'
+    try:
+        with open(list_path, 'w', encoding='utf-8') as f:
+            for p in video_paths:
+                # ffmpeg requires forward slashes and escaped single quotes
+                safe = p.replace('\\', '/').replace("'", "'\\''")
+                f.write(f"file '{safe}'\n")
+
+        cmd = [
+            'ffmpeg', '-y',
+            '-f', 'concat', '-safe', '0',
+            '-i', list_path,
+            '-c', 'copy',
+            '-movflags', '+faststart',
+            output_path
+        ]
+        print(f"⚡ ffmpeg concat {len(video_paths)} files → {os.path.basename(output_path)}")
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if proc.returncode != 0:
+            raise RuntimeError(f'ffmpeg concat failed: {proc.stderr[-400:]}')
+    finally:
+        if os.path.exists(list_path):
+            try:
+                os.remove(list_path)
+            except Exception:
+                pass
+
+
 @presentation_bp.route('/presentation/<pres_id>/merge_slide_videos', methods=['POST'])
 def merge_slide_videos(pres_id):
     """Merge all individual slide videos into final presentation"""
@@ -1223,33 +1260,9 @@ def merge_slide_videos(pres_id):
         
         output_filename = f'final_presentation_{uuid.uuid4().hex}.mp4'
         output_path = os.path.join(video_dir, output_filename)
-        
-        # Merge videos using moviepy
-        from moviepy.editor import VideoFileClip, concatenate_videoclips
-        
-        clips = []
+
         try:
-            for path in video_paths:
-                clip = VideoFileClip(path)
-                clips.append(clip)
-            
-            final_video = concatenate_videoclips(clips, method="compose")
-            
-            print(f"📹 Writing merged video to: {output_path}")
-            final_video.write_videofile(
-                output_path,
-                codec='libx264',
-                audio_codec='aac',
-                preset='ultrafast',
-                threads=4,
-                logger=None
-            )
-            
-            # Clean up
-            final_video.close()
-            for clip in clips:
-                clip.close()
-            
+            _ffmpeg_concat(video_paths, output_path)
             video_url = f'/static/videos/{pres_id}/{output_filename}'
             
             # Update presentation
@@ -1271,16 +1284,10 @@ def merge_slide_videos(pres_id):
                 'slides_merged': len(video_paths),
                 'slides_skipped': len(missing_slides)
             })
-            
+
         except Exception as e:
-            # Clean up clips on error
-            for clip in clips:
-                try:
-                    clip.close()
-                except:
-                    pass
             raise e
-        
+
     except Exception as e:
         print(f"❌ Error merging videos: {str(e)}")
         traceback.print_exc()
@@ -1331,25 +1338,9 @@ def generate_final_video_v2(pres_id):
         
         base_filename = f'base_presentation_{uuid.uuid4().hex}.mp4'
         base_output_path = os.path.join(video_dir, base_filename)
-        
-        from moviepy.editor import VideoFileClip, concatenate_videoclips
-        clips = []
+
         try:
-            for path in video_paths:
-                clips.append(VideoFileClip(path))
-            
-            final_video = concatenate_videoclips(clips, method="compose")
-            final_video.write_videofile(
-                base_output_path,
-                codec='libx264',
-                audio_codec='aac',
-                preset='ultrafast',
-                threads=4,
-                logger=None
-            )
-            final_video.close()
-            for clip in clips: clip.close()
-            
+            _ffmpeg_concat(video_paths, base_output_path)
         except Exception as e:
             traceback.print_exc()
             return jsonify({'success': False, 'error': f'Lỗi khi ghép video slides: {str(e)}'}), 500
