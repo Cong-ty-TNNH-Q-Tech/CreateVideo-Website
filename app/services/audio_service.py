@@ -90,6 +90,20 @@ class AudioService:
                 print("  🔧 Quick VieNeu initialization...")
                 # Auto-detect device: use CUDA if available
                 import torch
+                # Fix CUDA_VISIBLE_DEVICES misconfiguration:
+                # If it's set to a non-existing index (e.g. =1 on a 1-GPU machine), reset to 0
+                cvd = os.environ.get('CUDA_VISIBLE_DEVICES', '')
+                if cvd not in ('', 'all', 'void', 'noDevFiles'):
+                    try:
+                        import subprocess as _sp
+                        ngpu = int(_sp.run(['nvidia-smi', '--query-gpu=name', '--format=csv,noheader'],
+                                           capture_output=True, text=True).stdout.strip().count('\n')) + 1
+                        requested = [int(x) for x in cvd.split(',') if x.strip().lstrip('-').isdigit()]
+                        if requested and max(requested) >= ngpu:
+                            print(f"  ⚠️  CUDA_VISIBLE_DEVICES={cvd} invalid for {ngpu} GPU(s), resetting to 0")
+                            os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+                    except Exception:
+                        pass
                 cuda_available = torch.cuda.is_available()
                 if not cuda_available:
                     try:
