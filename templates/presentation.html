@@ -1082,8 +1082,8 @@
 
                 if (data.success && data.results) {
                     data.results.forEach(r => {
-                        if (r && r.success && r.slide_num) {
-                            const idx = r.slide_num - 1;
+                        if (r && r.success && r.slide_index !== undefined) {
+                            const idx = r.slide_index; // 0-based, same pattern as generateAudioForAll
                             if (state.slides[idx]) {
                                 state.slides[idx].videoUrl = r.video_url;
                             }
