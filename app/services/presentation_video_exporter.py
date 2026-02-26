@@ -19,7 +19,7 @@ class PresentationVideoExporter:
     
     def __init__(self):
         self.transition_duration = 0.5  # 0.5 second fade transition
-        self.slide_buffer = 3.0  # Extra 3 seconds after audio before next slide
+        self.slide_buffer = 3  # Extra 0.5 seconds of silence after audio ends
         self.target_size = (1920, 1080)
         
     def _create_styled_slide(self, image_path, temp_dir, index):
