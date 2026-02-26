@@ -763,6 +763,16 @@
                 if (data.success) {
                     dom.scriptEditor.value = data.text;
                     state.slides[state.currentSlideIndex].script = data.text;
+                    // Auto-save to server immediately after generating
+                    await fetch('/api/save-text', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            presentation_id: state.presentationId,
+                            slide_num: slide.slide_num,
+                            edited_text: data.text
+                        })
+                    });
                 } else {
                     alert('Error: ' + data.error);
                 }
