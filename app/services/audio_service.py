@@ -90,9 +90,18 @@ class AudioService:
                 print("  🔧 Quick VieNeu initialization...")
                 # Auto-detect device: use CUDA if available
                 import torch
-                device = "cuda" if torch.cuda.is_available() else "cpu"
+                cuda_available = torch.cuda.is_available()
+                device = "cuda" if cuda_available else "cpu"
                 print(f"  🖥️  Using device: {device}")
-                self.vieneu_engine = Vieneu(backbone_device=device, codec_device=device)
+                # Best quality model per device:
+                #   GPU → VieNeu-TTS-0.3B (PyTorch, ★★★★, no quantization loss)
+                #   CPU → VieNeu-TTS-0.3B-q8-gguf (GGUF Q8, ★★★★, faster than Q4)
+                if cuda_available:
+                    backbone_repo = "pnnbao-ump/VieNeu-TTS-0.3B"
+                else:
+                    backbone_repo = "pnnbao-ump/VieNeu-TTS-0.3B-q8-gguf"
+                print(f"  📦 Model: {backbone_repo}")
+                self.vieneu_engine = Vieneu(backbone_repo=backbone_repo, backbone_device=device, codec_device=device)
                 
                 # Get available voices quickly
                 available_voices = self.vieneu_engine.list_preset_voices()
