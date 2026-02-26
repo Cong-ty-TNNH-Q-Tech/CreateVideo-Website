@@ -240,7 +240,7 @@ class AudioService:
             print(f"Error getting voices: {e}")
             return []
     
-    def generate_audio(self, text: str, output_path: str, voice_type: str = None, voice_id: str = None, clone_voice_path: str = None) -> Tuple[bool, str]:
+    def generate_audio(self, text: str, output_path: str, voice_type: str = None, voice_id: str = None, clone_voice_path: str = None, clone_ref_text: str = None) -> Tuple[bool, str]:
         """
         Generate audio from text using specified TTS engine
         
@@ -279,7 +279,7 @@ class AudioService:
             elif voice_type == 'clone':
                 # Force VieNeu with voice cloning
                 print("🎯 User selected Voice Clone")
-                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
+                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path, clone_ref_text):
                     return True, f"Generated using Voice Clone ({detected_lang})"
                 else:
                     print("⚠️  Voice cloning failed, falling back to edge-tts...")
@@ -291,7 +291,7 @@ class AudioService:
             elif voice_type == 'vieneu':
                 # Force VieNeu-TTS
                 print("🎯 User selected VieNeu-TTS")
-                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
+                if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path, clone_ref_text):
                     return True, f"Generated using VieNeu-TTS ({detected_lang})"
                 else:
                     print("⚠️  VieNeu-TTS failed, falling back to edge-tts...")
@@ -303,7 +303,7 @@ class AudioService:
                 # Auto-detect based on language (legacy behavior)
                 if self.should_use_vieneu(detected_lang):
                     # Dùng VieNeu-TTS cho tiếng Việt
-                    if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
+                    if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path, clone_ref_text):
                         return True, f"Generated using VieNeu-TTS ({detected_lang})"
                     else:
                         print("⚠️  VieNeu-TTS failed, falling back to edge-tts...")
@@ -324,7 +324,7 @@ class AudioService:
             traceback.print_exc()
             return False, error_msg
     
-    def _generate_with_vieneu(self, text: str, output_path: str, voice_id: str = None, clone_voice_path: str = None) -> bool:
+    def _generate_with_vieneu(self, text: str, output_path: str, voice_id: str = None, clone_voice_path: str = None, clone_ref_text: str = None) -> bool:
         """Generate audio using VieNeu-TTS engine (thread-safe: serializes GPU inference)"""
         try:
             if not self.vieneu_engine or not self.vieneu_available:
@@ -340,11 +340,26 @@ class AudioService:
                 if clone_voice_path and os.path.exists(clone_voice_path):
                     print(f"  🎤 Using cloned voice from: {clone_voice_path}")
                     try:
-                        voice_to_use = self.vieneu_engine.clone_voice(clone_voice_path)
+                        # Use infer() directly with ref_audio — VieNeu auto-encodes the audio.
+                        # If ref_text (transcript of reference audio) is provided it improves
+                        # the alignment; empty string is accepted when no transcript is available.
+                        ref_text_for_clone = (clone_ref_text.strip() if clone_ref_text else "")
+                        audio_spec = self.vieneu_engine.infer(
+                            text=text,
+                            ref_audio=clone_voice_path,
+                            ref_text=ref_text_for_clone  # "" is fine; None would raise ValueError
+                        )
+                        # Save and return early — skip the preset-voice path below
+                        self.vieneu_engine.save(audio_spec, output_path)
+                        print(f"\u2705 VieNeu voice-clone audio saved to: {output_path}")
+                        return True
                     except Exception as e:
-                        print(f"  ⚠️ Voice cloning failed: {e}, using preset")
+                        print(f"  \u26a0\ufe0f Voice cloning failed: {e}, falling back to preset")
 
-                if not voice_to_use and voice_id:
+                # --- preset / default voice path ---
+                voice_to_use = None
+
+                if voice_id:
                     print(f"  👤 Using preset voice: {voice_id}")
                     try:
                         voice_to_use = self.vieneu_engine.get_preset_voice(voice_id)

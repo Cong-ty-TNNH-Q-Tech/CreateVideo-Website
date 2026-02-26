@@ -238,11 +238,35 @@
                                     </div>
                                     <!-- Clone voice upload section -->
                                     <div id="cloneVoiceUpload" class="mt-2 pt-2 border-top border-secondary" style="display: none;">
-                                        <label class="small text-secondary mb-1">Upload mẫu giọng (WAV/MP3, 10-60s):</label>
+                                        <!-- Record section -->
+                                        <div class="mb-2">
+                                            <div class="small text-secondary mb-1">Ghi âm trực tiếp (3–60 giây):</div>
+                                            <div class="d-flex gap-2 align-items-center">
+                                                <button id="btnStartRec" type="button" class="btn btn-sm btn-danger"
+                                                        onclick="startCloneRecording()">
+                                                    <i class="bi bi-record-circle"></i> Ghi âm
+                                                </button>
+                                                <button id="btnStopRec" type="button" class="btn btn-sm btn-secondary"
+                                                        onclick="stopCloneRecording()" style="display:none;">
+                                                    <i class="bi bi-stop-circle"></i> Dừng
+                                                </button>
+                                                <span id="recTimer" class="small text-danger" style="display:none;">&#9679; 0s</span>
+                                            </div>
+                                        </div>
+                                        <!-- OR upload file -->
+                                        <div class="small text-secondary mb-1">― Hoặc upload file (WAV/MP3, 3–60s) ―</div>
                                         <input type="file" id="cloneVoiceInput"
                                                class="form-control form-control-sm bg-dark border-secondary text-white"
                                                accept="audio/*"
                                                onchange="uploadCloneVoice(this)">
+                                        <!-- Ref text (transcript) -->
+                                        <div class="mt-2">
+                                            <label class="small text-secondary mb-1">Nội dung đoạn âm thanh mẫu (tùy chọn, giúp tăng chất lượng clone):</label>
+                                            <textarea id="cloneRefText" rows="2"
+                                                      class="form-control form-control-sm bg-dark border-secondary text-white"
+                                                      placeholder="Ví dụ: Xin chào, đây là giọng nói mẫu của tôi."
+                                                      oninput="state.cloneRefText = this.value"></textarea>
+                                        </div>
                                         <div id="cloneVoiceStatus" class="small mt-1" style="display:none;"></div>
                                         <audio id="cloneVoicePreview" controls class="w-100 mt-2" style="display:none;height:32px;"></audio>
                                     </div>
@@ -601,7 +625,8 @@
             slides: [],
             currentSlideIndex: 0,
             voiceSettings: { type: 'preset', voice_id: 'default' }, // Global settings
-            cloneVoicePath: null, // Server-side absolute path after upload
+            cloneVoicePath: null,   // Server-side absolute path after upload
+            cloneRefText: '',       // Transcript of the reference audio (improves clone quality)
         };
 
         // --- Constants & Config ---
@@ -1182,6 +1207,7 @@
                 }
                 if (state.voiceSettings.type === 'clone' && state.cloneVoicePath) {
                     bodyData.clone_voice_path = state.cloneVoicePath;
+                    bodyData.clone_ref_text   = state.cloneRefText || '';
                 }
 
                 const res = await fetch(`/api/presentation/${state.presentationId}/slide/${slideNum}/regenerate_audio`, {
@@ -1304,19 +1330,32 @@
         }
 
         async function uploadCloneVoice(input) {
-            if (!input.files || input.files.length === 0) return;
+            let file;
+            let refText = '';
+            if (input && input.files && input.files.length > 0) {
+                file = input.files[0];
+            } else if (input instanceof File) {
+                // Called from recording callback
+                file = input;
+            }
+            if (!file) return;
             if (!state.presentationId) {
                 alert('Vui lòng upload file presentation trước.');
-                input.value = '';
+                if (input && input.value !== undefined) input.value = '';
                 return;
             }
+
+            // Read ref_text from textarea if available
+            const refTextEl = document.getElementById('cloneRefText');
+            if (refTextEl) refText = refTextEl.value.trim();
 
             const statusEl = document.getElementById('cloneVoiceStatus');
             statusEl.style.display = 'block';
             statusEl.innerHTML = '<span class="text-secondary"><span class="spinner-border spinner-border-sm me-1"></span>Đang upload...</span>';
 
             const formData = new FormData();
-            formData.append('clone_file', input.files[0]);
+            formData.append('clone_file', file);
+            if (refText) formData.append('ref_text', refText);
 
             try {
                 const res = await fetch(`/api/presentation/${state.presentationId}/upload-clone-voice`, {
@@ -1327,6 +1366,7 @@
 
                 if (data.success) {
                     state.cloneVoicePath = data.clone_voice_path;
+                    state.cloneRefText   = data.clone_ref_text || refText;
                     statusEl.innerHTML = `<span class="text-success">✅ Đã upload (${data.size_kb} KB) — sẵn sàng dùng</span>`;
                     // Auto-preview with cloned voice
                     const previewAudio = document.getElementById('cloneVoicePreview');
@@ -1336,13 +1376,87 @@
                     }
                 } else {
                     state.cloneVoicePath = null;
+                    state.cloneRefText   = '';
                     statusEl.innerHTML = `<span class="text-danger">❌ ${data.error || 'Upload thất bại'}</span>`;
                 }
             } catch (e) {
                 state.cloneVoicePath = null;
+                state.cloneRefText   = '';
                 statusEl.innerHTML = `<span class="text-danger">❌ Network error: ${e.message}</span>`;
             }
         }
+
+        // ─── In-browser voice recording ─────────────────────────────────────────
+        let _mediaRecorder = null;
+        let _recChunks     = [];
+        let _recInterval   = null;
+        let _recSeconds    = 0;
+
+        async function startCloneRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Trình duyệt của bạn không hỗ trợ ghi âm. Hãy dùng Chrome/Firefox mới nhất.');
+                return;
+            }
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                // Pick a supported MIME type (wav preferred for VieNeu)
+                const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                    ? 'audio/webm;codecs=opus'
+                    : (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus') ? 'audio/ogg;codecs=opus' : '');
+
+                _recChunks = [];
+                _mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+                _mediaRecorder.ondataavailable = e => { if (e.data.size > 0) _recChunks.push(e.data); };
+                _mediaRecorder.onstop = async () => {
+                    // Stop all tracks so the mic indicator disappears
+                    stream.getTracks().forEach(t => t.stop());
+                    const blob = new Blob(_recChunks, { type: _mediaRecorder.mimeType || 'audio/webm' });
+                    // Determine extension from MIME
+                    const ext  = (blob.type.includes('ogg') ? '.ogg' : '.webm');
+                    const file = new File([blob], `recording${ext}`, { type: blob.type });
+
+                    // Preview immediately
+                    const previewEl = document.getElementById('cloneVoicePreview');
+                    if (previewEl) {
+                        previewEl.src = URL.createObjectURL(blob);
+                        previewEl.style.display = 'block';
+                    }
+
+                    // Upload as clone reference
+                    await uploadCloneVoice(file);
+                };
+                _mediaRecorder.start();
+
+                // UI: swap buttons, start timer
+                document.getElementById('btnStartRec').style.display = 'none';
+                document.getElementById('btnStopRec').style.display  = '';
+                const timerEl = document.getElementById('recTimer');
+                timerEl.style.display = '';
+                _recSeconds = 0;
+                timerEl.textContent = '● 0s';
+                _recInterval = setInterval(() => {
+                    _recSeconds++;
+                    timerEl.textContent = `● ${_recSeconds}s`;
+                    // Auto-stop at 60s
+                    if (_recSeconds >= 60) stopCloneRecording();
+                }, 1000);
+
+            } catch (err) {
+                alert('Không thể truy cập microphone: ' + err.message);
+            }
+        }
+
+        function stopCloneRecording() {
+            if (_mediaRecorder && _mediaRecorder.state !== 'inactive') {
+                _mediaRecorder.stop();
+            }
+            clearInterval(_recInterval);
+            document.getElementById('btnStartRec').style.display = '';
+            document.getElementById('btnStopRec').style.display  = 'none';
+            document.getElementById('recTimer').style.display     = 'none';
+        }
+        // ────────────────────────────────────────────────────────────────────────
 
         function testVoice() {
             alert("Voice preview feature coming soon!");
@@ -1377,6 +1491,7 @@
                 if (state.voiceSettings.type === 'clone') {
                     if (state.cloneVoicePath) {
                         bodyData.clone_voice_path = state.cloneVoicePath;
+                        bodyData.clone_ref_text   = state.cloneRefText || '';
                     }
                     // Note: if no file uploaded, backend will use VieNeu default voice
                 }

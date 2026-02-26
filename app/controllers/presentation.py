@@ -652,9 +652,10 @@ def generate_audio(pres_id):
             data = request.get_json(silent=True) or {}
         except:
             data = {}
-        voice_type      = data.get('voice_type')
-        voice_id        = data.get('voice_id')
+        voice_type       = data.get('voice_type')
+        voice_id         = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
+        clone_ref_text   = data.get('clone_ref_text', '')
         # VieNeu-TTS (GPU): workers=1-2 recommended (model serialized internally)
         # gTTS (network):   workers=4-16 is fine
         max_workers = int(data.get('max_workers', 4))
@@ -699,7 +700,8 @@ def generate_audio(pres_id):
                 text, audio_file_path,
                 voice_type=voice_type,
                 voice_id=voice_id,
-                clone_voice_path=clone_voice_path
+                clone_voice_path=clone_voice_path,
+                clone_ref_text=clone_ref_text
             )
 
             if ok:
@@ -852,6 +854,58 @@ def upload_avatar(pres_id):
         print(f"Error uploading avatar: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+
+@presentation_bp.route('/presentation/<pres_id>/upload-clone-voice', methods=['POST'])
+def upload_clone_voice(pres_id):
+    """Upload reference audio file for voice cloning"""
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        if 'clone_file' not in request.files:
+            return jsonify({'success': False, 'error': 'No audio file uploaded'}), 400
+
+        file = request.files['clone_file']
+        if file.filename == '':
+            return jsonify({'success': False, 'error': 'No file selected'}), 400
+
+        # Get optional reference transcript
+        ref_text = request.form.get('ref_text', '').strip()
+
+        static_folder = current_app.static_folder
+        clone_dir = os.path.join(static_folder, 'audio', pres_id, 'clone')
+        os.makedirs(clone_dir, exist_ok=True)
+
+        # Keep original extension (wav/mp3/webm etc.)
+        original_ext = os.path.splitext(secure_filename(file.filename))[1].lower() or '.wav'
+        filename = f"clone_ref_{uuid.uuid4().hex}{original_ext}"
+        file_path = os.path.join(clone_dir, filename)
+        file.save(file_path)
+
+        size_kb = round(os.path.getsize(file_path) / 1024, 1)
+        clone_voice_url = f"/static/audio/{pres_id}/clone/{filename}"
+
+        # Persist clone voice path (and optional ref_text) on the presentation model
+        current_app.presentation_model.update(pres_id, {
+            'clone_voice_path': file_path,
+            'clone_ref_text': ref_text
+        })
+
+        print(f"  🎤 Clone voice saved: {file_path} ({size_kb} KB), ref_text={bool(ref_text)}")
+        return jsonify({
+            'success': True,
+            'clone_voice_path': file_path,
+            'clone_voice_url': clone_voice_url,
+            'clone_ref_text': ref_text,
+            'size_kb': size_kb
+        })
+
+    except Exception as e:
+        print(f"Error uploading clone voice: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/regenerate_audio', methods=['POST'])
 def regenerate_audio(pres_id, slide_num):
     """Regenerate audio for a specific slide"""
@@ -884,6 +938,7 @@ def regenerate_audio(pres_id, slide_num):
         voice_type = data.get('voice_type')
         voice_id = data.get('voice_id')
         clone_voice_path = data.get('clone_voice_path')
+        clone_ref_text = data.get('clone_ref_text', '')
         
         # Generate audio file path
         audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
@@ -895,7 +950,8 @@ def regenerate_audio(pres_id, slide_num):
             audio_file_path,
             voice_type=voice_type,
             voice_id=voice_id,
-            clone_voice_path=clone_voice_path
+            clone_voice_path=clone_voice_path,
+            clone_ref_text=clone_ref_text
         )
         
         if success:
