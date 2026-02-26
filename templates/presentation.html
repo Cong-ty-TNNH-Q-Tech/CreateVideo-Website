@@ -326,13 +326,19 @@
 
                 <!-- Result -->
                 <div id="videoResultContainer" style="display: none;">
-                    <div class="card overflow-hidden mb-4 border-primary">
-                        <video id="finalVideo" controls class="w-100" style="max-height: 500px; background: black;"></video>
+                    <div class="card overflow-hidden mb-4 border-primary position-relative">
+                        <video id="finalVideo" controls class="w-100" style="max-height: 500px; background: black;">
+                            <track id="subtitleTrack" kind="subtitles" srclang="vi" label="Phụ đề" default>
+                        </video>
+                        <div id="subtitleOverlay" class="subtitle-overlay" style="display:none;"></div>
                     </div>
-                    <div class="d-flex gap-3 justify-content-center" id="downloadContainer">
+                    <div class="d-flex gap-3 justify-content-center flex-wrap" id="downloadContainer">
                         <a id="downloadVideoBtn" class="btn btn-success px-4 py-2">
                             <i class="bi bi-download me-2"></i> <span data-i18n="step4.download">Tải video về</span>
                         </a>
+                        <button id="ccBtn" onclick="toggleSubtitles()" class="btn btn-outline-light px-4 py-2" title="Bật/Tắt phụ đề">
+                            <i class="bi bi-badge-cc me-1"></i> <span id="ccLabel">Bật phụ đề</span>
+                        </button>
                         <button onclick="location.reload()" class="btn btn-outline-secondary px-4 py-2" data-i18n="step4.createNew">
                             Tạo mới
                         </button>
@@ -387,6 +393,36 @@
         .lang-divider {
             color: rgba(255,255,255,0.25);
             font-size: 0.75rem;
+        }
+
+        /* === Subtitle / CC styles === */
+        .subtitle-overlay {
+            position: absolute;
+            bottom: 52px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .subtitle-overlay .sub-text {
+            display: inline-block;
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 500;
+            line-height: 1.5;
+            padding: 4px 14px;
+            border-radius: 4px;
+            max-width: 100%;
+            white-space: pre-wrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+        #ccBtn.cc-active {
+            background: #fff;
+            color: #111;
+            border-color: #fff;
         }
     </style>
     <script>
@@ -1323,7 +1359,10 @@
                         resultContainer.style.display = 'block';
                         resultContainer.scrollIntoView({ behavior: 'smooth' });
                     }
-                    
+
+                    // Load subtitles automatically
+                    loadSubtitles(state.presentationId);
+
                     alert('✅ Video created successfully!');
                 } else {
                     alert('Lỗi: ' + data.error);
@@ -1347,6 +1386,87 @@
             }
             if(dom.finalProgressValue) {
                 dom.finalProgressValue.textContent = `${percent}%`;
+            }
+        }
+
+        // --- Subtitle / CC Logic ---
+        let subtitleCues = [];
+        let ccEnabled = false;
+
+        async function loadSubtitles(presId) {
+            try {
+                const res = await fetch(`/api/presentation/${presId}/subtitles`);
+                if (!res.ok) { console.warn('Subtitles not available'); return; }
+                const vtt = await res.text();
+                subtitleCues = parseVTT(vtt);
+                console.log(`✅ Loaded ${subtitleCues.length} subtitle cues`);
+
+                const track = document.getElementById('subtitleTrack');
+                const video = document.getElementById('finalVideo');
+                if (track && video) {
+                    const blob = new Blob([vtt], { type: 'text/vtt' });
+                    track.src = URL.createObjectURL(blob);
+                    video.removeEventListener('timeupdate', renderSubtitleOverlay);
+                    video.addEventListener('timeupdate', renderSubtitleOverlay);
+                }
+                const ccBtn = document.getElementById('ccBtn');
+                if (ccBtn) ccBtn.style.display = 'inline-flex';
+            } catch(e) {
+                console.error('Error loading subtitles:', e);
+            }
+        }
+
+        function parseVTT(vtt) {
+            const cues = [];
+            const blocks = vtt.split(/\n\n+/);
+            for (const block of blocks) {
+                const lines = block.trim().split('\n');
+                const arrowIdx = lines.findIndex(l => l.includes('-->'));
+                if (arrowIdx === -1) continue;
+                const timeParts = lines[arrowIdx].split('-->');
+                if (timeParts.length < 2) continue;
+                const start = parseVTTTime(timeParts[0].trim());
+                const end   = parseVTTTime(timeParts[1].trim().split(' ')[0]);
+                const text  = lines.slice(arrowIdx + 1).join('\n').trim();
+                if (text) cues.push({ start, end, text });
+            }
+            return cues;
+        }
+
+        function parseVTTTime(str) {
+            const parts = str.split(':');
+            return parts.length === 3
+                ? parseFloat(parts[0]) * 3600 + parseFloat(parts[1]) * 60 + parseFloat(parts[2])
+                : parseFloat(parts[0]) * 60 + parseFloat(parts[1]);
+        }
+
+        function renderSubtitleOverlay() {
+            if (!ccEnabled) return;
+            const video   = document.getElementById('finalVideo');
+            const overlay = document.getElementById('subtitleOverlay');
+            if (!video || !overlay) return;
+            const t = video.currentTime;
+            const cue = subtitleCues.find(c => t >= c.start && t < c.end);
+            if (cue) {
+                overlay.innerHTML = `<span class="sub-text">${cue.text.replace(/\n/g, '<br>')}</span>`;
+                overlay.style.display = 'block';
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function toggleSubtitles() {
+            ccEnabled = !ccEnabled;
+            const btn     = document.getElementById('ccBtn');
+            const label   = document.getElementById('ccLabel');
+            const overlay = document.getElementById('subtitleOverlay');
+            if (ccEnabled) {
+                btn.classList.add('cc-active');
+                label.textContent = currentLang === 'vi' ? 'Tắt phụ đề' : 'Hide CC';
+            } else {
+                btn.classList.remove('cc-active');
+                if (overlay) overlay.style.display = 'none';
+                label.textContent = currentLang === 'vi' ? 'Bật phụ đề' : 'Show CC';
             }
         }
 

@@ -19,7 +19,7 @@ class PresentationVideoExporter:
     
     def __init__(self):
         self.transition_duration = 0.5  # 0.5 second fade transition
-        self.slide_buffer = 0.5  # Extra 0.5 seconds after audio
+        self.slide_buffer = 3.0  # Extra 3 seconds after audio before next slide
         self.target_size = (1920, 1080)
         
     def _create_styled_slide(self, image_path, temp_dir, index):
@@ -87,20 +87,33 @@ class PresentationVideoExporter:
             return image_path  # Fallback to original
 
     def _get_audio_duration(self, audio_path):
-        """Get audio duration in seconds using ffprobe (fast, no Python I/O overhead)"""
+        """Get audio duration in seconds using ffprobe, with moviepy fallback"""
+        duration = None
+        # Try ffprobe first
         try:
             result = subprocess.run(
                 ['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
                  '-of', 'csv=p=0', audio_path],
                 capture_output=True, text=True, timeout=10
             )
-            return float(result.stdout.strip())
+            val = result.stdout.strip()
+            if val:
+                duration = float(val)
         except Exception:
-            # Fallback: use moviepy (slower)
-            clip = AudioFileClip(audio_path)
-            dur = clip.duration
-            clip.close()
-            return dur
+            pass
+
+        # Fallback: moviepy
+        if not duration or duration <= 0:
+            try:
+                clip = AudioFileClip(audio_path)
+                duration = clip.duration
+                clip.close()
+            except Exception as e:
+                print(f"Warning: could not read audio duration: {e}")
+                duration = 5.0  # last resort default
+
+        print(f"  📏 Audio duration: {duration:.2f}s → total slide = {duration + self.slide_buffer:.2f}s")
+        return duration
 
     def create_single_slide_video_fast(self, image_path, audio_path, output_path):
         """
@@ -123,7 +136,8 @@ class PresentationVideoExporter:
             w, h = self.target_size
             scale_filter = f'scale={w}:{h}:flags=lanczos,format=yuv420p'
 
-            # Direct ffmpeg: static image + audio, no Python frame loop
+            # Direct ffmpeg: static image + audio padded with silence for buffer
+            # -af apad ensures audio stream has silence for the slide_buffer period
             cmd = [
                 'ffmpeg', '-y',
                 '-loop', '1', '-i', styled_image,
@@ -133,6 +147,7 @@ class PresentationVideoExporter:
                 '-preset', 'ultrafast',
                 '-crf', '23',
                 '-vf', scale_filter,
+                '-af', f'apad=pad_dur={self.slide_buffer}',
                 '-c:a', 'aac', '-b:a', '192k',
                 '-t', str(total_duration),
                 '-movflags', '+faststart',
