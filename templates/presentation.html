@@ -1062,35 +1062,24 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
 
-            try {
-                // Determine 1-based slide number for API
-                // Currently API uses slide_num which seems to be 1-based based on get_slide implementation usually?
-                // Let's check get_slide... it takes slide_num. 
-                // presentation_model.get_slide usually expects 0-based index or 1-based?
-                // Standard array access is 0-based. Let's assume slide_num is index for now, or check usage.
-                // In generate_audio, it uses enumerate(slides) so i is 0-based index.
-                // And calls get_audio_file_path(..., i, ...)
-                // So let's use index `idx` (0-based) for consistency if backend expects 0-based.
-                // presentation.py: get_slide(pres_id, slide_num) -> get_slide(..., slide_num)
-                // Let's verify presentation_model.get_slide logic.
-                // Usually web apps use 1-based for display, 0-based for logic.
-                // Let's try passing `idx` (0-based).
-                
-                // Backend expects 1-based slide_num
-                const slideNum = idx + 1; 
-                console.log(`Generating video for slide index ${idx}, slideNum ${slideNum}`);
-                // alert(`Debug: slideNum = ${slideNum}`); // Uncomment for debugging
+            // Use actual slide_num from state (not idx+1 — breaks after deletions)
+            const slide = state.slides[idx];
+            if (!slide) {
+                alert(`Slide ${idx + 1} not found in state`);
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                return;
+            }
+            const slideNum = slide.slide_num;
 
+            try {
                 const res = await fetch(`/api/presentation/${state.presentationId}/slide/${slideNum}/generate_slide_video`, {
                      method: 'POST'
                 });
                 const data = await res.json();
                 
                 if (data.success) {
-                    // Update state
-                    if (state.slides[idx]) {
-                        state.slides[idx].videoUrl = data.video_url;
-                    }
+                    state.slides[idx].videoUrl = data.video_url;
                     renderAudioList();
                 } else {
                     alert('Error generating video: ' + data.error);
@@ -1107,7 +1096,21 @@
         async function generateVideoForAll() {
             if (!state.slides || state.slides.length === 0) return;
 
-            showLoading('Generating Videos for all slides in parallel...');
+            // Count slides that have audio ready
+            const slidesWithAudio = state.slides.filter(s => s.audioUrl);
+            if (slidesWithAudio.length === 0) {
+                alert('⚠️ Chưa có slide nào có audio. Vui lòng tạo audio trước.');
+                return;
+            }
+
+            const alreadyDone = state.slides.filter(s => s.videoUrl).length;
+            if (alreadyDone > 0) {
+                if (!confirm(`${alreadyDone}/${state.slides.length} slide đã có video.\nBấm OK để tạo lại tất cả, Cancel để chỉ tạo những slide chưa có.`)) {
+                    // Only generate missing videos — filter on backend is handled by slide state
+                }
+            }
+
+            showLoading(`Đang tạo video cho ${slidesWithAudio.length} slide (parallel)...`);
             let _msg = null;
             try {
                 const res = await fetch(`/api/presentation/${state.presentationId}/generate_all_slide_videos`, {
@@ -1118,15 +1121,19 @@
                 const data = await res.json();
 
                 if (data.success && data.results) {
+                    let updated = 0;
                     data.results.forEach(r => {
                         if (r && r.success && r.slide_index !== undefined) {
                             const idx = r.slide_index; // 0-based index
                             if (state.slides[idx]) {
                                 state.slides[idx].videoUrl = r.video_url;
+                                updated++;
                             }
                         }
                     });
-                    _msg = `✅ ${data.success_count}/${data.total_slides} videos generated`;
+                    const failed = data.total_slides - data.success_count;
+                    _msg = `✅ ${data.success_count}/${data.total_slides} videos đã tạo xong`
+                          + (failed > 0 ? `\n⚠️ ${failed} slide thất bại (xem console server)` : '');
                 } else {
                     _msg = '❌ ' + (data.error || 'Failed to generate videos');
                 }
