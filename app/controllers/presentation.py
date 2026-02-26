@@ -174,6 +174,193 @@ def delete_slide(pres_id, slide_num):
         print(f"❌ Error deleting slide: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# ==================== SUBTITLE ROUTES ====================
+
+def generate_vtt_content(slides):
+    """
+    Generate WebVTT with per-sentence cues synced proportionally to audio duration.
+    Each sentence gets a time slice proportional to its character count.
+    """
+    import re as _re
+    import subprocess as _sp
+
+    try:
+        from moviepy.editor import AudioFileClip as _AFC
+    except ImportError:
+        return None, "moviepy not available"
+
+    SLIDE_BUFFER = 3.0  # Must match PresentationVideoExporter.slide_buffer
+
+    def _get_dur(audio_path):
+        dur = None
+        try:
+            r = _sp.run(['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
+                         '-of', 'csv=p=0', audio_path],
+                        capture_output=True, text=True, timeout=10)
+            v = r.stdout.strip()
+            if v: dur = float(v)
+        except Exception:
+            pass
+        if not dur or dur <= 0:
+            try:
+                c = _AFC(audio_path); dur = c.duration; c.close()
+            except Exception:
+                dur = 5.0
+        return dur
+
+    def _fmt(t):
+        h = int(t // 3600); m = int((t % 3600) // 60); s = t % 60
+        return f"{h:02d}:{m:02d}:{s:06.3f}"
+
+    def _split_sentences(text):
+        """Split text into sentences by punctuation, keeping 1-2 sentences per cue."""
+        # Split on sentence-ending punctuation
+        parts = _re.split(r'(?<=[.!?。！？,،،])\s+', text.strip())
+        sentences = [p.strip() for p in parts if p.strip()]
+        if not sentences:
+            sentences = [text.strip()]
+        return sentences
+
+    lines = ["WEBVTT", ""]
+    current_time = 0.0
+    cue_index = 1
+
+    for slide in slides:
+        audio_path = slide.get('audio_file_path')
+        text = (slide.get('edited_text') or slide.get('generated_text') or '').strip()
+
+        if not audio_path or not os.path.exists(audio_path):
+            audio_duration = 5.0
+        else:
+            audio_duration = _get_dur(audio_path)
+
+        if not text:
+            current_time += audio_duration + SLIDE_BUFFER
+            continue
+
+        # Split into sentences for synced display
+        sentences = _split_sentences(text)
+        total_chars = sum(len(s) for s in sentences)
+
+        cue_start = current_time
+        for i, sentence in enumerate(sentences):
+            # Proportional duration based on char count
+            if total_chars > 0:
+                proportion = len(sentence) / total_chars
+            else:
+                proportion = 1.0 / len(sentences)
+
+            cue_dur = audio_duration * proportion
+            cue_end = cue_start + cue_dur
+
+            lines += [
+                str(cue_index),
+                f"{_fmt(cue_start)} --> {_fmt(cue_end)}",
+                sentence,
+                ""
+            ]
+            cue_index += 1
+            cue_start = cue_end
+
+        # Advance past full slide (audio + 3s buffer)
+        current_time += audio_duration + SLIDE_BUFFER
+
+    return "\n".join(lines), None
+
+
+@presentation_bp.route('/presentation/<pres_id>/subtitles', methods=['GET'])
+def get_subtitles(pres_id):
+    """Generate and serve WebVTT subtitle file for the presentation."""
+    from flask import Response
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        slides = presentation.get('slides', [])
+        if not slides:
+            return jsonify({'success': False, 'error': 'No slides'}), 400
+
+        static_folder = current_app.static_folder
+        vtt_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(vtt_dir, exist_ok=True)
+        vtt_path = os.path.join(vtt_dir, 'subtitles.vtt')
+
+        print(f"🎬 Generating VTT subtitles for {pres_id}...")
+        vtt_content, error = generate_vtt_content(slides)
+        if error:
+            return jsonify({'success': False, 'error': error}), 500
+
+        with open(vtt_path, 'w', encoding='utf-8') as f:
+            f.write(vtt_content)
+
+        print(f"✅ VTT saved: {vtt_path}")
+        return Response(vtt_content, mimetype='text/vtt; charset=utf-8')
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@presentation_bp.route('/presentation/<pres_id>/download_with_subtitles', methods=['POST'])
+def download_with_subtitles(pres_id):
+    """Burn VTT subtitles into the final video and return download URL."""
+    import subprocess as _sp
+    try:
+        presentation = current_app.presentation_model.get_by_id(pres_id)
+        if not presentation:
+            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
+
+        final_video_path = presentation.get('final_video_path')
+        if not final_video_path or not os.path.exists(final_video_path):
+            return jsonify({'success': False, 'error': 'Final video not found. Generate it first.'}), 400
+
+        static_folder = current_app.static_folder
+        vtt_dir = os.path.join(static_folder, 'videos', pres_id)
+        os.makedirs(vtt_dir, exist_ok=True)
+        vtt_path = os.path.join(vtt_dir, 'subtitles.vtt')
+
+        # Re-generate VTT if missing
+        if not os.path.exists(vtt_path):
+            slides = presentation.get('slides', [])
+            vtt_content, err = generate_vtt_content(slides)
+            if err:
+                return jsonify({'success': False, 'error': err}), 500
+            with open(vtt_path, 'w', encoding='utf-8') as f:
+                f.write(vtt_content)
+
+        # Output file with burned-in subtitles
+        burned_filename = f'video_with_subtitles_{uuid.uuid4().hex[:8]}.mp4'
+        burned_path = os.path.join(vtt_dir, burned_filename)
+
+        # ffmpeg burn subtitles — use forward slashes for cross-platform filter
+        vtt_path_escaped = vtt_path.replace('\\', '/').replace(':', '\\:')
+        cmd = [
+            'ffmpeg', '-y',
+            '-i', final_video_path,
+            '-vf', f"subtitles='{vtt_path_escaped}':force_style='FontSize=20,PrimaryColour=&H00FFFFFF,BackColour=&H80000000,BorderStyle=3,Outline=0,Shadow=0'",
+            '-c:a', 'copy',
+            '-preset', 'ultrafast',
+            '-threads', '0',
+            burned_path
+        ]
+
+        print(f"🔥 Burning subtitles into video...")
+        proc = _sp.run(cmd, capture_output=True, text=True, timeout=600)
+
+        if proc.returncode != 0:
+            print(f"ffmpeg stderr: {proc.stderr[-500:]}")
+            return jsonify({'success': False, 'error': f'Failed to burn subtitles: {proc.stderr[-200:]}'}), 500
+
+        video_url = f'/static/videos/{pres_id}/{burned_filename}'
+        print(f"✅ Burned video: {video_url}")
+        return jsonify({'success': True, 'video_url': video_url})
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 # ==================== GEMINI ROUTES ====================
 
 

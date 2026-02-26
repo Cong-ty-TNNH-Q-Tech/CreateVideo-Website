@@ -336,6 +336,9 @@
                         <a id="downloadVideoBtn" class="btn btn-success px-4 py-2">
                             <i class="bi bi-download me-2"></i> <span data-i18n="step4.download">Tải video về</span>
                         </a>
+                        <button id="downloadSubBtn" onclick="downloadWithSubtitles()" class="btn btn-warning px-4 py-2" style="display:none;" title="Tải video đã có phụ đề burn-in">
+                            <i class="bi bi-badge-cc me-1"></i> Tải có phụ đề
+                        </button>
                         <button id="ccBtn" onclick="toggleSubtitles()" class="btn btn-outline-light px-4 py-2" title="Bật/Tắt phụ đề">
                             <i class="bi bi-badge-cc me-1"></i> <span id="ccLabel">Bật phụ đề</span>
                         </button>
@@ -1401,11 +1404,21 @@
                 subtitleCues = parseVTT(vtt);
                 console.log(`✅ Loaded ${subtitleCues.length} subtitle cues`);
 
-                const track = document.getElementById('subtitleTrack');
                 const video = document.getElementById('finalVideo');
-                if (track && video) {
-                    const blob = new Blob([vtt], { type: 'text/vtt' });
-                    track.src = URL.createObjectURL(blob);
+                const track = document.getElementById('subtitleTrack');
+
+                if (video) {
+                    // Disable ALL native text tracks to prevent browser double-rendering
+                    for (let i = 0; i < video.textTracks.length; i++) {
+                        video.textTracks[i].mode = 'disabled';
+                    }
+                    // Load blob to track for accessibility, but force hidden
+                    if (track) {
+                        const blob = new Blob([vtt], { type: 'text/vtt' });
+                        track.src = URL.createObjectURL(blob);
+                        // mode will auto-set; override after load
+                        track.addEventListener('load', () => { track.track.mode = 'hidden'; }, { once: true });
+                    }
                     video.removeEventListener('timeupdate', renderSubtitleOverlay);
                     video.addEventListener('timeupdate', renderSubtitleOverlay);
                 }
@@ -1457,16 +1470,47 @@
 
         function toggleSubtitles() {
             ccEnabled = !ccEnabled;
-            const btn     = document.getElementById('ccBtn');
-            const label   = document.getElementById('ccLabel');
-            const overlay = document.getElementById('subtitleOverlay');
+            const btn        = document.getElementById('ccBtn');
+            const label      = document.getElementById('ccLabel');
+            const overlay    = document.getElementById('subtitleOverlay');
+            const dlSubBtn   = document.getElementById('downloadSubBtn');
+
             if (ccEnabled) {
                 btn.classList.add('cc-active');
                 label.textContent = currentLang === 'vi' ? 'Tắt phụ đề' : 'Hide CC';
+                if (dlSubBtn) dlSubBtn.style.display = 'inline-flex';
             } else {
                 btn.classList.remove('cc-active');
                 if (overlay) overlay.style.display = 'none';
                 label.textContent = currentLang === 'vi' ? 'Bật phụ đề' : 'Show CC';
+                if (dlSubBtn) dlSubBtn.style.display = 'none';
+            }
+        }
+
+        async function downloadWithSubtitles() {
+            if (!state.presentationId) { alert('Cần tạo video trước!'); return; }
+            const dlBtn = document.getElementById('downloadSubBtn');
+            const origHtml = dlBtn ? dlBtn.innerHTML : '';
+            if (dlBtn) { dlBtn.disabled = true; dlBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang xử lý...'; }
+
+            try {
+                const res = await fetch(`/api/presentation/${state.presentationId}/download_with_subtitles`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    // Auto-download
+                    const a = document.createElement('a');
+                    a.href = data.video_url;
+                    a.download = `presentation_subtitled_${state.presentationId}.mp4`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    alert('Lỗi: ' + (data.error || 'Không thể tạo video có phụ đề'));
+                }
+            } catch(e) {
+                alert('Lỗi kết nối: ' + e.message);
+            } finally {
+                if (dlBtn) { dlBtn.disabled = false; dlBtn.innerHTML = origHtml; }
             }
         }
 
