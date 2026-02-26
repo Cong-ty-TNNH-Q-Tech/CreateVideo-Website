@@ -90,11 +90,16 @@ def enhancer_generator_no_len(images, method='gfpgan', bg_upsampler='realesrgan'
     else:
         bg_upsampler = None
 
-    # determine model paths
-    model_path = os.path.join('gfpgan/weights', model_name + '.pth')
-    
+    # determine model paths — use absolute path to avoid CWD/permission issues
+    _sadtalker_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    _weights_dir = os.path.join(_sadtalker_root, 'gfpgan', 'weights')
+    if not os.access(_weights_dir, os.W_OK):
+        _weights_dir = os.path.expanduser('~/.cache/sadtalker/weights')
+    os.makedirs(_weights_dir, exist_ok=True)
+    model_path = os.path.join(_weights_dir, model_name + '.pth')
+
     if not os.path.isfile(model_path):
-        model_path = os.path.join('checkpoints', model_name + '.pth')
+        model_path = os.path.join(_sadtalker_root, 'checkpoints', model_name + '.pth')
     
     if not os.path.isfile(model_path):
         # download pre-trained models from url

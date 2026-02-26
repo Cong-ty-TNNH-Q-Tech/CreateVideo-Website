@@ -31,16 +31,33 @@ def init_alignment_model(model_name, half=False, device='cuda', model_rootpath=N
     return model
 
 
+def _get_sadtalker_weights_dir():
+    """Return an absolute, writable path for SadTalker model weight downloads.
+    Falls back to ~/.cache/sadtalker/weights if the repo dir is not writable
+    (e.g. cloned/pulled by root but run as another user).
+    """
+    _sadtalker_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    candidate = os.path.join(_sadtalker_root, 'gfpgan', 'weights')
+    try:
+        os.makedirs(candidate, exist_ok=True)
+        if os.access(candidate, os.W_OK):
+            return candidate
+    except Exception:
+        pass
+    fallback = os.path.expanduser('~/.cache/sadtalker/weights')
+    os.makedirs(fallback, exist_ok=True)
+    return fallback
+
+
 class KeypointExtractor():
     def __init__(self, device='cuda'):
 
         ### gfpgan/weights
         try:
             import webui  # in webui
-            root_path = 'extensions/SadTalker/gfpgan/weights' 
-
-        except:
-            root_path = 'gfpgan/weights'
+            root_path = 'extensions/SadTalker/gfpgan/weights'
+        except Exception:
+            root_path = _get_sadtalker_weights_dir()
 
         self.detector = init_alignment_model('awing_fan',device=device, model_rootpath=root_path)   
         self.det_net = init_detection_model('retinaface_resnet50', half=False,device=device, model_rootpath=root_path)
