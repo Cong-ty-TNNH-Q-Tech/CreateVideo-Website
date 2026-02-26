@@ -2,7 +2,7 @@
 Audio Service for Text-to-Speech Generation
 
 This service provides audio generation capabilities with VieNeu-TTS as primary option
-and gTTS as fallback for stability.
+and edge-tts (Microsoft Neural) as fallback, with gTTS as last resort.
 """
 
 import os
@@ -43,7 +43,7 @@ if vieneu_path not in sys.path:
 class AudioService:
     """Service for generating audio from text with multi-language support"""
     
-    # Language mapping for gTTS
+    # Language mapping for gTTS (fallback)
     SUPPORTED_LANGUAGES = {
         'vi': 'vi',     # Vietnamese
         'en': 'en',     # English  
@@ -59,6 +59,24 @@ class AudioService:
         'ru': 'ru',     # Russian
         'ar': 'ar',     # Arabic
         'hi': 'hi',     # Hindi
+    }
+
+    # Neural voice mapping for edge-tts (Microsoft Azure)
+    EDGE_TTS_VOICES = {
+        'vi': 'vi-VN-HoaiMyNeural',       # Vietnamese (female, natural)
+        'en': 'en-US-JennyNeural',         # English US
+        'zh': 'zh-CN-XiaoxiaoNeural',      # Chinese Simplified
+        'ja': 'ja-JP-NanamiNeural',        # Japanese
+        'ko': 'ko-KR-SunHiNeural',         # Korean
+        'th': 'th-TH-PremwadeeNeural',     # Thai
+        'fr': 'fr-FR-DeniseNeural',        # French
+        'de': 'de-DE-KatjaNeural',         # German
+        'es': 'es-ES-ElviraNeural',        # Spanish
+        'it': 'it-IT-ElsaNeural',          # Italian
+        'pt': 'pt-BR-FranciscaNeural',     # Portuguese Brazil
+        'ru': 'ru-RU-SvetlanaNeural',      # Russian
+        'ar': 'ar-EG-SalmaNeural',         # Arabic
+        'hi': 'hi-IN-SwaraNeural',         # Hindi
     }
     
     def __init__(self, force_gtts=False):
@@ -250,13 +268,13 @@ class AudioService:
             print(f"🌐 Language: {detected_lang}")
             
             # If voice_type is explicitly set, use that engine
-            if voice_type == 'gtts':
-                # Force gTTS
-                print("🎯 User selected gTTS - skipping VieNeu")
-                if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                    return True, f"Generated using gTTS ({detected_lang})"
+            if voice_type in ('gtts', 'edge'):
+                # edge-tts (Microsoft Neural) — 'gtts' kept as backward-compat alias
+                print("🎯 User selected edge-tts")
+                if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
+                    return True, f"Generated using edge-tts ({detected_lang})"
                 else:
-                    return False, f"gTTS failed for language {detected_lang}"
+                    return False, f"edge-tts failed for language {detected_lang}"
                     
             elif voice_type == 'clone':
                 # Force VieNeu with voice cloning
@@ -264,11 +282,11 @@ class AudioService:
                 if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
                     return True, f"Generated using Voice Clone ({detected_lang})"
                 else:
-                    print("⚠️  Voice cloning failed, falling back to gTTS...")
-                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                        return True, f"Generated using gTTS fallback ({detected_lang})"
+                    print("⚠️  Voice cloning failed, falling back to edge-tts...")
+                    if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
+                        return True, f"Generated using edge-tts fallback ({detected_lang})"
                     else:
-                        return False, "Both Voice Clone and gTTS failed"
+                        return False, "Both Voice Clone and edge-tts failed"
                         
             elif voice_type == 'vieneu':
                 # Force VieNeu-TTS
@@ -276,11 +294,11 @@ class AudioService:
                 if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
                     return True, f"Generated using VieNeu-TTS ({detected_lang})"
                 else:
-                    print("⚠️  VieNeu-TTS failed, falling back to gTTS...")
-                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                        return True, f"Generated using gTTS fallback ({detected_lang})"
+                    print("⚠️  VieNeu-TTS failed, falling back to edge-tts...")
+                    if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
+                        return True, f"Generated using edge-tts fallback ({detected_lang})"
                     else:
-                        return False, "Both VieNeu-TTS and gTTS failed"
+                        return False, "Both VieNeu-TTS and edge-tts failed"
             else:
                 # Auto-detect based on language (legacy behavior)
                 if self.should_use_vieneu(detected_lang):
@@ -288,17 +306,17 @@ class AudioService:
                     if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path):
                         return True, f"Generated using VieNeu-TTS ({detected_lang})"
                     else:
-                        print("⚠️  VieNeu-TTS failed, falling back to gTTS...")
-                        if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                            return True, f"Generated using gTTS fallback ({detected_lang})"
+                        print("⚠️  VieNeu-TTS failed, falling back to edge-tts...")
+                        if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
+                            return True, f"Generated using edge-tts fallback ({detected_lang})"
                         else:
-                            return False, "Both VieNeu-TTS and gTTS failed"
+                            return False, "Both VieNeu-TTS and edge-tts failed"
                 else:
-                    # Dùng gTTS cho các ngôn ngữ khác
-                    if self._generate_with_gtts(clean_text, output_path, detected_lang):
-                        return True, f"Generated using gTTS ({detected_lang})"
+                    # Dùng edge-tts cho các ngôn ngữ khác
+                    if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
+                        return True, f"Generated using edge-tts ({detected_lang})"
                     else:
-                        return False, f"gTTS failed for language {detected_lang}"
+                        return False, f"edge-tts failed for language {detected_lang}"
                 
         except Exception as e:
             error_msg = f"Audio generation failed: {str(e)}"
@@ -354,6 +372,67 @@ class AudioService:
             traceback.print_exc()
             return False
     
+    def _generate_with_edge_tts(self, text: str, output_path: str, language: str = 'vi') -> bool:
+        """Generate audio using Microsoft Edge TTS (neural voices, free, requires internet).
+        Falls back to gTTS if edge-tts is unavailable or fails.
+        """
+        try:
+            import edge_tts
+            import asyncio
+            import concurrent.futures
+            import tempfile
+
+            voice = self.EDGE_TTS_VOICES.get(language, 'en-US-JennyNeural')
+            print(f"🎧 Generating audio with edge-tts ({voice})...")
+
+            if not text or len(text.strip()) < 3:
+                print("  ❌ Text too short for TTS")
+                return False
+
+            # Save mp3 to temp, then convert to wav
+            with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp:
+                temp_mp3 = tmp.name
+
+            async def _run():
+                communicate = edge_tts.Communicate(text, voice, rate="-5%")
+                await communicate.save(temp_mp3)
+
+            # Always run in a new thread with its own fresh event loop to avoid
+            # conflicts with Flask's threaded WSGI environment
+            def _sync_run():
+                asyncio.run(_run())
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                pool.submit(_sync_run).result(timeout=60)
+
+            if not os.path.exists(temp_mp3) or os.path.getsize(temp_mp3) == 0:
+                print("  ❌ edge-tts produced no output")
+                return False
+
+            # Convert mp3 → wav
+            from pydub import AudioSegment
+            audio = AudioSegment.from_mp3(temp_mp3)
+            audio.export(output_path, format="wav")
+
+            try:
+                os.remove(temp_mp3)
+            except Exception:
+                pass
+
+            if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                print(f"✅ edge-tts audio saved: {output_path}")
+                return True
+            return False
+
+        except ImportError:
+            print("⚠️ edge-tts not installed, falling back to gTTS...")
+            return self._generate_with_gtts(text, output_path, language)
+        except Exception as e:
+            print(f"❌ edge-tts failed: {e}")
+            traceback.print_exc()
+            print("⚠️ Falling back to gTTS...")
+            return self._generate_with_gtts(text, output_path, language)
+
     def _generate_with_gtts(self, text: str, output_path: str, language: str = 'vi') -> bool:
         """Generate audio using gTTS (Google Text-to-Speech) with language support"""
         try:

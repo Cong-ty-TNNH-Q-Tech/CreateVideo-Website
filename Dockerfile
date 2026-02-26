@@ -70,6 +70,7 @@ RUN pip install --no-cache-dir --ignore-installed blinker -r requirements.txt
 # Install additional TTS dependencies (permanent)
 RUN pip install --no-cache-dir \
     gtts>=2.4.0 \
+    edge-tts>=6.1.9 \
     pydub>=0.25.1 \
     langdetect>=1.0.9 \
     soundfile>=0.12.1
