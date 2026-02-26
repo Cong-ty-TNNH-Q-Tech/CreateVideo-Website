@@ -215,7 +215,11 @@ class PresentationReader:
         
         # Extract slides from PDF using pymupdf
         try:
+            # Suppress MuPDF stderr warnings (e.g. "No common ancestor in structure tree")
+            # These are non-fatal PDF structure warnings that don't affect rendering
+            fitz.TOOLS.mupdf_display_errors(False)
             doc = fitz.open(pdf_path)
+            fitz.TOOLS.mupdf_display_errors(True)  # Restore for other operations
             image_paths = []
             
             for page_num in range(len(doc)):
