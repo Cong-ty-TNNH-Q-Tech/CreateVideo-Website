@@ -271,8 +271,8 @@ class AudioService:
             if voice_type in ('gtts', 'edge'):
                 # edge-tts (Microsoft Neural) — 'gtts' kept as backward-compat alias
                 print("🎯 User selected edge-tts")
-                if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
-                    return True, f"Generated using edge-tts ({detected_lang})"
+                if self._generate_with_edge_tts(clean_text, output_path, detected_lang, voice_id=voice_id):
+                    return True, f"Generated using edge-tts ({voice_id or detected_lang})"
                 else:
                     return False, f"edge-tts failed for language {detected_lang}"
                     
@@ -372,7 +372,7 @@ class AudioService:
             traceback.print_exc()
             return False
     
-    def _generate_with_edge_tts(self, text: str, output_path: str, language: str = 'vi') -> bool:
+    def _generate_with_edge_tts(self, text: str, output_path: str, language: str = 'vi', voice_id: str = None) -> bool:
         """Generate audio using Microsoft Edge TTS (neural voices, free, requires internet).
         Falls back to gTTS if edge-tts is unavailable or fails.
         """
@@ -382,7 +382,8 @@ class AudioService:
             import concurrent.futures
             import tempfile
 
-            voice = self.EDGE_TTS_VOICES.get(language, 'en-US-JennyNeural')
+            # Use explicit voice_id if provided, otherwise pick by language
+            voice = voice_id if voice_id else self.EDGE_TTS_VOICES.get(language, 'en-US-JennyNeural')
             print(f"🎧 Generating audio with edge-tts ({voice})...")
 
             if not text or len(text.strip()) < 3:
