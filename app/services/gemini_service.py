@@ -14,9 +14,20 @@ _ROTATE_KEYWORDS = (
     'too many requests', 'limit exceeded',
 )
 
+# Errors that trigger model fallback (model unavailable / not found)
+_MODEL_FALLBACK_KEYWORDS = (
+    'not found', '404', 'model not found', 'is not supported',
+    'does not exist', 'invalid model', 'unsupported model',
+    'preview', 'not available',
+)
+
 def _is_rotatable_error(exc: Exception) -> bool:
     msg = str(exc).lower()
     return any(kw in msg for kw in _ROTATE_KEYWORDS)
+
+def _is_model_fallback_error(exc: Exception) -> bool:
+    msg = str(exc).lower()
+    return any(kw in msg for kw in _MODEL_FALLBACK_KEYWORDS)
 
 
 class GeminiService:
@@ -63,7 +74,8 @@ class GeminiService:
             "top_k": 40,
             "max_output_tokens": 8192,
         }
-        self.model_name = 'gemini-2.5-flash'
+        self.model_name = 'gemini-3-flash-preview'
+        self.fallback_model_name = 'gemini-2.5-flash'
 
     # ------------------------------------------------------------------
     # Internal helpers
@@ -90,26 +102,39 @@ class GeminiService:
 
     def _call_with_rotation(self, fn):
         """
-        Execute fn(client) and auto-rotate keys on quota/rate errors.
-        Tries every key once before re-raising.
+        Execute fn(client, model_name) trying:
+          1. Primary model (self.model_name) across all keys on quota errors.
+          2. Fallback model (self.fallback_model_name) across all keys on model-not-found errors.
+        fn signature: fn(client, model_name) -> result
         """
         if not self._keys:
             raise ValueError("Gemini API key is not configured.")
 
-        attempts = len(self._keys)
+        models_to_try = [self.model_name]
+        if self.fallback_model_name and self.fallback_model_name != self.model_name:
+            models_to_try.append(self.fallback_model_name)
+
         last_exc = None
-        for attempt in range(attempts):
-            try:
-                return fn(self._client)
-            except Exception as exc:
-                last_exc = exc
-                key_hint = self._keys[self._current_idx][-4:]
-                if _is_rotatable_error(exc):
-                    print(f"⚠️  Gemini key ****{key_hint} hit quota/rate error (attempt {attempt + 1}/{attempts}): {exc}")
-                    if not self._rotate():
-                        break  # only 1 key, no point retrying
-                else:
-                    raise  # non-rotatable error → propagate immediately
+        for model in models_to_try:
+            attempts = len(self._keys)
+            for attempt in range(attempts):
+                try:
+                    result = fn(self._client, model)
+                    if model != self.model_name:
+                        print(f"ℹ️  Used fallback model: {model}")
+                    return result
+                except Exception as exc:
+                    last_exc = exc
+                    key_hint = self._keys[self._current_idx][-4:]
+                    if _is_rotatable_error(exc):
+                        print(f"⚠️  Gemini key ****{key_hint} quota/rate error on {model} (attempt {attempt + 1}/{attempts}): {exc}")
+                        if not self._rotate():
+                            break
+                    elif _is_model_fallback_error(exc):
+                        print(f"⚠️  Model '{model}' unavailable: {exc} → trying fallback model")
+                        break  # stop retrying this model, move to fallback
+                    else:
+                        raise  # non-rotatable, non-model error → propagate immediately
         raise last_exc
 
     # ------------------------------------------------------------------
@@ -142,9 +167,9 @@ class GeminiService:
         Generated Script:
         """
 
-        def _call(client):
+        def _call(client, model):
             return client.models.generate_content(
-                model=self.model_name, contents=prompt, config=self.generation_config
+                model=model, contents=prompt, config=self.generation_config
             ).text.strip()
 
         try:
@@ -176,9 +201,9 @@ class GeminiService:
         Updated Script:
         """
 
-        def _call(client):
+        def _call(client, model):
             return client.models.generate_content(
-                model=self.model_name, contents=prompt, config=self.generation_config
+                model=model, contents=prompt, config=self.generation_config
             ).text.strip()
 
         try:
@@ -212,9 +237,9 @@ class GeminiService:
         New Script:
         """
 
-        def _call(client):
+        def _call(client, model):
             return client.models.generate_content(
-                model=self.model_name, contents=prompt, config=self.generation_config
+                model=model, contents=prompt, config=self.generation_config
             ).text.strip()
 
         try:
