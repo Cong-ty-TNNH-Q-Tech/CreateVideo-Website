@@ -88,7 +88,11 @@ class AudioService:
             # Try to initialize quickly
             try:
                 print("  🔧 Quick VieNeu initialization...")
-                self.vieneu_engine = Vieneu()
+                # Auto-detect device: use CUDA if available
+                import torch
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+                print(f"  🖥️  Using device: {device}")
+                self.vieneu_engine = Vieneu(backbone_device=device, codec_device=device)
                 
                 # Get available voices quickly
                 available_voices = self.vieneu_engine.list_preset_voices()
