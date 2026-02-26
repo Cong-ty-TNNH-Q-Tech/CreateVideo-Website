@@ -3,6 +3,7 @@ import shutil
 import traceback
 import uuid
 import time
+import subprocess
 from PIL import Image, ImageFilter, ImageOps
 from moviepy.editor import ImageClip, AudioFileClip, concatenate_videoclips
 from moviepy.video.fx.all import fadein, fadeout
@@ -18,7 +19,7 @@ class PresentationVideoExporter:
     
     def __init__(self):
         self.transition_duration = 0.5  # 0.5 second fade transition
-        self.slide_buffer = 5  # Extra 5 seconds after audio
+        self.slide_buffer = 0.5  # Extra 0.5 seconds after audio
         self.target_size = (1920, 1080)
         
     def _create_styled_slide(self, image_path, temp_dir, index):
@@ -84,6 +85,79 @@ class PresentationVideoExporter:
         except Exception as e:
             print(f"Warning: Failed to style slide {image_path}: {e}")
             return image_path  # Fallback to original
+
+    def _get_audio_duration(self, audio_path):
+        """Get audio duration in seconds using ffprobe (fast, no Python I/O overhead)"""
+        try:
+            result = subprocess.run(
+                ['ffprobe', '-v', 'quiet', '-show_entries', 'format=duration',
+                 '-of', 'csv=p=0', audio_path],
+                capture_output=True, text=True, timeout=10
+            )
+            return float(result.stdout.strip())
+        except Exception:
+            # Fallback: use moviepy (slower)
+            clip = AudioFileClip(audio_path)
+            dur = clip.duration
+            clip.close()
+            return dur
+
+    def create_single_slide_video_fast(self, image_path, audio_path, output_path):
+        """
+        Fast single-slide video using direct ffmpeg call.
+        Avoids moviepy Python frame iteration — 5-10x faster for static images.
+        """
+        temp_dir = None
+        try:
+            temp_dir = os.path.join(os.path.dirname(output_path), f'_tmp_{uuid.uuid4().hex}')
+            os.makedirs(temp_dir, exist_ok=True)
+
+            # Style slide image (add blur background if not 16:9)
+            styled_image = self._create_styled_slide(image_path, temp_dir, 0)
+
+            # Get audio duration
+            audio_duration = self._get_audio_duration(audio_path)
+            total_duration = audio_duration + self.slide_buffer
+
+            # Scale to even dimensions required by libx264
+            w, h = self.target_size
+            scale_filter = f'scale={w}:{h}:flags=lanczos,format=yuv420p'
+
+            # Direct ffmpeg: static image + audio, no Python frame loop
+            cmd = [
+                'ffmpeg', '-y',
+                '-loop', '1', '-i', styled_image,
+                '-i', audio_path,
+                '-c:v', 'libx264',
+                '-tune', 'stillimage',
+                '-preset', 'ultrafast',
+                '-crf', '23',
+                '-vf', scale_filter,
+                '-c:a', 'aac', '-b:a', '192k',
+                '-t', str(total_duration),
+                '-movflags', '+faststart',
+                '-threads', '0',
+                output_path
+            ]
+
+            print(f"⚡ ffmpeg direct encode: {os.path.basename(output_path)} ({total_duration:.1f}s)")
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+
+            if proc.returncode != 0:
+                print(f"ffmpeg stderr: {proc.stderr[-500:]}")
+                return {'success': False, 'error': f'ffmpeg error: {proc.stderr[-200:]}'}
+
+            return {'success': True, 'video_path': output_path}
+
+        except Exception as e:
+            traceback.print_exc()
+            return {'success': False, 'error': str(e)}
+        finally:
+            if temp_dir and os.path.exists(temp_dir):
+                try:
+                    shutil.rmtree(temp_dir)
+                except Exception:
+                    pass
 
     def create_presentation_video(self, slides, output_path, fps=24):
         """

@@ -1022,10 +1022,9 @@ def generate_all_slide_videos(pres_id):
 
             print(f"🎬 [{slide_num}/{len(slides)}] Generating slide video...")
 
-            # ffmpeg subprocess — safe to run in parallel
-            exporter   = PresentationVideoExporter()
-            slides_data = [{'image_path': slide_image_path, 'audio_path': audio_path}]
-            result      = exporter.create_presentation_video(slides_data, output_path)
+            # ffmpeg direct encode — fast path for single slide
+            exporter = PresentationVideoExporter()
+            result   = exporter.create_single_slide_video_fast(slide_image_path, audio_path, output_path)
 
             if result['success']:
                 video_url = f'/static/videos/{pres_id}/slides/{output_filename}'
@@ -1148,14 +1147,9 @@ def generate_slide_video(pres_id, slide_num):
         print(f"  Audio: {audio_path}")
         print(f"  Output: {output_path}")
         
-        # Use PresentationVideoExporter for single slide
+        # Use fast single-slide path (direct ffmpeg, no moviepy frame loop)
         exporter = PresentationVideoExporter()
-        slides_data = [{
-            'image_path': slide_image_path,
-            'audio_path': audio_path
-        }]
-        
-        result = exporter.create_presentation_video(slides_data, output_path)
+        result = exporter.create_single_slide_video_fast(slide_image_path, audio_path, output_path)
         
         if result['success']:
             video_url = f'/static/videos/{pres_id}/slides/{output_filename}'
