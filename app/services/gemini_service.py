@@ -1,58 +1,129 @@
 """
 Service to interact with Google Gemini API for generating presentation scripts.
+Supports multiple API keys with automatic round-robin rotation on quota/rate-limit errors.
 """
 import os
+import threading
 from google import genai
-from typing import Optional
+from typing import Optional, List
+
+# Errors that trigger key rotation (quota exhausted, rate limit, invalid key, etc.)
+_ROTATE_KEYWORDS = (
+    'quota', 'rate', '429', 'resource_exhausted', 'resourceexhausted',
+    'api_key_invalid', 'permission_denied', 'invalid api key',
+    'too many requests', 'limit exceeded',
+)
+
+def _is_rotatable_error(exc: Exception) -> bool:
+    msg = str(exc).lower()
+    return any(kw in msg for kw in _ROTATE_KEYWORDS)
+
 
 class GeminiService:
-    """Service to interact with Gemini API"""
-    
-    def __init__(self, api_key: Optional[str] = None):
+    """Service to interact with Gemini API with multi-key rotation support."""
+
+    def __init__(self, api_keys: Optional[List[str]] = None, api_key: Optional[str] = None):
         """
-        Initialize Gemini service
-        
+        Initialize Gemini service.
+
         Args:
-            api_key: Gemini API key (if None, loads from GEMINI_API_KEY env var)
+            api_keys: List of Gemini API keys for rotation.
+            api_key:  Single key fallback (legacy).
+                      If neither is given, reads GEMINI_API_KEYS (comma-separated)
+                      then GEMINI_API_KEY from environment.
         """
-        self.api_key = api_key or os.getenv('GEMINI_API_KEY')
-        if not self.api_key:
-            # We don't raise error here to allow app to start, 
-            # but methods will fail if key is missing.
-            print("Warning: GEMINI_API_KEY not found.")
-            self.client = None
+        # Build key list
+        if api_keys:
+            keys = [k.strip() for k in api_keys if k and k.strip()]
         else:
-            self.client = genai.Client(api_key=self.api_key)
-        
-        # Configure generation config for TTS-friendly output
+            # Try GEMINI_API_KEYS (comma-separated) first
+            multi = os.getenv('GEMINI_API_KEYS', '')
+            keys = [k.strip() for k in multi.split(',') if k.strip()]
+            if not keys:
+                # Fallback to single key
+                single = api_key or os.getenv('GEMINI_API_KEY', '')
+                if single.strip():
+                    keys = [single.strip()]
+
+        self._keys: List[str] = keys
+        self._current_idx: int = 0
+        self._lock = threading.Lock()
+
+        if not self._keys:
+            print("⚠️  Warning: No Gemini API key configured. Set GEMINI_API_KEYS or GEMINI_API_KEY.")
+            self._client = None
+        else:
+            print(f"✅ GeminiService initialized with {len(self._keys)} API key(s).")
+            self._client = genai.Client(api_key=self._keys[0])
+
+        # Generation config for TTS-friendly output
         self.generation_config = {
             "temperature": 0.7,
             "top_p": 0.95,
             "top_k": 40,
             "max_output_tokens": 8192,
         }
-        
-        # Use gemini-1.5-flash - stable and available model
         self.model_name = 'gemini-2.5-flash'
-    
-    def generate_script(self, slide_text: str, language: str = 'vi') -> str:
-        """
-        Generate a speech script from slide text.
-        
-        Args:
-            slide_text: The text content extracted from the slide.
-            language: The target language for the script (default: 'vi' for Vietnamese).
-            
-        Returns:
-            str: The generated speech script (plain text).
-        """
-        if not self.api_key or not self.client:
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _get_client(self) -> genai.Client:
+        if not self._keys:
             raise ValueError("Gemini API key is not configured.")
-            
+        return self._client
+
+    def _rotate(self) -> bool:
+        """Rotate to the next available key. Returns True if a new key was selected."""
+        with self._lock:
+            if len(self._keys) <= 1:
+                return False
+            next_idx = (self._current_idx + 1) % len(self._keys)
+            if next_idx == self._current_idx:
+                return False
+            self._current_idx = next_idx
+            new_key = self._keys[self._current_idx]
+            self._client = genai.Client(api_key=new_key)
+            print(f"🔄 Gemini key rotated → key index {self._current_idx} (****{new_key[-4:]})")
+            return True
+
+    def _call_with_rotation(self, fn):
+        """
+        Execute fn(client) and auto-rotate keys on quota/rate errors.
+        Tries every key once before re-raising.
+        """
+        if not self._keys:
+            raise ValueError("Gemini API key is not configured.")
+
+        attempts = len(self._keys)
+        last_exc = None
+        for attempt in range(attempts):
+            try:
+                return fn(self._client)
+            except Exception as exc:
+                last_exc = exc
+                key_hint = self._keys[self._current_idx][-4:]
+                if _is_rotatable_error(exc):
+                    print(f"⚠️  Gemini key ****{key_hint} hit quota/rate error (attempt {attempt + 1}/{attempts}): {exc}")
+                    if not self._rotate():
+                        break  # only 1 key, no point retrying
+                else:
+                    raise  # non-rotatable error → propagate immediately
+        raise last_exc
+
+    # ------------------------------------------------------------------
+    # Public API (unchanged signatures)
+    # ------------------------------------------------------------------
+
+    def generate_script(self, slide_text: str, language: str = 'vi') -> str:
+        """Generate a speech script from slide text."""
+        if not self._keys:
+            raise ValueError("Gemini API key is not configured.")
+
         if not slide_text or not slide_text.strip():
             return "Slide này không có nội dung, vui lòng nhập nội dung để tạo kịch bản."
-            
-        # Prompt Engineering for TTS
+
         prompt = f"""
         Act as a professional presenter and speaker.
         Rewrite the following slide content into a natural, engaging speech script suitable for Text-to-Speech (TTS).
@@ -70,26 +141,23 @@ class GeminiService:
         
         Generated Script:
         """
-        
+
+        def _call(client):
+            return client.models.generate_content(
+                model=self.model_name, contents=prompt, config=self.generation_config
+            ).text.strip()
+
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=self.generation_config
-            )
-            return response.text.strip()
+            return self._call_with_rotation(_call)
         except Exception as e:
-            print(f"Error generating script with Gemini: {e}")
-            # Fallback handling or re-raise
+            print(f"❌ Gemini generate_script failed: {e}")
             raise Exception(f"Gemini API Error: {str(e)}")
 
     def enhance_text(self, current_text: str, instruction: str) -> str:
-        """
-        Enhance the existing script based on user instruction.
-        """
-        if not self.api_key or not self.client:
+        """Enhance the existing script based on user instruction."""
+        if not self._keys:
             raise ValueError("Gemini API key is not configured.")
-            
+
         prompt = f"""
         Act as a professional editor.
         Update the following speech script based on the instruction.
@@ -107,23 +175,22 @@ class GeminiService:
         
         Updated Script:
         """
+
+        def _call(client):
+            return client.models.generate_content(
+                model=self.model_name, contents=prompt, config=self.generation_config
+            ).text.strip()
+
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=self.generation_config
-            )
-            return response.text.strip()
+            return self._call_with_rotation(_call)
         except Exception as e:
             raise Exception(f"Gemini enhancement error: {str(e)}")
 
     def regenerate_text(self, slide_content: str, current_text: str, feedback: str) -> str:
-        """
-        Regenerate the script with feedback.
-        """
-        if not self.api_key or not self.client:
+        """Regenerate the script with feedback."""
+        if not self._keys:
             raise ValueError("Gemini API key is not configured.")
-            
+
         prompt = f"""
         Act as a professional presenter.
         Regenerate the speech script for the slide content, taking into account the user's feedback.
@@ -144,12 +211,25 @@ class GeminiService:
         
         New Script:
         """
+
+        def _call(client):
+            return client.models.generate_content(
+                model=self.model_name, contents=prompt, config=self.generation_config
+            ).text.strip()
+
         try:
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=self.generation_config
-            )
-            return response.text.strip()
+            return self._call_with_rotation(_call)
         except Exception as e:
             raise Exception(f"Gemini regeneration error: {str(e)}")
+
+    # ------------------------------------------------------------------
+    # Status info
+    # ------------------------------------------------------------------
+
+    def get_status(self) -> dict:
+        """Return current key pool status (for debugging)."""
+        return {
+            'total_keys': len(self._keys),
+            'current_key_index': self._current_idx,
+            'current_key_hint': f"****{self._keys[self._current_idx][-4:]}" if self._keys else None,
+        }
