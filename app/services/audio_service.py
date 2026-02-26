@@ -91,6 +91,7 @@ class AudioService:
                 # Auto-detect device: use CUDA if available
                 import torch
                 cuda_available = torch.cuda.is_available()
+                print(f"  🔍 torch version: {torch.__version__}, CUDA available: {cuda_available}")
                 device = "cuda" if cuda_available else "cpu"
                 print(f"  🖥️  Using device: {device}")
                 # Best quality model per device:
