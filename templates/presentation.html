@@ -236,10 +236,15 @@
                                         </div>
                                         <i class="bi bi-check-circle-fill text-primary ms-auto check-icon" style="display: none;"></i>
                                     </div>
-                                    <!-- Hidden upload input for clone voice -->
+                                    <!-- Clone voice upload section -->
                                     <div id="cloneVoiceUpload" class="mt-2 pt-2 border-top border-secondary" style="display: none;">
-                                        <label class="small text-secondary mb-1">Upload mẫu giọng (WAV/MP3, 1-3 mins):</label>
-                                        <input type="file" id="cloneVoiceInput" class="form-control form-control-sm bg-dark border-secondary text-secondary" accept="audio/*">
+                                        <label class="small text-secondary mb-1">Upload mẫu giọng (WAV/MP3, 10-60s):</label>
+                                        <input type="file" id="cloneVoiceInput"
+                                               class="form-control form-control-sm bg-dark border-secondary text-white"
+                                               accept="audio/*"
+                                               onchange="uploadCloneVoice(this)">
+                                        <div id="cloneVoiceStatus" class="small mt-1" style="display:none;"></div>
+                                        <audio id="cloneVoicePreview" controls class="w-100 mt-2" style="display:none;height:32px;"></audio>
                                     </div>
                                 </div>
 
@@ -547,7 +552,8 @@
             presentationId: null,
             slides: [],
             currentSlideIndex: 0,
-            voiceSettings: { type: 'preset', voice_id: 'default' } // Global settings
+            voiceSettings: { type: 'preset', voice_id: 'default' }, // Global settings
+            cloneVoicePath: null, // Server-side absolute path after upload
         };
 
         // --- Constants & Config ---
@@ -1184,6 +1190,47 @@
             state.voiceSettings.type = type;
         }
 
+        async function uploadCloneVoice(input) {
+            if (!input.files || input.files.length === 0) return;
+            if (!state.presentationId) {
+                alert('Vui lòng upload file presentation trước.');
+                input.value = '';
+                return;
+            }
+
+            const statusEl = document.getElementById('cloneVoiceStatus');
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = '<span class="text-secondary"><span class="spinner-border spinner-border-sm me-1"></span>Đang upload...</span>';
+
+            const formData = new FormData();
+            formData.append('clone_file', input.files[0]);
+
+            try {
+                const res = await fetch(`/api/presentation/${state.presentationId}/upload-clone-voice`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    state.cloneVoicePath = data.clone_voice_path;
+                    statusEl.innerHTML = `<span class="text-success">✅ Đã upload (${data.size_kb} KB) — sẵn sàng dùng</span>`;
+                    // Auto-preview with cloned voice
+                    const previewAudio = document.getElementById('cloneVoicePreview');
+                    if (previewAudio && data.clone_voice_url) {
+                        previewAudio.src = data.clone_voice_url;
+                        previewAudio.style.display = 'block';
+                    }
+                } else {
+                    state.cloneVoicePath = null;
+                    statusEl.innerHTML = `<span class="text-danger">❌ ${data.error || 'Upload thất bại'}</span>`;
+                }
+            } catch (e) {
+                state.cloneVoicePath = null;
+                statusEl.innerHTML = `<span class="text-danger">❌ Network error: ${e.message}</span>`;
+            }
+        }
+
         function testVoice() {
             alert("Voice preview feature coming soon!");
         }
@@ -1207,13 +1254,10 @@
 
                 // Handle Clone Voice
                 if (state.voiceSettings.type === 'clone') {
-                    const cloneInput = document.getElementById('cloneVoiceInput');
-                    // For now, simpler implementation: if file exists, we might need FormData
-                    // But to keep it consistent with 'generate_audio' endpoint which expects JSON or FormData? 
-                    // Let's assume the backend handles basic type for now, or we need to implementation FormData if uploading.
-                    if (cloneInput && cloneInput.files.length > 0) {
-                        alert("Tính năng upload mẫu giọng Clone đang được phát triển. Sẽ sử dụng giọng Clone mặc định.");
+                    if (state.cloneVoicePath) {
+                        bodyData.clone_voice_path = state.cloneVoicePath;
                     }
+                    // Note: if no file uploaded, backend will use VieNeu default voice
                 }
 
                 // Call batch generation endpoint
