@@ -754,48 +754,89 @@
             const btn = document.getElementById('btnGenAllText');
             btn.disabled = true;
 
+            const COOLDOWN_MS   = 1500;  // wait between slides to avoid rate limit
+            const MAX_RETRIES   = 3;
+            const RETRY_BASE_MS = 3000;  // base backoff (doubles each retry)
+
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
+
             for (let i = 0; i < total; i++) {
                 const slide = state.slides[i];
-                btn.innerHTML = `<div class="spinner-border spinner-border-sm me-1"></div> Đang tạo slide ${i + 1}/${total}...`;
 
-                try {
-                    const res = await fetch('/api/generate-text', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            presentation_id: state.presentationId,
-                            slide_num: slide.slide_num,
-                            language: 'vi'
-                        })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        state.slides[i].script = data.text;
-                        // If currently viewing this slide, update the textarea
-                        if (i === state.currentSlideIndex) {
-                            dom.scriptEditor.value = data.text;
-                        }
-                        // Auto-save
-                        await fetch('/api/save-text', {
+                let attempt = 0;
+                let success = false;
+
+                while (attempt < MAX_RETRIES && !success) {
+                    if (attempt > 0) {
+                        const wait = RETRY_BASE_MS * Math.pow(2, attempt - 1);
+                        btn.innerHTML = `<div class="spinner-border spinner-border-sm me-1"></div> Slide ${i + 1}/${total} — retry ${attempt}/${MAX_RETRIES} (chờ ${wait/1000}s)...`;
+                        await sleep(wait);
+                    } else {
+                        btn.innerHTML = `<div class="spinner-border spinner-border-sm me-1"></div> Đang tạo slide ${i + 1}/${total}...`;
+                    }
+
+                    try {
+                        const res = await fetch('/api/generate-text', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 presentation_id: state.presentationId,
                                 slide_num: slide.slide_num,
-                                edited_text: data.text
+                                language: 'vi'
                             })
                         });
-                    } else {
-                        console.error(`Slide ${slide.slide_num} error:`, data.error);
+
+                        // Rate limit: 429 or server error → retry
+                        if (res.status === 429 || res.status >= 500) {
+                            attempt++;
+                            console.warn(`Slide ${slide.slide_num}: HTTP ${res.status}, retry ${attempt}`);
+                            continue;
+                        }
+
+                        const data = await res.json();
+
+                        if (data.success) {
+                            state.slides[i].script = data.text;
+                            if (i === state.currentSlideIndex) {
+                                dom.scriptEditor.value = data.text;
+                            }
+                            // Auto-save
+                            await fetch('/api/save-text', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    presentation_id: state.presentationId,
+                                    slide_num: slide.slide_num,
+                                    edited_text: data.text
+                                })
+                            });
+                            success = true;
+                        } else if (data.error && data.error.toLowerCase().includes('rate')) {
+                            // Gemini rate limit returned as 200 with error message
+                            attempt++;
+                            console.warn(`Slide ${slide.slide_num}: rate limit in response, retry ${attempt}`);
+                        } else {
+                            console.error(`Slide ${slide.slide_num} error:`, data.error);
+                            success = true; // non-retryable error, skip
+                        }
+                    } catch (err) {
+                        attempt++;
+                        console.error(`Slide ${slide.slide_num} network error (attempt ${attempt}):`, err);
                     }
-                } catch (err) {
-                    console.error(`Slide ${slide.slide_num} connection error:`, err);
+                }
+
+                if (!success) {
+                    console.error(`Slide ${slide.slide_num}: failed after ${MAX_RETRIES} retries, skipping`);
+                }
+
+                // Cooldown between slides to stay within rate limit quota
+                if (i < total - 1) {
+                    await sleep(COOLDOWN_MS);
                 }
             }
 
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-magic me-1"></i> Tạo Text tất cả slide';
-            // Re-render current slide to show updated script
             renderSlide(state.currentSlideIndex);
         }
 
