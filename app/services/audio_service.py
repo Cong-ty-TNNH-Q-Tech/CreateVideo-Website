@@ -16,15 +16,23 @@ from typing import Optional, Tuple
 # Language detection
 try:
     from langdetect import detect, DetectorFactory
-    # Set seed for consistent results
+    from langdetect.lang_detect_exception import LangDetectException
+    # Set seed for consistent results across threads
     DetectorFactory.seed = 0
+    # Pre-load language profiles now (avoids "Need to load profiles." in worker threads)
+    try:
+        detect("xin chào")
+    except Exception:
+        pass
     LANGDETECT_AVAILABLE = True
     print("✅ langdetect available for advanced language detection")
 except ImportError:
     LANGDETECT_AVAILABLE = False
+    LangDetectException = Exception  # fallback so except clause doesn't break
     print("ℹ️  langdetect not available - using fallback language detection")
 except Exception as e:
     LANGDETECT_AVAILABLE = False
+    LangDetectException = Exception
     print(f"ℹ️  langdetect error: {e} - using fallback detection")
 
 # Add VieNeu-TTS to path for imports
@@ -148,7 +156,11 @@ class AudioService:
         
         try:
             if LANGDETECT_AVAILABLE:
-                detected = detect(text)
+                try:
+                    detected = detect(text)
+                except LangDetectException as lde:
+                    print(f"  ⚠️  langdetect exception: {lde}, defaulting to Vietnamese")
+                    return 'vi'
                 print(f"  🔍 Detected language: {detected}")
                 
                 # Map detected language to supported language
