@@ -834,48 +834,7 @@ def upload_avatar(pres_id):
         print(f"Error uploading avatar: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
-@presentation_bp.route('/presentation/<pres_id>/upload-clone-voice', methods=['POST'])
-def upload_clone_voice(pres_id):
-    """Upload a reference audio file for voice cloning (used as clone_voice_path in TTS)."""
-    try:
-        presentation = current_app.presentation_model.get_by_id(pres_id)
-        if not presentation:
-            return jsonify({'success': False, 'error': 'Presentation not found'}), 404
-
-        if 'clone_file' not in request.files:
-            return jsonify({'success': False, 'error': 'No file uploaded (field: clone_file)'}), 400
-
-        file = request.files['clone_file']
-        if file.filename == '':
-            return jsonify({'success': False, 'error': 'No file selected'}), 400
-
-        ext = os.path.splitext(secure_filename(file.filename))[1].lower()
-        if ext not in ['.wav', '.mp3', '.m4a', '.ogg', '.flac']:
-            return jsonify({'success': False, 'error': 'Invalid audio format. Use WAV/MP3/M4A/OGG/FLAC'}), 400
-
-        static_folder = current_app.static_folder
-        avatar_dir = os.path.join(static_folder, 'avatars', pres_id)
-        os.makedirs(avatar_dir, exist_ok=True)
-
-        # Save with deterministic name so re-uploads overwrite the previous one
-        filename = f'clone_voice{ext}'
-        file_path = os.path.join(avatar_dir, filename)
-        file.save(file_path)
-
-        file_size_kb = os.path.getsize(file_path) // 1024
-        print(f'✅ Clone voice uploaded: {file_path} ({file_size_kb} KB)')
-
-        return jsonify({
-            'success': True,
-            'clone_voice_path': file_path,          # absolute server path for TTS engine
-            'clone_voice_url':  f'/static/avatars/{pres_id}/{filename}',
-            'size_kb': file_size_kb,
-            'message': f'Uploaded {file_size_kb} KB'
-        })
-
-    except Exception as e:
-        print(f'Error uploading clone voice: {e}')
-        return jsonify({'success': False, 'error': str(e)}), 500
+@presentation_bp.route('/presentation/<pres_id>/slide/<int:slide_num>/regenerate_audio', methods=['POST'])
 def regenerate_audio(pres_id, slide_num):
     """Regenerate audio for a specific slide"""
     try:

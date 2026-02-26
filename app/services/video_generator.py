@@ -117,18 +117,19 @@ class VideoGenerationService:
                  
             latest_file = max(list_of_files, key=os.path.getctime)
             
-            # If the file is in a subfolder, we need to handle the relative path for URL
-            # result_dir_abs is static/results
-            # latest_file is static/results/timestamp/vid.mp4
-            
-            rel_path = os.path.relpath(latest_file, result_dir_abs)
-            
-            # If rel_path has backslashes (Windows), replace with forward slashes for URL
-            rel_path_url = rel_path.replace('\\', '/')
-            
+            # Build URL by finding the 'static' directory in the absolute path
+            parts = latest_file.replace('\\', '/').split('/')
+            try:
+                static_idx = next(i for i in range(len(parts) - 1, -1, -1) if parts[i] == 'static')
+                video_url = '/' + '/'.join(parts[static_idx:])
+            except StopIteration:
+                # Fallback if 'static' not found in path
+                rel = os.path.relpath(latest_file, result_dir_abs).replace('\\', '/')
+                video_url = f'/static/results/{rel}'
+
             return {
                 'success': True,
-                'video_url': f'/static/results/{rel_path_url}',
+                'video_url': video_url,
                 'video_path': latest_file
             }
 
