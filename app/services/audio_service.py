@@ -13,6 +13,8 @@ import threading
 from pathlib import Path
 from typing import Optional, Tuple
 
+from app.utils.retry import retry_call
+
 # Language detection
 try:
     from langdetect import detect, DetectorFactory
@@ -389,7 +391,7 @@ class AudioService:
     
     def _generate_with_edge_tts(self, text: str, output_path: str, language: str = 'vi', voice_id: str = None) -> bool:
         """Generate audio using Microsoft Edge TTS (neural voices, free, requires internet).
-        Falls back to gTTS if edge-tts is unavailable or fails.
+        Retries up to 3 times on transient network errors, then falls back to gTTS.
         """
         try:
             import edge_tts
@@ -397,13 +399,13 @@ class AudioService:
             import concurrent.futures
             import tempfile
 
-            # Use explicit voice_id if provided, otherwise pick by language
-            voice = voice_id if voice_id else self.EDGE_TTS_VOICES.get(language, 'en-US-JennyNeural')
-            print(f"🎧 Generating audio with edge-tts ({voice})...")
-
             if not text or len(text.strip()) < 3:
                 print("  ❌ Text too short for TTS")
                 return False
+
+            # Use explicit voice_id if provided, otherwise pick by language
+            voice = voice_id if voice_id else self.EDGE_TTS_VOICES.get(language, 'en-US-JennyNeural')
+            print(f"🎧 Generating audio with edge-tts ({voice})...")
 
             # Save mp3 to temp, then convert to wav
             with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp:
@@ -418,12 +420,24 @@ class AudioService:
             def _sync_run():
                 asyncio.run(_run())
 
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-                pool.submit(_sync_run).result(timeout=60)
+            # Retry up to 3 times on network/timeout errors
+            def _attempt_edge_tts():
+                with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+                    pool.submit(_sync_run).result(timeout=60)
+                if not os.path.exists(temp_mp3) or os.path.getsize(temp_mp3) == 0:
+                    raise RuntimeError("edge-tts produced no output")
 
-            if not os.path.exists(temp_mp3) or os.path.getsize(temp_mp3) == 0:
-                print("  ❌ edge-tts produced no output")
-                return False
+            try:
+                retry_call(_attempt_edge_tts, max_attempts=3, delay=2.0, backoff=2.0,
+                           exceptions=(Exception,))
+            except Exception as retry_exc:
+                print(f"  ❌ edge-tts failed after retries: {retry_exc}")
+                try:
+                    os.remove(temp_mp3)
+                except Exception:
+                    pass
+                print("⚠️ Falling back to gTTS...")
+                return self._generate_with_gtts(text, output_path, language)
 
             # Convert mp3 → wav
             from pydub import AudioSegment
@@ -450,71 +464,68 @@ class AudioService:
             return self._generate_with_gtts(text, output_path, language)
 
     def _generate_with_gtts(self, text: str, output_path: str, language: str = 'vi') -> bool:
-        """Generate audio using gTTS (Google Text-to-Speech) with language support"""
+        """Generate audio using gTTS (Google Text-to-Speech).
+        Retries up to 3 times on transient network errors.
+        """
         try:
             print(f"🎧 Generating audio with gTTS ({language})...")
-            
-            # Import required modules
+
             from gtts import gTTS
             from pydub import AudioSegment
             import tempfile
-            
+
             print(f"  📝 Text length: {len(text)} characters")
             print(f"  🌐 Language: {language}")
-            
-            # Validate text
+
             if not text or len(text.strip()) < 3:
                 print("  ❌ Text too short for TTS")
                 return False
-            
-            # Validate language
+
             if language not in self.SUPPORTED_LANGUAGES:
                 print(f"  ⚠️  Language {language} not supported, using English")
                 language = 'en'
-            
-            # Tạo gTTS object
-            tts = gTTS(text=text, lang=language, slow=False)
-            print("  ✅ gTTS object created")
-            
-            # Tạo temp file an toàn
-            import tempfile
+
             with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_file:
                 temp_mp3 = temp_file.name
-            
+
+            def _save_gtts():
+                tts = gTTS(text=text, lang=language, slow=False)
+                tts.save(temp_mp3)
+                if not os.path.exists(temp_mp3) or os.path.getsize(temp_mp3) == 0:
+                    raise RuntimeError("gTTS produced no output")
+
             print(f"  📋 Saving to temp MP3: {temp_mp3}")
-            tts.save(temp_mp3)
-            
-            # Kiểm tra file MP3 đã tạo thành công
-            if not os.path.exists(temp_mp3):
-                print("  ❌ MP3 file not created")
+            try:
+                retry_call(_save_gtts, max_attempts=3, delay=2.0, backoff=2.0,
+                           exceptions=(Exception,))
+            except Exception as retry_exc:
+                print(f"  ❌ gTTS failed after retries: {retry_exc}")
+                try:
+                    os.remove(temp_mp3)
+                except Exception:
+                    pass
                 return False
-                
+
             file_size = os.path.getsize(temp_mp3)
             print(f"  ✅ MP3 created, size: {file_size} bytes")
-            
+
             # Convert MP3 to WAV
             audio = AudioSegment.from_mp3(temp_mp3)
             audio.export(output_path, format="wav")
             print(f"  ✅ Converted to WAV: {output_path}")
-            
-            # Kiểm tra file WAV
-            if os.path.exists(output_path):
-                wav_size = os.path.getsize(output_path)
-                print(f"  ✅ WAV created, size: {wav_size} bytes")
-            else:
+
+            if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
                 print("  ❌ WAV file not created")
                 return False
-            
-            # Clean up temp file
+
             try:
                 os.remove(temp_mp3)
-                print(f"  🧹 Cleaned up temp file")
-            except:
-                print(f"  ⚠️  Could not clean up temp file: {temp_mp3}")
-            
+            except Exception:
+                pass
+
             print(f"✅ gTTS audio saved successfully: {output_path}")
             return True
-            
+
         except Exception as e:
             print(f"❌ gTTS failed: {e}")
             traceback.print_exc()

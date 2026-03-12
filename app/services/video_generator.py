@@ -67,13 +67,15 @@ class VideoGenerationService:
         print(f"CWD: {self.sadtalker_dir}")
 
         try:
-            # Run inference
+            # Run inference — cap at 45 minutes to prevent silent hangs
+            VIDEO_TIMEOUT = 2700  # 45 minutes
             process = subprocess.run(
-                command, 
-                cwd=self.sadtalker_dir, 
-                stdout=subprocess.PIPE, 
+                command,
+                cwd=self.sadtalker_dir,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                timeout=VIDEO_TIMEOUT,
             )
             
             if process.returncode != 0:
@@ -133,6 +135,11 @@ class VideoGenerationService:
                 'video_path': latest_file
             }
 
+        except subprocess.TimeoutExpired:
+            return {
+                'success': False,
+                'error': "Video generation timed out (45 min limit). Try a shorter audio or smaller image."
+            }
         except ValueError as e:
             # Handle face detection errors
             error_msg = str(e)

@@ -3,9 +3,16 @@ Service to interact with Google Gemini API for generating presentation scripts.
 Supports multiple API keys with automatic round-robin rotation on quota/rate-limit errors.
 """
 import os
+import time
 import threading
 from google import genai
 from typing import Optional, List
+
+# Minimum retry attempts per model (ensures retry even when only 1 key is configured)
+_MIN_ATTEMPTS_PER_MODEL = 3
+# Backoff timing for quota/rate-limit retries
+_RETRY_DELAY_BASE = 1.0   # seconds for the first retry
+_RETRY_DELAY_MAX  = 30.0  # cap per wait
 
 # Errors that trigger key rotation (quota exhausted, rate limit, invalid key, etc.)
 _ROTATE_KEYWORDS = (
@@ -116,7 +123,8 @@ class GeminiService:
 
         last_exc = None
         for model in models_to_try:
-            attempts = len(self._keys)
+            # Allow at least _MIN_ATTEMPTS_PER_MODEL retries even with a single API key
+            attempts = max(len(self._keys), _MIN_ATTEMPTS_PER_MODEL)
             for attempt in range(attempts):
                 try:
                     result = fn(self._client, model)
@@ -128,8 +136,14 @@ class GeminiService:
                     key_hint = self._keys[self._current_idx][-4:]
                     if _is_rotatable_error(exc):
                         print(f"⚠️  Gemini key ****{key_hint} quota/rate error on {model} (attempt {attempt + 1}/{attempts}): {exc}")
-                        if not self._rotate():
-                            break
+                        rotated = self._rotate()
+                        # Always wait — longer when no new key is available
+                        wait = 0.5 if rotated else min(_RETRY_DELAY_BASE * (2 ** attempt), _RETRY_DELAY_MAX)
+                        print(f"⏳ Waiting {wait:.1f}s before next attempt...")
+                        time.sleep(wait)
+                        if not rotated and attempt >= len(self._keys) - 1:
+                            # Exhausted all real keys; remaining attempts use same key with backoff
+                            pass  # continue looping with increasing wait
                     elif _is_model_fallback_error(exc):
                         print(f"⚠️  Model '{model}' unavailable: {exc} → trying fallback model")
                         break  # stop retrying this model, move to fallback

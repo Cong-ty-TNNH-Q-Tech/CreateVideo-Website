@@ -7,6 +7,7 @@ import threading
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from app.utils.presentation_reader import PresentationReader
+from app.utils.retry import retry_call, MaxRetriesExceeded
 from app.services.gemini import get_gemini_service
 from app.services.audio_service import get_audio_service, AudioService
 from app.services.video_generator import VideoGenerationService
@@ -401,24 +402,33 @@ def generate_text():
         gemini = get_gemini_service()
         if gemini is None:
             return jsonify({
-                'success': False, 
+                'success': False,
                 'error': 'Gemini API not configured. Please set GEMINI_API_KEY environment variable.'
             }), 500
-        
-        # Generate text using the new method for TTS scripts
-        generated_text = gemini.generate_script(slide['content'], language=language)
-        
+
+        # Generate text with retry for transient Gemini errors
+        generated_text = retry_call(
+            gemini.generate_script,
+            slide['content'],
+            language=language,
+            max_attempts=3, delay=2.0, backoff=2.0,
+            exceptions=(Exception,),
+        )
+
         # Update slide
         current_app.presentation_model.update_slide(pres_id, slide_num, {
             'generated_text': generated_text,
             'edited_text': generated_text if not slide.get('edited_text') else slide.get('edited_text')
         })
-        
+
         return jsonify({
             'success': True,
             'text': generated_text,
             'slide_num': slide_num
         })
+    except MaxRetriesExceeded as e:
+        print(f"Gemini generate_text exhausted retries: {e}")
+        return jsonify({'success': False, 'error': 'Gemini API unavailable after multiple retries. Please try again later.'}), 503
     except Exception as e:
         print(f"Error generating text: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -485,16 +495,24 @@ def enhance_text():
         gemini = get_gemini_service()
         if gemini is None:
             return jsonify({
-                'success': False, 
+                'success': False,
                 'error': 'Gemini API not configured. Please set GEMINI_API_KEY environment variable.'
             }), 500
-        
-        enhanced_text = gemini.enhance_text(current_text, instruction)
-        
+
+        enhanced_text = retry_call(
+            gemini.enhance_text,
+            current_text, instruction,
+            max_attempts=3, delay=2.0, backoff=2.0,
+            exceptions=(Exception,),
+        )
+
         return jsonify({
             'success': True,
             'enhanced_text': enhanced_text
         })
+    except MaxRetriesExceeded as e:
+        print(f"Gemini enhance_text exhausted retries: {e}")
+        return jsonify({'success': False, 'error': 'Gemini API unavailable after multiple retries. Please try again later.'}), 503
     except Exception as e:
         print(f"Error enhancing text: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -518,23 +536,31 @@ def regenerate_text():
         gemini = get_gemini_service()
         if gemini is None:
             return jsonify({
-                'success': False, 
+                'success': False,
                 'error': 'Gemini API not configured. Please set GEMINI_API_KEY environment variable.'
             }), 500
-        
+
         current_val = slide.get('edited_text', slide.get('generated_text', ''))
-        new_text = gemini.regenerate_text(slide['content'], current_val, feedback)
-        
+        new_text = retry_call(
+            gemini.regenerate_text,
+            slide['content'], current_val, feedback,
+            max_attempts=3, delay=2.0, backoff=2.0,
+            exceptions=(Exception,),
+        )
+
         # Update slide
         current_app.presentation_model.update_slide(pres_id, slide_num, {
             'generated_text': new_text,
             'edited_text': new_text
         })
-        
+
         return jsonify({
             'success': True,
             'text': new_text
         })
+    except MaxRetriesExceeded as e:
+        print(f"Gemini regenerate_text exhausted retries: {e}")
+        return jsonify({'success': False, 'error': 'Gemini API unavailable after multiple retries. Please try again later.'}), 503
     except Exception as e:
         print(f"Error regenerating text: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -696,13 +722,23 @@ def generate_audio(pres_id):
 
             # VieNeu-TTS serializes GPU inference internally via _vieneu_lock.
             # gTTS calls run truly in parallel (no lock inside service).
-            ok, message = svc.generate_audio(
-                text, audio_file_path,
-                voice_type=voice_type,
-                voice_id=voice_id,
-                clone_voice_path=clone_voice_path,
-                clone_ref_text=clone_ref_text
-            )
+            # Retry up to 2 times for transient failures (network, timeout).
+            ok, message = False, 'Not attempted'
+            for _attempt in range(3):
+                ok, message = svc.generate_audio(
+                    text, audio_file_path,
+                    voice_type=voice_type,
+                    voice_id=voice_id,
+                    clone_voice_path=clone_voice_path,
+                    clone_ref_text=clone_ref_text
+                )
+                if ok:
+                    break
+                if _attempt < 2:
+                    import time
+                    wait = 2.0 * (2 ** _attempt)
+                    print(f"  ⚠️ Slide {slide_num} audio attempt {_attempt + 1} failed: {message}. Retrying in {wait:.0f}s...")
+                    time.sleep(wait)
 
             if ok:
                 with _model_write:
@@ -943,17 +979,26 @@ def regenerate_audio(pres_id, slide_num):
         # Generate audio file path
         audio_file_path = audio_service.get_audio_file_path(pres_id, slide_num, static_folder)
         audio_url = audio_service.get_audio_url(pres_id, slide_num)
-        
-        # Generate audio with optional voice settings
-        success, message = audio_service.generate_audio(
-            text_to_convert, 
-            audio_file_path,
-            voice_type=voice_type,
-            voice_id=voice_id,
-            clone_voice_path=clone_voice_path,
-            clone_ref_text=clone_ref_text
-        )
-        
+
+        # Retry up to 3 times for transient failures
+        success, message = False, 'Not attempted'
+        for _attempt in range(3):
+            success, message = audio_service.generate_audio(
+                text_to_convert,
+                audio_file_path,
+                voice_type=voice_type,
+                voice_id=voice_id,
+                clone_voice_path=clone_voice_path,
+                clone_ref_text=clone_ref_text,
+            )
+            if success:
+                break
+            if _attempt < 2:
+                import time
+                wait = 2.0 * (2 ** _attempt)
+                print(f"  ⚠️ regenerate_audio attempt {_attempt + 1} failed: {message}. Retrying in {wait:.0f}s...")
+                time.sleep(wait)
+
         if success:
             # Update slide with audio URL
             current_app.presentation_model.update_slide(pres_id, slide_num, {
