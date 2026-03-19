@@ -41,7 +41,7 @@ jobs:
         run: npm install @google/generative-ai
 
       - name: AI Review
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const { GoogleGenerativeAI } = require(process.cwd() + '/node_modules/@google/generative-ai');

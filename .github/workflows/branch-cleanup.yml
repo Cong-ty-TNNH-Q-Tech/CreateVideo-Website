@@ -40,7 +40,7 @@ jobs:
 
       - name: Create cleanup Issue
         if: steps.stale.outputs.branches != ''
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const branches = `${{ steps.stale.outputs.branches }}`.split('\n').filter(Boolean);
