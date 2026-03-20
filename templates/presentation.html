@@ -31,19 +31,19 @@
 
         <!-- Step Nav -->
         <div class="step-nav">
-            <div id="navStep1" class="step-item active">
+            <div id="navStep1" class="step-item active" onclick="goToStep(1)" style="cursor: pointer;">
                 <div class="step-number">1</div> <span data-i18n="nav.upload">Tải lên</span>
             </div>
             <div class="step-connector"></div>
-            <div id="navStep2" class="step-item">
+            <div id="navStep2" class="step-item" onclick="goToStep(2)" style="cursor: pointer;">
                 <div class="step-number">2</div> <span data-i18n="nav.edit">Chỉnh sửa</span>
             </div>
             <div class="step-connector"></div>
-             <div id="navStep3" class="step-item">
+             <div id="navStep3" class="step-item" onclick="goToStep(3)" style="cursor: pointer;">
                 <div class="step-number">3</div> <span data-i18n="nav.generate">Tạo audio</span>
             </div>
             <div class="step-connector"></div>
-             <div id="navStep4" class="step-item">
+             <div id="navStep4" class="step-item" onclick="goToStep(4)" style="cursor: pointer;">
                 <div class="step-number">4</div> <span data-i18n="nav.finalize">Hoàn thành</span>
             </div>
         </div>
@@ -159,9 +159,14 @@
                             <textarea id="currentScriptEditor" class="script-textarea border-0 w-100 h-100 p-3" style="resize: none; outline: none;" data-i18n-placeholder="step2.placeholder" placeholder="Nhập script thuyết minh cho slide này..."></textarea>
                         </div>
                         <div class="card-footer bg-transparent border-top border-secondary p-3 d-flex justify-content-between align-items-center">
-                            <button class="btn btn-warning" onclick="generateTextForAllSlides()" id="btnGenAllText">
-                                <i class="bi bi-magic me-1"></i> Tạo Text tất cả slide
-                            </button>
+                            <div>
+                                <button class="btn btn-secondary me-2" onclick="goToStep(1)">
+                                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                </button>
+                                <button class="btn btn-warning" onclick="generateTextForAllSlides()" id="btnGenAllText">
+                                    <i class="bi bi-magic me-1"></i> Tạo Text tất cả slide
+                                </button>
+                            </div>
                             <button class="btn btn-primary" onclick="goToStep3()">
                                 <span data-i18n="step2.nextBtn">Tiếp: Tạo Audio</span> <i class="bi bi-arrow-right ms-2"></i>
                             </button>
@@ -356,9 +361,14 @@
                             
                             <hr class="border-secondary my-4">
                             
-                            <button id="step4Btn" onclick="goToStep4()" class="btn btn-success w-100 py-2" style="display: none;">
-                                <span data-i18n="step3.nextBtn">Tiếp: Hoàn thiện Video</span> <i class="bi bi-arrow-right ms-2"></i>
-                            </button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-secondary py-2 flex-grow-1 me-2" onclick="goToStep(2)">
+                                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                </button>
+                                <button id="step4Btn" onclick="goToStep4()" class="btn btn-success py-2 flex-grow-1 ms-2" style="display: none;">
+                                    <span data-i18n="step3.nextBtn">Tiếp: Hoàn thiện Video</span> <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -396,6 +406,11 @@
                 </div>
 
                 <div class="row justify-content-center mb-5">
+                    <div class="col-md-3">
+                        <button onclick="goToStep(3)" class="btn btn-lg btn-secondary w-100 rounded-pill py-3">
+                            <i class="bi bi-arrow-left me-2"></i> Quay lại
+                        </button>
+                    </div>
                     <div class="col-md-6">
                         <button onclick="generateFinalVideoV2()" class="btn btn-lg btn-primary w-100 rounded-pill py-3 position-relative overflow-hidden">
                              <span class="position-relative z-1"><i class="bi bi-film me-2"></i> <span data-i18n="step4.generateBtn">Tạo Video cuối cùng</span></span>
@@ -703,6 +718,10 @@
         function goToStep(stepNum) {
             // Validate
             if (stepNum > 1 && !state.presentationId) return;
+
+            // Make sure not to go to step 3 or 4 if data is not generated, but for now allow based on state
+            if (stepNum === 3 && state.slides.length === 0) return;
+            if (stepNum === 4 && state.slides.some(s => !s.audio_url)) return;
 
             // Update UI Containers
             dom.steps.forEach((el, idx) => {
