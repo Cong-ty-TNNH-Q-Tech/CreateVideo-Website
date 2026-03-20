@@ -270,13 +270,21 @@ class AudioService:
             print(f"🌐 Language: {detected_lang}")
             
             # If voice_type is explicitly set, use that engine
-            if voice_type in ('gtts', 'edge'):
-                # edge-tts (Microsoft Neural) — 'gtts' kept as backward-compat alias
+            if voice_type == 'edge':
+                # edge-tts (Microsoft Neural)
                 print("🎯 User selected edge-tts")
                 if self._generate_with_edge_tts(clean_text, output_path, detected_lang, voice_id=voice_id):
                     return True, f"Generated using edge-tts ({voice_id or detected_lang})"
                 else:
                     return False, f"edge-tts failed for language {detected_lang}"
+                    
+            elif voice_type == 'gtts':
+                # Google TTS (Standard)
+                print("🎯 User selected Google TTS")
+                if self._generate_with_gtts(clean_text, output_path, detected_lang):
+                    return True, f"Generated using gTTS ({detected_lang})"
+                else:
+                    return False, f"gTTS failed for language {detected_lang}"
                     
             elif voice_type == 'clone':
                 # Force VieNeu with voice cloning

@@ -195,9 +195,23 @@
                         <div class="card-body">
                             <label class="form-label text-secondary small text-uppercase fw-bold" data-i18n="step3.selectPersona">Chọn giọng đọc</label>
                             <div class="d-flex flex-column gap-3 mb-4">
-                                <!-- VieNeu Option (Default) -->
-                                <!-- VieNeu Option (Default) -->
-                                <div class="voice-persona-card active" onclick="selectVoice('vieneu')">
+                                <!-- gTTS Option (Default) -->
+                                <div class="voice-persona-card active" onclick="selectVoice('gtts')">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px; background-color: #4285F4;">
+                                            <i class="bi bi-google"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-white">Google TTS <span class="badge bg-secondary ms-2" style="font-size: 0.6rem;">BASIC</span></div>
+                                            <div class="small text-secondary">Giọng đọc cơ bản của Google</div>
+                                            <div class="mt-1"><span class="badge bg-info bg-opacity-25 text-info" style="font-size: 0.65rem;">Đa ngôn ngữ</span></div>
+                                        </div>
+                                        <i class="bi bi-check-circle-fill text-primary ms-auto check-icon" style="display: block;"></i>
+                                    </div>
+                                </div>
+
+                                <!-- VieNeu Option -->
+                                <div class="voice-persona-card" onclick="selectVoice('vieneu')">
                                     <div class="d-flex align-items-center gap-3">
                                         <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
                                             <i class="bi bi-music-note-beamed"></i>
@@ -207,10 +221,10 @@
                                             <div class="small text-secondary">Giọng đọc AI tự nhiên nhất</div>
                                             <div class="mt-1"><span class="badge bg-primary bg-opacity-25 text-primary" style="font-size: 0.65rem;">Vietnamese</span></div>
                                         </div>
-                                        <i class="bi bi-check-circle-fill text-primary ms-auto check-icon" style="display: block;"></i>
+                                        <i class="bi bi-check-circle-fill text-primary ms-auto check-icon" style="display: none;"></i>
                                     </div>
                                     <!-- VieNeu Sub-voices Dropdown -->
-                                    <div id="vieneuVoiceSelect" class="mt-2 pt-2 border-top border-secondary" style="display: block;">
+                                    <div id="vieneuVoiceSelect" class="mt-2 pt-2 border-top border-secondary" style="display: none;">
                                         <label class="small text-secondary mb-1">Chọn người đọc:</label>
                                         <select id="vieneuVoiceId" class="form-select form-select-sm bg-dark border-secondary text-white">
                                             <option value="Tuyen">Tuyên (Nam - Bắc)</option>
@@ -624,7 +638,7 @@
             presentationId: null,
             slides: [],
             currentSlideIndex: 0,
-            voiceSettings: { type: 'preset', voice_id: 'default' }, // Global settings
+            voiceSettings: { type: 'gtts voice_id: 'default' }, // Global settings
             cloneVoicePath: null,   // Server-side absolute path after upload
             cloneRefText: '',       // Transcript of the reference audio (improves clone quality)
         };
@@ -1325,6 +1339,8 @@
             } else {
                 if(edgeSelectDiv) edgeSelectDiv.style.display = 'none';
             }
+
+            // No extra UI for gtts
 
             state.voiceSettings.type = type;
         }

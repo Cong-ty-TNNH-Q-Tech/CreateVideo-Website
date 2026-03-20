@@ -593,15 +593,19 @@ def preview_voice():
         if data:
             # Handle JSON request
             text = data.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_type = data.get('voice_type', 'gtts')
             voice_id = data.get('voice_id')
             clone_file = None
             clone_voice_path = data.get('clone_voice_path')
+            clone_ref_text = data.get('clone_ref_text', '')
         else:
             # Handle Form Data (multipart/form-data)
             text = request.form.get('text', 'Xin chào, đây là giọng nói mẫu.')
+            voice_type = request.form.get('voice_type', 'gtts')
             voice_id = request.form.get('voice_id')
             clone_file = request.files.get('clone_file')
             clone_voice_path = None # Will be set later if clone_file exists
+            clone_ref_text = request.form.get('clone_ref_text', '')
 
         # Limit text length for preview
         if len(text) > 100:
@@ -629,12 +633,14 @@ def preview_voice():
         # clone_voice_path is already set from data if JSON was used
 
         
-        # Generate audio (voice_type not used in preview, always auto-detect)
+        # Generate audio (voice_type respected)
         success, message = audio_service.generate_audio(
             text, 
             output_path, 
+            voice_type=voice_type,
             voice_id=voice_id, 
-            clone_voice_path=clone_voice_path
+            clone_voice_path=clone_voice_path,
+            clone_ref_text=clone_ref_text
         )
         
         # Clean up clone source file if it was uploaded
