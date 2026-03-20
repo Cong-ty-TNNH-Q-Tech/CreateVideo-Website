@@ -719,6 +719,11 @@
             // Validate
             if (stepNum > 1 && !state.presentationId) return;
 
+            // Nếu đang ở bước 2 và chuyển đi, hãy lưu script của slide hiện tại
+            if (dom.steps[1] && dom.steps[1].style.display !== 'none') {
+                saveCurrentScriptState();
+            }
+
             // Make sure not to go to step 3 or 4 if data is not generated, but for now allow based on state
             if (stepNum === 3 && state.slides.length === 0) {
                 alert('Vui lòng tạo nội dung cho ít nhất một slide trước khi chuyển sang bước Tạo Audio.');
@@ -898,9 +903,47 @@
         }
 
 
+        function updateSlideScript(idx, newScript) {
+            const slide = state.slides[idx];
+            if (!slide) return;
+            
+            if (slide.script !== newScript) {
+                slide.script = newScript;
+                
+                // Trạng thái đã thay đổi, cần reset lại quá trình tạo audio và video
+                slide.audioUrl = null;
+                slide.videoUrl = null;
+                
+                // Ẩn final video vì bản render cuối đã lỗi thời
+                const finalVideo = document.getElementById('finalVideo');
+                if (finalVideo) {
+                    finalVideo.src = '';
+                    const resultContainer = document.getElementById('videoResultContainer');
+                    if (resultContainer) resultContainer.style.display = 'none';
+                    
+                    // Reset phụ đề nếu đã tải
+                    subtitleCues = [];
+                    ccEnabled = false;
+                    const overlay = document.getElementById('subtitleOverlay');
+                    if (overlay) overlay.style.display = 'none';
+                }
+
+                // Lưu ngầm lên server
+                fetch('/api/save-text', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        presentation_id: state.presentationId,
+                        slide_num: slide.slide_num,
+                        edited_text: newScript
+                    })
+                }).catch(e => console.error("Error auto-saving script:", e));
+            }
+        }
+
         function saveCurrentScriptState() {
             if (state.slides[state.currentSlideIndex]) {
-                state.slides[state.currentSlideIndex].script = dom.scriptEditor.value;
+                updateSlideScript(state.currentSlideIndex, dom.scriptEditor.value);
             }
         }
 
@@ -953,20 +996,11 @@
                         const data = await res.json();
 
                         if (data.success) {
-                            state.slides[i].script = data.text;
                             if (i === state.currentSlideIndex) {
                                 dom.scriptEditor.value = data.text;
                             }
-                            // Auto-save
-                            await fetch('/api/save-text', {
-                                method: 'POST',
-                                headers: {'Content-Type': 'application/json'},
-                                body: JSON.stringify({
-                                    presentation_id: state.presentationId,
-                                    slide_num: slide.slide_num,
-                                    edited_text: data.text
-                                })
-                            });
+                            // Dùng hàm chung để lưu và reset trạng thái audio/video
+                            updateSlideScript(i, data.text);
                             success = true;
                         } else if (data.error && data.error.toLowerCase().includes('rate')) {
                             // Gemini rate limit returned as 200 with error message
@@ -1015,17 +1049,7 @@
                 const data = await res.json();
                 if (data.success) {
                     dom.scriptEditor.value = data.text;
-                    state.slides[state.currentSlideIndex].script = data.text;
-                    // Auto-save to server immediately after generating
-                    await fetch('/api/save-text', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            presentation_id: state.presentationId,
-                            slide_num: slide.slide_num,
-                            edited_text: data.text
-                        })
-                    });
+                    updateSlideScript(state.currentSlideIndex, data.text);
                 } else {
                     alert('Error: ' + data.error);
                 }
