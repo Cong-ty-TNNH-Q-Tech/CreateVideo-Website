@@ -720,8 +720,14 @@
             if (stepNum > 1 && !state.presentationId) return;
 
             // Make sure not to go to step 3 or 4 if data is not generated, but for now allow based on state
-            if (stepNum === 3 && state.slides.length === 0) return;
-            if (stepNum === 4 && state.slides.some(s => !s.audio_url)) return;
+            if (stepNum === 3 && state.slides.length === 0) {
+                alert('Vui lòng tạo nội dung cho ít nhất một slide trước khi chuyển sang bước Tạo Audio.');
+                return;
+            }
+            if (stepNum === 4 && state.slides.some(s => !s.audioUrl)) {
+                alert('Vui lòng tạo Audio cho tất cả các slide trước khi chuyển sang bước Hoàn thiện.');
+                return;
+            }
 
             // Update UI Containers
             dom.steps.forEach((el, idx) => {
