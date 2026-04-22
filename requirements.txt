@@ -71,7 +71,7 @@ onnxruntime>=1.18.0
 
 # -------------------- SadTalker Dependencies --------------------
 yacs>=0.1.8
-face-alignment>=1.4.1
+face-alignment>=1.5.0
 facexlib>=0.3.0
 easydict>=1.13
 prettytable>=3.10.0
