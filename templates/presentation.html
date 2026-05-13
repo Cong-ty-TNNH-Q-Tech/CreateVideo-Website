@@ -1692,47 +1692,103 @@
 
                 const data = await response.json();
 
-                clearInterval(progressInterval);
-                updateFinalProgress(100);
-
-                if (data.success) {
-                    // Update Video Player
-                    const video = document.getElementById('finalVideo');
-                    const downloadBtn = document.getElementById('downloadVideoBtn');
-                    
-                    if(video) {
-                        video.src = data.video_url + '?t=' + new Date().getTime();
-                        video.load();
-                    }
-                    
-                    if(downloadBtn) {
-                        downloadBtn.href = data.video_url;
-                        downloadBtn.download = `presentation_${state.presentationId}.mp4`;
-                    }
-                    
-                    if(resultContainer) {
-                        resultContainer.style.display = 'block';
-                        resultContainer.scrollIntoView({ behavior: 'smooth' });
-                    }
-
-                    // Load subtitles automatically
-                    loadSubtitles(state.presentationId);
-
-                    alert('✅ Video created successfully!');
+                if (response.status === 202 || data.status === 'processing') {
+                    // It's processing in the background, start polling
+                    pollVideoGenerationStatus(state.presentationId, btn, progressInterval, resultContainer);
                 } else {
-                    alert('Lỗi: ' + data.error);
+                    // Synchronous error or success
+                    clearInterval(progressInterval);
+                    updateFinalProgress(100);
+                    
+                    if (data.success) {
+                        showFinalVideo(data.video_url, resultContainer);
+                    } else {
+                        alert('Lỗi: ' + data.error);
+                        if(btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = 'Generate Final Video';
+                        }
+                    }
                 }
 
             } catch (error) {
                 console.error('Error generating final video:', error);
                 alert('Đã xảy ra lỗi khi kết nối server.');
-            } finally {
                 clearInterval(progressInterval);
                 if(btn) {
                     btn.disabled = false;
                     btn.innerHTML = 'Generate Final Video';
                 }
             }
+        }
+
+        async function pollVideoGenerationStatus(presId, btn, progressInterval, resultContainer) {
+            const pollInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/presentation/${presId}/status`);
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        if (!data.is_generating_video) {
+                            // Finished generating!
+                            clearInterval(pollInterval);
+                            clearInterval(progressInterval);
+                            updateFinalProgress(100);
+                            
+                            if(btn) {
+                                btn.disabled = false;
+                                btn.innerHTML = 'Generate Final Video';
+                            }
+                            
+                            if (data.final_video_url) {
+                                showFinalVideo(data.final_video_url, resultContainer);
+                            } else if (data.video_generation_error) {
+                                alert('Lỗi tạo video ngầm: ' + data.video_generation_error);
+                            } else {
+                                alert('Video tạo xong nhưng không tìm thấy link.');
+                            }
+                        }
+                        // If still generating, just wait for next poll. 
+                        // The progress indicator keeps spinning.
+                    } else {
+                        // Error fetching status
+                        clearInterval(pollInterval);
+                        clearInterval(progressInterval);
+                        if(btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = 'Generate Final Video';
+                        }
+                        alert('Lỗi khi kiểm tra tiến độ: ' + data.error);
+                    }
+                } catch (e) {
+                    console.error('Polling error', e);
+                    // Do not stop polling on a transient network error, just wait for next tick
+                }
+            }, 5000);
+        }
+
+        function showFinalVideo(video_url, resultContainer) {
+            const video = document.getElementById('finalVideo');
+            const downloadBtn = document.getElementById('downloadVideoBtn');
+            
+            if(video) {
+                video.src = video_url + '?t=' + new Date().getTime();
+                video.load();
+            }
+            
+            if(downloadBtn) {
+                downloadBtn.href = video_url;
+                downloadBtn.download = `presentation_${state.presentationId}.mp4`;
+            }
+            
+            if(resultContainer) {
+                resultContainer.style.display = 'block';
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // Load subtitles automatically
+            loadSubtitles(state.presentationId);
+            alert('✅ Video created successfully!');
         }
         
         function updateFinalProgress(percent) {
