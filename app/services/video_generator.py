@@ -55,7 +55,7 @@ class VideoGenerationService:
             '--result_dir', unique_result_dir,
             '--still', 
             '--preprocess', 'full',  # 'full' for better quality, 'crop' for cropped face
-            '--size', '512',  # Higher resolution (256, 512)
+            '--size', '256',  # Lower resolution to prevent VRAM overflow
             '--checkpoint_dir', 'checkpoints',
             '--batch_size', '2',  # Larger batch for smoother results
             '--enhancer', 'gfpgan',  # Enabled GFPGAN for face enhancement
