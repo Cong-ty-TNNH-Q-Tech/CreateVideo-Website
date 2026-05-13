@@ -60,7 +60,7 @@ class VideoGenerationService:
             '--batch_size', '2',  # Larger batch for smoother results
             '--enhancer', 'gfpgan',  # Enabled GFPGAN for face enhancement
             '--expression_scale', '1.0',  # Expression intensity
-            '--gpu_id', '1'  # Explicitly run on physical GPU 1
+            '--gpu_id', '0'  # Fallback to GPU 0 since GPU 1 doesn't exist
         ]
         
         if use_cpu:
