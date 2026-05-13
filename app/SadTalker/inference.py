@@ -128,6 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--enhancer',  type=str, default=None, help="Face enhancer, [gfpgan, RestoreFormer]")
     parser.add_argument('--background_enhancer',  type=str, default=None, help="background enhancer, [realesrgan]")
     parser.add_argument("--cpu", dest="cpu", action="store_true") 
+    parser.add_argument("--gpu_id", type=int, default=0, help="GPU index to use when not in CPU mode")
     parser.add_argument("--face3dvis", action="store_true", help="generate 3d face and 3d landmarks") 
     parser.add_argument("--still", action="store_true", help="can crop back to the original videos for the full body aniamtion") 
     parser.add_argument("--preprocess", default='crop', choices=['crop', 'extcrop', 'resize', 'full', 'extfull'], help="how to preprocess the images" ) 
@@ -152,9 +153,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if torch.cuda.is_available() and not args.cpu:
-        args.device = "cuda"
-        print(f"[GPU] Using GPU: {torch.cuda.get_device_name(0)}")
-        print(f"      GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1024**3:.2f} GB")
+        args.device = f"cuda:{args.gpu_id}"
+        print(f"[GPU] Using GPU: {torch.cuda.get_device_name(args.gpu_id)} (Index: {args.gpu_id})")
+        print(f"      GPU Memory: {torch.cuda.get_device_properties(args.gpu_id).total_memory / 1024**3:.2f} GB")
     else:
         args.device = "cpu"
         print("[CPU] Using CPU mode")

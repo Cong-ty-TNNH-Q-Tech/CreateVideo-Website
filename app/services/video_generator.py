@@ -59,7 +59,8 @@ class VideoGenerationService:
             '--checkpoint_dir', 'checkpoints',
             '--batch_size', '2',  # Larger batch for smoother results
             '--enhancer', 'gfpgan',  # Enabled GFPGAN for face enhancement
-            '--expression_scale', '1.0'  # Expression intensity
+            '--expression_scale', '1.0',  # Expression intensity
+            '--gpu_id', '1'  # Explicitly run on physical GPU 1
         ]
         
         if use_cpu:
@@ -73,10 +74,6 @@ class VideoGenerationService:
         print(f"CWD: {self.sadtalker_dir}")
 
         try:
-            # Prepare environment to use GPU 1
-            my_env = os.environ.copy()
-            my_env["CUDA_VISIBLE_DEVICES"] = "1"
-            
             # Run inference — cap at 45 minutes to prevent silent hangs
             VIDEO_TIMEOUT = 2700  # 45 minutes
             process = subprocess.run(
@@ -86,7 +83,6 @@ class VideoGenerationService:
                 stderr=subprocess.PIPE,
                 text=True,
                 timeout=VIDEO_TIMEOUT,
-                env=my_env,
             )
             
             if process.returncode != 0:
