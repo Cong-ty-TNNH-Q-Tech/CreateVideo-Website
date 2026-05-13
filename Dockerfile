@@ -63,6 +63,10 @@ RUN pip install --no-cache-dir \
     torchaudio==2.5.1 \
     --index-url https://download.pytorch.org/whl/cu118
 
+# Pin NumPy <2.0 FIRST — modules like basicsr, gfpgan, realesrgan, face-alignment
+# are compiled against NumPy 1.x and will crash with NumPy 2.x
+RUN pip install --no-cache-dir "numpy>=1.24.0,<2.0"
+
 # Install dependencies from requirements.txt
 # Remove conflicting system blinker if present
 RUN pip install --no-cache-dir --ignore-installed blinker -r requirements.txt
