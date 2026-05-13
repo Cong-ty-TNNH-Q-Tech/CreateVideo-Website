@@ -152,7 +152,11 @@ def api_generate_tts():
         print(f"[TTS] Model: {model_repo}, Voice: {voice_id}, Text length: {len(text)}")
         
         # Initialize TTS with selected model
-        tts = Vieneu(backbone_repo=model_repo)
+        tts = Vieneu(
+            backbone_repo=model_repo,
+            backbone_device="cpu",
+            codec_device="cpu"
+        )
         
         # Generate audio based on voice selection
         if voice_id == 'clone':

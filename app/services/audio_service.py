@@ -139,15 +139,13 @@ class AudioService:
                     except Exception as cuda_err:
                         print(f"  ⚠️  CUDA init error: {cuda_err}")
                 print(f"  🔍 torch: {torch.__version__}, CUDA: {cuda_available}, device_count: {torch.cuda.device_count()}")
-                device = "cuda" if cuda_available else "cpu"
-                print(f"  🖥️  Using device: {device}")
-                # Best quality model per device:
-                #   GPU → VieNeu-TTS-0.3B (PyTorch, ★★★★, no quantization loss)
-                #   CPU → VieNeu-TTS-0.3B-q8-gguf (GGUF Q8, ★★★★, faster than Q4)
-                if cuda_available:
-                    backbone_repo = "pnnbao-ump/VieNeu-TTS-0.3B"
-                else:
-                    backbone_repo = "pnnbao-ump/VieNeu-TTS-0.3B-q8-gguf"
+                
+                # FORCE CPU as requested by user
+                device = "cpu"
+                print(f"  🖥️  Forcing device: {device}")
+                
+                # CPU → VieNeu-TTS-0.3B-q8-gguf (GGUF Q8, ★★★★, faster than Q4)
+                backbone_repo = "pnnbao-ump/VieNeu-TTS-0.3B-q8-gguf"
                 print(f"  📦 Model: {backbone_repo}")
                 self.vieneu_engine = Vieneu(backbone_repo=backbone_repo, backbone_device=device, codec_device=device)
                 
