@@ -73,6 +73,10 @@ class VideoGenerationService:
         print(f"CWD: {self.sadtalker_dir}")
 
         try:
+            # Prepare environment to use GPU 1
+            my_env = os.environ.copy()
+            my_env["CUDA_VISIBLE_DEVICES"] = "1"
+            
             # Run inference — cap at 45 minutes to prevent silent hangs
             VIDEO_TIMEOUT = 2700  # 45 minutes
             process = subprocess.run(
@@ -82,6 +86,7 @@ class VideoGenerationService:
                 stderr=subprocess.PIPE,
                 text=True,
                 timeout=VIDEO_TIMEOUT,
+                env=my_env,
             )
             
             if process.returncode != 0:
