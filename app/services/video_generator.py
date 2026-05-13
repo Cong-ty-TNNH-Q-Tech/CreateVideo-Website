@@ -3,6 +3,7 @@ import subprocess
 import sys
 import glob
 import platform
+import uuid
 
 class VideoGenerationService:
     def __init__(self, app_root):
@@ -23,6 +24,11 @@ class VideoGenerationService:
         source_image_abs = os.path.abspath(source_image_path)
         driven_audio_abs = os.path.abspath(driven_audio_path)
         result_dir_abs = os.path.abspath(result_dir)
+        
+        # Create a unique sub-directory to isolate outputs and prevent race conditions
+        unique_id = uuid.uuid4().hex
+        unique_result_dir = os.path.join(result_dir_abs, unique_id)
+        os.makedirs(unique_result_dir, exist_ok=True)
         
         # Determine python executable based on OS
         project_root = os.path.dirname(self.app_root)
@@ -46,13 +52,13 @@ class VideoGenerationService:
             python_exec, 'inference.py',
             '--driven_audio', driven_audio_abs,
             '--source_image', source_image_abs,
-            '--result_dir', result_dir_abs,
+            '--result_dir', unique_result_dir,
             '--still', 
             '--preprocess', 'full',  # 'full' for better quality, 'crop' for cropped face
             '--size', '512',  # Higher resolution (256, 512)
             '--checkpoint_dir', 'checkpoints',
             '--batch_size', '2',  # Larger batch for smoother results
-            # '--enhancer', 'gfpgan',  # Disabled: gfpgan not installed
+            '--enhancer', 'gfpgan',  # Enabled GFPGAN for face enhancement
             '--expression_scale', '1.0'  # Expression intensity
         ]
         
@@ -110,9 +116,9 @@ class VideoGenerationService:
             # Ideally SadTalker should return the specific filename.
             # Since we can't easily change SadTalker return, we scan.
             
-            list_of_files = glob.glob(os.path.join(result_dir_abs, '*.mp4'))
+            list_of_files = glob.glob(os.path.join(unique_result_dir, '*.mp4'))
             # Check for files in subfolders too just in case
-            list_of_files += glob.glob(os.path.join(result_dir_abs, '*', '*.mp4'))
+            list_of_files += glob.glob(os.path.join(unique_result_dir, '*', '*.mp4'))
             
             if not list_of_files:
                  return {'success': False, 'error': "No video generated."}
