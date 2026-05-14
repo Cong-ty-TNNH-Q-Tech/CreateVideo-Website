@@ -5,21 +5,6 @@ from time import  strftime
 import os, sys, time
 from argparse import ArgumentParser
 
-# START PATCH: Fix basicsr compatibility with newer torchvision
-try:
-    import torchvision.transforms.functional_tensor
-except ImportError:
-    try:
-        import torchvision.transforms.functional as F
-        import types
-        functional_tensor = types.ModuleType("torchvision.transforms.functional_tensor")
-        functional_tensor.rgb_to_grayscale = F.rgb_to_grayscale
-        sys.modules["torchvision.transforms.functional_tensor"] = functional_tensor
-    except Exception as e:
-        print(f"Failed to patch torchvision: {e}")
-# END PATCH
-
-
 from src.utils.preprocess import CropAndExtract
 from src.test_audio2coeff import Audio2Coeff  
 from src.facerender.animate import AnimateFromCoeff
@@ -30,8 +15,8 @@ from src.utils.init_path import init_path
 def main(args):
     #torch.backends.cudnn.enabled = False
 
-    pic_path = args.source_image
-    audio_path = args.driven_audio
+    pic_path = args.image
+    audio_path = args.audio
     save_dir = os.path.join(args.result_dir, strftime("%Y_%m_%d_%H.%M.%S"))
     os.makedirs(save_dir, exist_ok=True)
     pose_style = args.pose_style
@@ -112,8 +97,8 @@ def main(args):
 if __name__ == '__main__':
 
     parser = ArgumentParser()  
-    parser.add_argument("--driven_audio", default='./examples/driven_audio/bus_chinese.wav', help="path to driven audio")
-    parser.add_argument("--source_image", default='./examples/source_image/full_body_1.png', help="path to source image")
+    parser.add_argument("--audio", default='./source_audio/Intro_Mai.wav', help="path to driven audio")
+    parser.add_argument("--image", default='./source_image/Mai.png', help="path to source image")
     parser.add_argument("--ref_eyeblink", default=None, help="path to reference video providing eye blinking")
     parser.add_argument("--ref_pose", default=None, help="path to reference video providing pose")
     parser.add_argument("--checkpoint_dir", default='./checkpoints', help="path to output")
@@ -125,13 +110,12 @@ if __name__ == '__main__':
     parser.add_argument('--input_yaw', nargs='+', type=int, default=None, help="the input yaw degree of the user ")
     parser.add_argument('--input_pitch', nargs='+', type=int, default=None, help="the input pitch degree of the user")
     parser.add_argument('--input_roll', nargs='+', type=int, default=None, help="the input roll degree of the user")
-    parser.add_argument('--enhancer',  type=str, default=None, help="Face enhancer, [gfpgan, RestoreFormer]")
+    parser.add_argument('--enhancer',  type=str, default='gfpgan', help="Face enhancer, [gfpgan, RestoreFormer]")
     parser.add_argument('--background_enhancer',  type=str, default=None, help="background enhancer, [realesrgan]")
     parser.add_argument("--cpu", dest="cpu", action="store_true") 
-    parser.add_argument("--gpu_id", type=int, default=0, help="GPU index to use when not in CPU mode")
     parser.add_argument("--face3dvis", action="store_true", help="generate 3d face and 3d landmarks") 
     parser.add_argument("--still", action="store_true", help="can crop back to the original videos for the full body aniamtion") 
-    parser.add_argument("--preprocess", default='full', choices=['crop', 'extcrop', 'resize', 'full', 'extfull'], help="how to preprocess the images" ) 
+    parser.add_argument("--preprocess", default='full', choices=['crop', 'extcrop', 'resize', 'full', 'extfull'], help="how to preprocess the images" )
     parser.add_argument("--verbose",action="store_true", help="saving the intermedia output or not" ) 
     parser.add_argument("--old_version",action="store_true", help="use the pth other than safetensor version" ) 
 
@@ -153,14 +137,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if torch.cuda.is_available() and not args.cpu:
-        args.device = f"cuda:{args.gpu_id}"
-        print(f"[GPU] Using GPU: {torch.cuda.get_device_name(args.gpu_id)} (Index: {args.gpu_id})")
-        print(f"      GPU Memory: {torch.cuda.get_device_properties(args.gpu_id).total_memory / 1024**3:.2f} GB")
+        args.device = "cuda"
     else:
         args.device = "cpu"
-        print("[CPU] Using CPU mode")
-        if torch.cuda.is_available():
-            print("      Note: GPU is available but CPU mode was forced with --cpu flag")
 
     main(args)
 

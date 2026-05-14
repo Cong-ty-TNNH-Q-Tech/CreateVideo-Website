@@ -50,8 +50,8 @@ class VideoGenerationService:
         # Construct command
         command = [
             python_exec, 'inference.py',
-            '--driven_audio', driven_audio_abs,
-            '--source_image', source_image_abs,
+            '--audio', driven_audio_abs,
+            '--image', source_image_abs,
             '--result_dir', unique_result_dir,
             '--still', 
             '--preprocess', 'full',  # 'full' for better quality, 'crop' for cropped face
@@ -59,8 +59,7 @@ class VideoGenerationService:
             '--checkpoint_dir', 'checkpoints',
             '--batch_size', '2',  # Reduce batch_size to 1 to prevent VRAM overflow instead of reducing size
             '--enhancer', 'gfpgan',  # Enabled GFPGAN for face enhancement
-            '--expression_scale', '1.0',  # Expression intensity
-            '--gpu_id', '0'  # Fallback to GPU 0 since GPU 1 doesn't exist
+            '--expression_scale', '1.0'  # Expression intensity
         ]
         
         if use_cpu:

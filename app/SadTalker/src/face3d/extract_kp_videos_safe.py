@@ -31,33 +31,16 @@ def init_alignment_model(model_name, half=False, device='cuda', model_rootpath=N
     return model
 
 
-def _get_sadtalker_weights_dir():
-    """Return an absolute, writable path for SadTalker model weight downloads.
-    Falls back to ~/.cache/sadtalker/weights if the repo dir is not writable
-    (e.g. cloned/pulled by root but run as another user).
-    """
-    _sadtalker_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    candidate = os.path.join(_sadtalker_root, 'gfpgan', 'weights')
-    try:
-        os.makedirs(candidate, exist_ok=True)
-        if os.access(candidate, os.W_OK):
-            return candidate
-    except Exception:
-        pass
-    fallback = os.path.expanduser('~/.cache/sadtalker/weights')
-    os.makedirs(fallback, exist_ok=True)
-    return fallback
-
-
 class KeypointExtractor():
     def __init__(self, device='cuda'):
 
         ### gfpgan/weights
         try:
             import webui  # in webui
-            root_path = 'extensions/SadTalker/gfpgan/weights'
-        except Exception:
-            root_path = _get_sadtalker_weights_dir()
+            root_path = 'extensions/SadTalker/gfpgan/weights' 
+
+        except:
+            root_path = 'gfpgan/weights'
 
         self.detector = init_alignment_model('awing_fan',device=device, model_rootpath=root_path)   
         self.det_net = init_detection_model('retinaface_resnet50', half=False,device=device, model_rootpath=root_path)
@@ -87,22 +70,7 @@ class KeypointExtractor():
                     with torch.no_grad():
                         # face detection -> face alignment.
                         img = np.array(images)
-                        
-                        # Try multiple confidence thresholds for better detection
-                        bboxes = None
-                        for confidence in [0.97, 0.92, 0.85, 0.75]:
-                            bboxes = self.det_net.detect_faces(images, confidence)
-                            if len(bboxes) > 0:
-                                print(f"Face detected with confidence threshold: {confidence}")
-                                break
-                        
-                        # Check if any face was detected
-                        if bboxes is None or len(bboxes) == 0:
-                            raise ValueError(
-                                "No face detected in the image. "
-                                "Please ensure the image contains a clear, visible face. "
-                                "Tips: Use a well-lit portrait photo with the face clearly visible."
-                            )
+                        bboxes = self.det_net.detect_faces(images, 0.97)
                         
                         bboxes = bboxes[0]
                         img = img[int(bboxes[1]):int(bboxes[3]), int(bboxes[0]):int(bboxes[2]), :]
