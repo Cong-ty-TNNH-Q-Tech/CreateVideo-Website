@@ -568,35 +568,72 @@ class AudioService:
         audio_dir = os.path.join(static_folder, "audio", presentation_id)
         return os.path.join(audio_dir, f"slide_{slide_index}.wav")
 
-    def merge_audio_files(self, audio_paths: list, output_path: str) -> bool:
-        """Merge multiple audio files into one"""
+    def merge_audio_files(self, audio_paths: list, output_path: str, padding_seconds: float = 0.0) -> bool:
+        """Merge multiple audio files into one, optionally with silence padding between clips"""
         try:
-            from moviepy.editor import concatenate_audioclips, AudioFileClip
+            from pydub import AudioSegment
             
-            clips = []
+            combined = AudioSegment.empty()
+            padding = AudioSegment.silent(duration=int(padding_seconds * 1000)) if padding_seconds > 0 else None
+            
+            valid_clips = 0
             for path in audio_paths:
                 if os.path.exists(path):
                     try:
-                        clips.append(AudioFileClip(path))
+                        clip = AudioSegment.from_file(path)
+                        combined += clip
+                        if padding:
+                            combined += padding
+                        valid_clips += 1
                     except Exception as e:
-                        print(f"⚠️ Error loading clip {path}: {e}")
+                        print(f"⚠️ Error loading clip {path} with pydub: {e}")
             
-            if not clips:
+            if valid_clips == 0:
                 print("❌ No valid clips to merge")
                 return False
                 
-            final_clip = concatenate_audioclips(clips)
-            final_clip.write_audiofile(output_path, logger=None)
-            
-            # Close clips to release file handles
-            for clip in clips:
-                clip.close()
-            final_clip.close()
-            
+            fmt = output_path.split('.')[-1].lower()
+            if fmt == 'm4a': fmt = 'mp4'  # pydub export format workaround
+            combined.export(output_path, format=fmt)
             return True
+            
         except ImportError:
-            print("❌ moviepy not available for audio merging")
-            return False
+            try:
+                from moviepy.editor import concatenate_audioclips, AudioFileClip
+                from moviepy.audio.AudioClip import AudioClip
+                
+                clips = []
+                for path in audio_paths:
+                    if os.path.exists(path):
+                        try:
+                            clip = AudioFileClip(path)
+                            clips.append(clip)
+                            if padding_seconds > 0:
+                                make_frame = lambda t: [0, 0]
+                                silence = AudioClip(make_frame, duration=padding_seconds, fps=clip.fps)
+                                clips.append(silence)
+                        except Exception as e:
+                            print(f"⚠️ Error loading clip {path} with moviepy: {e}")
+                
+                if not clips:
+                    print("❌ No valid clips to merge")
+                    return False
+                    
+                final_clip = concatenate_audioclips(clips)
+                final_clip.write_audiofile(output_path, logger=None)
+                
+                for clip in clips:
+                    clip.close()
+                final_clip.close()
+                
+                return True
+            except ImportError:
+                print("❌ Neither pydub nor moviepy is available for audio merging")
+                return False
+            except Exception as e:
+                print(f"❌ Error merging audio with moviepy: {e}")
+                traceback.print_exc()
+                return False
         except Exception as e:
             print(f"❌ Error merging audio: {e}")
             traceback.print_exc()

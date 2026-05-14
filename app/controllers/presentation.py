@@ -1670,7 +1670,7 @@ def _generate_video_task(app, pres_id, use_talking_head, avatar_path):
                 full_audio_path = os.path.join(static_folder, 'audio', pres_id, full_audio_filename)
                 os.makedirs(os.path.dirname(full_audio_path), exist_ok=True)
                 
-                if not audio_service.merge_audio_files(audio_paths, full_audio_path):
+                if not audio_service.merge_audio_files(audio_paths, full_audio_path, padding_seconds=3.0):
                     app.presentation_model.update(pres_id, {'is_generating_video': False, 'video_generation_error': 'Lỗi khi gộp file audio.'})
                     return
 
