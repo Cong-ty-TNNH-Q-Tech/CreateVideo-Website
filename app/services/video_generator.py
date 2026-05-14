@@ -57,7 +57,7 @@ class VideoGenerationService:
             '--preprocess', 'full',  # 'full' for better quality, 'crop' for cropped face
             '--size', '256',  # 256 is the minimum supported size for SadTalker mapping models
             '--checkpoint_dir', 'checkpoints',
-            '--batch_size', '1',  # Reduce batch_size to 1 to prevent VRAM overflow instead of reducing size
+            '--batch_size', '2',  # Reduce batch_size to 1 to prevent VRAM overflow instead of reducing size
             '--enhancer', 'gfpgan',  # Enabled GFPGAN for face enhancement
             '--expression_scale', '1.0',  # Expression intensity
             '--gpu_id', '0'  # Fallback to GPU 0 since GPU 1 doesn't exist
