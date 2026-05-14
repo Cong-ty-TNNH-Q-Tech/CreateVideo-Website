@@ -20,7 +20,16 @@ from src.facerender.modules.generator import OcclusionAwareGenerator, OcclusionA
 from src.facerender.modules.make_animation import make_animation 
 
 from pydub import AudioSegment 
-from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
+
+try:
+    from src.utils.face_enhancer import enhancer_generator_with_len, enhancer_list
+    FACE_ENHANCER_AVAILABLE = True
+except ImportError:
+    print("Warning: face_enhancer not available (gfpgan not installed). Face enhancement will be disabled.")
+    FACE_ENHANCER_AVAILABLE = False
+    enhancer_generator_with_len = None
+    enhancer_list = None
+
 from src.utils.paste_pic import paste_pic
 from src.utils.videoio import save_video_with_watermark
 
@@ -233,7 +242,7 @@ class AnimateFromCoeff():
             full_video_path = av_path 
 
         #### paste back then enhancers
-        if enhancer:
+        if enhancer and FACE_ENHANCER_AVAILABLE:
             video_name_enhancer = x['video_name']  + '_enhanced.mp4'
             enhanced_path = os.path.join(video_save_dir, 'temp_'+video_name_enhancer)
             av_path_enhancer = os.path.join(video_save_dir, video_name_enhancer) 
@@ -249,6 +258,8 @@ class AnimateFromCoeff():
             save_video_with_watermark(enhanced_path, new_audio_path, av_path_enhancer, watermark= False)
             print(f'The generated video is named {video_save_dir}/{video_name_enhancer}')
             os.remove(enhanced_path)
+        elif enhancer and not FACE_ENHANCER_AVAILABLE:
+            print("Skipping enhancement because face_enhancer is not available.")
 
         os.remove(path)
         os.remove(new_audio_path)
