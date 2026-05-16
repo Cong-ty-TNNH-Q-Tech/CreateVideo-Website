@@ -50,6 +50,10 @@ librosa>=0.11.0
 audioread>=3.1.0
 audioop-lts>=0.2.0; python_version >= "3.13"
 soxr>=1.0.0
+# OmniVoice — zero-shot multilingual voice cloning (600+ languages)
+# Install: pip install omnivoice
+# Or from source: pip install git+https://github.com/k2-fsa/OmniVoice.git
+omnivoice>=0.1.0
 
 # -------------------- Video Processing --------------------
 # NOTE: Use moviepy<2.0 - v2 removed moviepy.editor module

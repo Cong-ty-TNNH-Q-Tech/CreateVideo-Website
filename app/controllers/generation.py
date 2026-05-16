@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app, url_for
 from werkzeug.utils import secure_filename
 import os
+import traceback
 from app.services.video_generator import VideoGenerationService
 
 generation_bp = Blueprint('generation', __name__)
@@ -119,105 +120,135 @@ def api_generate_video():
 @generation_bp.route('/api/generate-tts', methods=['POST'])
 def api_generate_tts():
     """
-    API endpoint for VieNeu-TTS voice synthesis
-    
+    API endpoint for Text-to-Speech synthesis.
+
+    Voice cloning  (voice='clone') → OmniVoice (k2-fsa/OmniVoice), 600+ languages.
+    Preset voices  (voice=<id>)    → VieNeu-TTS preset voice.
+    Default voice  (voice='default') → VieNeu-TTS default.
+
     Form data:
-        - text: Text to synthesize
-        - model: Model repository (optional, default: pnnbao-ump/VieNeu-TTS-0.3B-q4-gguf)
-        - voice: Voice ID (default, Tuyen, Ngoc, etc., or 'clone')
-        - ref_audio: Reference audio file (for voice cloning)
-        - ref_text: Reference text transcript (for voice cloning)
-    
+        - text:      Text to synthesise.
+        - voice:     'default', 'clone', or a VieNeu preset voice ID.
+        - ref_audio: Reference audio file (required when voice='clone').
+        - ref_text:  Reference audio transcript (optional for clone — OmniVoice
+                     auto-transcribes via Whisper if omitted).
     Returns:
-        JSON with success status, audio_url, or error message
+        JSON with success status, audio_url, or error message.
     """
     try:
-        # Import VieNeu-TTS
-        import sys
-        vieneu_path = os.path.join(current_app.root_path, 'VieNeu-TTS')
-        if vieneu_path not in sys.path:
-            sys.path.insert(0, vieneu_path)
-        
-        from vieneu import Vieneu
-        
-        # Get parameters
         text = request.form.get('text', '').strip()
         voice_id = request.form.get('voice', 'default')
-        model_repo = request.form.get('model', 'pnnbao-ump/VieNeu-TTS-0.3B-q4-gguf')
-        
+
         if not text:
             return jsonify({'success': False, 'error': 'No text provided'}), 400
-        
-        # Log model selection for debugging
-        print(f"[TTS] Model: {model_repo}, Voice: {voice_id}, Text length: {len(text)}")
-        
-        # Initialize TTS with selected model
-        tts = Vieneu(
-            backbone_repo=model_repo,
-            backbone_device="cpu",
-            codec_device="cpu"
-        )
-        
-        # Generate audio based on voice selection
-        if voice_id == 'clone':
-            # Voice cloning mode
-            if 'ref_audio' not in request.files:
-                return jsonify({'success': False, 'error': 'No reference audio provided for cloning'}), 400
-            
-            ref_text = request.form.get('ref_text', '').strip()
-            if not ref_text:
-                return jsonify({'success': False, 'error': 'No reference text provided for cloning'}), 400
-            
-            ref_audio_file = request.files['ref_audio']
-            if ref_audio_file.filename == '':
-                return jsonify({'success': False, 'error': 'No reference audio selected'}), 400
-            
-            # Save reference audio
-            upload_folder = current_app.config['UPLOAD_FOLDER']
-            os.makedirs(upload_folder, exist_ok=True)
-            
-            ref_audio_filename = secure_filename(ref_audio_file.filename)
-            ref_audio_path = os.path.join(upload_folder, ref_audio_filename)
-            ref_audio_file.save(ref_audio_path)
-            
-            # Generate with voice cloning
-            audio_spec = tts.infer(
-                text=text,
-                ref_audio=ref_audio_path,
-                ref_text=ref_text
-            )
-            
-        elif voice_id != 'default':
-            # Use preset voice
-            try:
-                voice_data = tts.get_preset_voice(voice_id)
-                audio_spec = tts.infer(text=text, voice=voice_data)
-            except Exception as e:
-                return jsonify({
-                    'success': False,
-                    'error': f'Voice "{voice_id}" not found: {str(e)}'
-                }), 400
-        else:
-            # Use default voice
-            audio_spec = tts.infer(text=text)
-        
-        # Save generated audio
+
+        print(f"[TTS] Voice: {voice_id}, Text length: {len(text)}")
+
+        # Prepare output path
+        from datetime import datetime
         result_folder = current_app.config['RESULT_FOLDER']
         os.makedirs(result_folder, exist_ok=True)
-        
-        from datetime import datetime
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         audio_filename = f'tts_{timestamp}.wav'
         audio_path = os.path.join(result_folder, audio_filename)
-        
-        tts.save(audio_spec, audio_path)
-        
-        # Convert to URL
+
+        # ----------------------------------------------------------------
+        # Voice cloning — OmniVoice (primary) with VieNeu fallback
+        # ----------------------------------------------------------------
+        if voice_id == 'clone':
+            if 'ref_audio' not in request.files:
+                return jsonify({'success': False, 'error': 'No reference audio provided for cloning'}), 400
+
+            ref_audio_file = request.files['ref_audio']
+            if ref_audio_file.filename == '':
+                return jsonify({'success': False, 'error': 'No reference audio selected'}), 400
+
+            ref_text = request.form.get('ref_text', '').strip() or None
+
+            # Save reference audio
+            upload_folder = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_folder, exist_ok=True)
+            ref_audio_filename = secure_filename(ref_audio_file.filename)
+            ref_audio_path = os.path.join(upload_folder, ref_audio_filename)
+            ref_audio_file.save(ref_audio_path)
+
+            # Try OmniVoice first
+            cloned = False
+            try:
+                from app.services.omnivoice_service import get_omnivoice_service
+                ov_service = get_omnivoice_service()
+                if ov_service.is_available():
+                    cloned = ov_service.clone_voice(
+                        text=text,
+                        ref_audio=ref_audio_path,
+                        ref_text=ref_text,
+                        output_path=audio_path,
+                    )
+                    if cloned:
+                        print("[TTS] OmniVoice cloning successful")
+            except Exception as ov_err:
+                print(f"[TTS] OmniVoice error: {ov_err}")
+                traceback.print_exc()
+
+            # Fallback to VieNeu if OmniVoice failed
+            if not cloned:
+                print("[TTS] Falling back to VieNeu for voice cloning...")
+                try:
+                    import sys
+                    vieneu_path = os.path.join(current_app.root_path, 'VieNeu-TTS')
+                    if vieneu_path not in sys.path:
+                        sys.path.insert(0, vieneu_path)
+                    from vieneu import Vieneu
+                    tts = Vieneu(backbone_repo='pnnbao-ump/VieNeu-TTS-0.3B-q4-gguf',
+                                 backbone_device='cpu', codec_device='cpu')
+                    audio_spec = tts.infer(text=text, ref_audio=ref_audio_path,
+                                           ref_text=ref_text or '')
+                    tts.save(audio_spec, audio_path)
+                    cloned = True
+                    print("[TTS] VieNeu fallback cloning successful")
+                except Exception as vn_err:
+                    print(f"[TTS] VieNeu fallback error: {vn_err}")
+                    traceback.print_exc()
+
+            if not cloned:
+                return jsonify({'success': False, 'error': 'Voice cloning failed with both OmniVoice and VieNeu'}), 500
+
+        # ----------------------------------------------------------------
+        # Preset / default voice — VieNeu-TTS
+        # ----------------------------------------------------------------
+        else:
+            try:
+                import sys
+                vieneu_path = os.path.join(current_app.root_path, 'VieNeu-TTS')
+                if vieneu_path not in sys.path:
+                    sys.path.insert(0, vieneu_path)
+                from vieneu import Vieneu
+                model_repo = request.form.get('model', 'pnnbao-ump/VieNeu-TTS-0.3B-q4-gguf')
+                print(f"[TTS] VieNeu model: {model_repo}, voice: {voice_id}")
+                tts = Vieneu(backbone_repo=model_repo, backbone_device='cpu', codec_device='cpu')
+
+                if voice_id != 'default':
+                    try:
+                        voice_data = tts.get_preset_voice(voice_id)
+                        audio_spec = tts.infer(text=text, voice=voice_data)
+                    except Exception as e:
+                        return jsonify({'success': False,
+                                        'error': f'Voice "{voice_id}" not found: {str(e)}'}), 400
+                else:
+                    audio_spec = tts.infer(text=text)
+
+                tts.save(audio_spec, audio_path)
+            except ImportError as ie:
+                return jsonify({'success': False,
+                                'error': f'VieNeu-TTS not available: {ie}'}), 500
+
+        # ----------------------------------------------------------------
+        # Build response
+        # ----------------------------------------------------------------
         static_path = os.path.relpath(audio_path, current_app.static_folder)
-        # Convert Windows backslashes to forward slashes for URL
         static_path_url = static_path.replace('\\', '/')
         audio_url = url_for('static', filename=static_path_url, _external=True)
-        
+
         return jsonify({
             'success': True,
             'audio_url': audio_url,
@@ -225,18 +256,10 @@ def api_generate_tts():
             'voice_used': voice_id,
             'text_length': len(text)
         })
-        
+
     except ImportError as e:
-        import traceback
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': f'VieNeu-TTS not available: {str(e)}'
-        }), 500
+        return jsonify({'success': False, 'error': f'TTS engine not available: {str(e)}'}), 500
     except Exception as e:
-        import traceback
         traceback.print_exc()
-        return jsonify({
-            'success': False,
-            'error': f'Server error: {str(e)}'
-        }), 500
+        return jsonify({'success': False, 'error': f'Server error: {str(e)}'}), 500

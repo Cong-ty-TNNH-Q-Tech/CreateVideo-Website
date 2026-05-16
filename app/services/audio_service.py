@@ -1,8 +1,11 @@
 """
 Audio Service for Text-to-Speech Generation
 
-This service provides audio generation capabilities with VieNeu-TTS as primary option
-and edge-tts (Microsoft Neural) as fallback, with gTTS as last resort.
+This service provides audio generation capabilities:
+- Voice Cloning  (voice_type='clone')  → OmniVoice (k2-fsa/OmniVoice) — 600+ langs
+- Preset voices  (voice_type='vieneu') → VieNeu-TTS (Vietnamese-focused)
+- Neural TTS     (voice_type='edge')   → Microsoft Edge-TTS
+- Standard TTS   (voice_type='gtts')   → Google TTS (fallback)
 """
 
 import os
@@ -88,12 +91,18 @@ class AudioService:
         self.force_gtts = force_gtts
         # Protects GPU/CPU model inference — only VieNeu acquires this
         self._vieneu_lock = threading.Lock()
-        
+
+        # OmniVoice service for voice cloning — eagerly pre-loaded at init time
+        # so model weights are warm before the first user request.
+        self._omnivoice_service = None
+        self.omnivoice_available = False
+
         # Chỉ thử VieNeu-TTS nếu không bị force dùng gTTS
         if not force_gtts:
             self._init_vieneu()
+            self._init_omnivoice()
         else:
-            print("🎯 Force using gTTS - skipping VieNeu-TTS initialization")
+            print("🎯 Force using gTTS - skipping VieNeu-TTS / OmniVoice initialization")
     
     def _init_vieneu(self):
         """Initialize VieNeu-TTS engine with fast fail"""
@@ -166,7 +175,28 @@ class AudioService:
         except Exception as e:
             print(f"⚠️  VieNeu-TTS not available: {e}")
             self.vieneu_available = False
-    
+
+    def _init_omnivoice(self):
+        """Initialize OmniVoice service for voice cloning (lazy singleton)."""
+        try:
+            from app.services.omnivoice_service import get_omnivoice_service, OMNIVOICE_AVAILABLE
+            if not OMNIVOICE_AVAILABLE:
+                print("ℹ️  OmniVoice not installed — voice cloning will use VieNeu fallback")
+                print("    Install: pip install omnivoice")
+                self.omnivoice_available = False
+                return
+            # Pre-load the singleton so model weights are ready before first request
+            print("🚀 Pre-loading OmniVoice model...")
+            self._omnivoice_service = get_omnivoice_service()
+            self.omnivoice_available = self._omnivoice_service.is_available()
+            if self.omnivoice_available:
+                print("✅ OmniVoice ready for voice cloning")
+            else:
+                print("⚠️  OmniVoice loaded but model unavailable — check logs above")
+        except Exception as e:
+            print(f"⚠️  OmniVoice init error: {e}")
+            self.omnivoice_available = False
+
     def detect_language(self, text: str) -> str:
         """Detect language of text and return appropriate language code"""
         if not text or len(text.strip()) < 10:
@@ -226,12 +256,16 @@ class AudioService:
     def should_use_vieneu(self, language: str) -> bool:
         """Determine if VieNeu-TTS should be used for this language"""
         return language == 'vi' and self.vieneu_available and not self.force_gtts
+
+    def should_use_omnivoice(self) -> bool:
+        """Determine if OmniVoice is available for voice cloning"""
+        return self.omnivoice_available and not self.force_gtts
     
     def get_available_voices(self):
         """Get list of available VieNeu-TTS preset voices"""
         if not self.vieneu_available or not self.vieneu_engine:
             return []
-        
+
         try:
             voices = self.vieneu_engine.list_preset_voices()
             # Returns list of tuples: [(name, id), ...]
@@ -239,18 +273,34 @@ class AudioService:
         except Exception as e:
             print(f"Error getting voices: {e}")
             return []
+
+    def get_engine_status(self) -> dict:
+        """Return availability status for each TTS engine."""
+        return {
+            'omnivoice': self.omnivoice_available,
+            'vieneu': self.vieneu_available,
+            'edge_tts': True,   # always attempted (network-based)
+            'gtts': True,       # always attempted (network-based)
+        }
     
     def generate_audio(self, text: str, output_path: str, voice_type: str = None, voice_id: str = None, clone_voice_path: str = None, clone_ref_text: str = None) -> Tuple[bool, str]:
         """
         Generate audio from text using specified TTS engine
-        
+
         Args:
-            text: Text to convert to speech
-            output_path: Path where audio file should be saved
-            voice_type: TTS engine to use ('vieneu', 'gtts', 'clone'). If None, auto-detect based on language
-            voice_id: Optional preset voice ID for VieNeu-TTS
-            clone_voice_path: Optional path to audio file for voice cloning
-            
+            text:             Text to convert to speech.
+            output_path:      Path where audio file should be saved.
+            voice_type:       TTS engine to use:
+                                'clone'  → OmniVoice voice cloning (primary), VieNeu (fallback)
+                                'vieneu' → VieNeu-TTS preset/default voice
+                                'edge'   → Microsoft Edge-TTS neural voice
+                                'gtts'   → Google TTS
+                                None     → auto-detect by detected language
+            voice_id:         Preset voice ID for VieNeu-TTS, or edge-tts voice string.
+            clone_voice_path: Absolute path to reference audio file for voice cloning.
+            clone_ref_text:   Transcript of the reference audio (optional — OmniVoice
+                              auto-transcribes via Whisper if omitted).
+
         Returns:
             Tuple of (success: bool, message: str)
         """
@@ -285,16 +335,26 @@ class AudioService:
                     return False, f"gTTS failed for language {detected_lang}"
                     
             elif voice_type == 'clone':
-                # Force VieNeu with voice cloning
-                print("🎯 User selected Voice Clone")
+                # OmniVoice voice cloning (primary)
+                print("🎯 User selected Voice Clone → OmniVoice")
+
+                if not clone_voice_path:
+                    print("⚠️  voice_type='clone' but no clone_voice_path provided "
+                          "— falling back to VieNeu preset then edge-tts")
+
+                if self.should_use_omnivoice() and clone_voice_path:
+                    if self._generate_with_omnivoice(clean_text, output_path, clone_voice_path, clone_ref_text):
+                        return True, f"Generated using OmniVoice Voice Clone ({detected_lang})"
+                    print("⚠️  OmniVoice clone failed, trying VieNeu fallback...")
+
+                # VieNeu fallback for cloning
                 if self._generate_with_vieneu(clean_text, output_path, voice_id, clone_voice_path, clone_ref_text):
-                    return True, f"Generated using Voice Clone ({detected_lang})"
-                else:
-                    print("⚠️  Voice cloning failed, falling back to edge-tts...")
-                    if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
-                        return True, f"Generated using edge-tts fallback ({detected_lang})"
-                    else:
-                        return False, "Both Voice Clone and edge-tts failed"
+                    return True, f"Generated using VieNeu Voice Clone fallback ({detected_lang})"
+
+                print("⚠️  Voice cloning failed, falling back to edge-tts...")
+                if self._generate_with_edge_tts(clean_text, output_path, detected_lang):
+                    return True, f"Generated using edge-tts fallback ({detected_lang})"
+                return False, "Voice Clone (OmniVoice + VieNeu) and edge-tts all failed"
                         
             elif voice_type == 'vieneu':
                 # Force VieNeu-TTS
@@ -332,6 +392,28 @@ class AudioService:
             traceback.print_exc()
             return False, error_msg
     
+    def _generate_with_omnivoice(self, text: str, output_path: str, ref_audio: str = None, ref_text: str = None) -> bool:
+        """Generate audio using OmniVoice voice cloning (thread-safe)."""
+        try:
+            if not self.should_use_omnivoice():
+                return False
+
+            # Lazily get service if not pre-loaded
+            if self._omnivoice_service is None:
+                from app.services.omnivoice_service import get_omnivoice_service
+                self._omnivoice_service = get_omnivoice_service()
+
+            return self._omnivoice_service.clone_voice(
+                text=text,
+                ref_audio=ref_audio,
+                ref_text=ref_text or None,
+                output_path=output_path,
+            )
+        except Exception as e:
+            print(f"❌ _generate_with_omnivoice error: {e}")
+            traceback.print_exc()
+            return False
+
     def _generate_with_vieneu(self, text: str, output_path: str, voice_id: str = None, clone_voice_path: str = None, clone_ref_text: str = None) -> bool:
         """Generate audio using VieNeu-TTS engine (thread-safe: serializes GPU inference)"""
         try:
@@ -658,6 +740,10 @@ class AudioService:
                 print("🧹 VieNeu-TTS engine closed")
         except Exception as e:
             print(f"⚠️  Error closing VieNeu engine: {e}")
+
+        # OmniVoice model: no explicit close needed; GC will handle GPU memory
+        self._omnivoice_service = None
+        self.omnivoice_available = False
 
 
 # Global instance
