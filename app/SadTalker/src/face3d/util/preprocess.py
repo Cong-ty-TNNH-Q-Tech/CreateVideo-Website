@@ -9,7 +9,10 @@ import os
 from skimage import transform as trans
 import torch
 import warnings
-warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
+try:
+    warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
+except AttributeError:
+    pass
 warnings.filterwarnings("ignore", category=FutureWarning) 
 
 
