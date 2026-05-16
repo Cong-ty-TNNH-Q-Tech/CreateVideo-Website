@@ -59,7 +59,7 @@ omnivoice>=0.1.0
 # -------------------- Video Processing --------------------
 # NOTE: Use moviepy<2.0 - v2 removed moviepy.editor module
 moviepy>=1.0.3,<2.0
-opencv-python>=4.13.0
+opencv-python>=4.10.0,<4.13.0
 imageio>=2.37.0
 imageio-ffmpeg>=0.6.0
 proglog>=0.1.12
