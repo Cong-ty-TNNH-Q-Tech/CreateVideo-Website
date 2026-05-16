@@ -4,11 +4,12 @@
 # Last updated: 2026-02-25
 # ============================================================
 
-# -------------------- PyTorch (CUDA 12.4) --------------------
-# Install with: pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-torch>=2.6.0
-torchvision>=0.21.0
-torchaudio>=2.6.0
+# -------------------- PyTorch (CUDA 12.x) --------------------
+# OmniVoice requires torch>=2.8.0. Install with:
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+torch>=2.8.0
+torchvision>=0.23.0
+torchaudio>=2.8.0
 
 # -------------------- Web Framework --------------------
 Flask>=3.1.0
